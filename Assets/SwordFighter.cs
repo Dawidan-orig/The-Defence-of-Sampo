@@ -94,22 +94,35 @@ public class SwordFighter : MonoBehaviour
 
             bladePrediction.transform.Rotate(e.direction, 90);
 
-            Vector3 bladeUp = start.transform.position;
-            Vector3 bladeDown = end.transform.position;
+            Vector3 bladeStart = start.transform.position;
+            Vector3 bladeEnd = end.transform.position;
 
             Destroy(bladePrediction);
+            int ignored = blade.gameObject.layer; // Игнорируем при проверке на самовтыкание все мечи.
+            ignored = ~ignored;
 
-            if (Physics.Raycast(bladeUp, bladeDown, out RaycastHit hit, 10)) //TODO : Учёт длины меча.
+            // Проверяем снизу вверх
+            if (Physics.Raycast(bladeStart, bladeEnd, out RaycastHit hit, (bladeStart - bladeEnd).magnitude, ignored))
             {
                 // Меч втыкается куда-то. Возможно, в себя самого. Ну его.
-                Debug.DrawLine(bladeUp, bladeDown, Color.red, 10);
+                Debug.DrawLine(bladeStart, bladeEnd, new Color(0.9f,0.6f, 0.6f), 10);
+                Debug.Log("returning, because precition in: " + hit.collider.transform.name + ", Layermask: " + ignored, hit.collider.gameObject);
                 return;
             }
 
-            if ((formalCenter - bladeDown).magnitude < (formalCenter - bladeUp).magnitude)
-                Block(bladeDown, bladeUp);
+            // Сверху вниз.
+            if (Physics.Raycast(bladeEnd, bladeStart, out hit, (bladeStart - bladeEnd).magnitude, ignored))
+            {
+                // Меч втыкается куда-то. Возможно, в себя самого. Ну его.
+                Debug.DrawLine(bladeStart, bladeEnd, new Color(0.9f, 0.6f, 0.6f), 10);
+                Debug.Log("returning, because precition in: " + hit.collider.transform.name, hit.collider.gameObject);
+                return;
+            }
+
+            if ((formalCenter - bladeEnd).magnitude < (formalCenter - bladeStart).magnitude)
+                Block(bladeStart, bladeEnd);
             else
-                Block(bladeUp, bladeDown);
+                Block(bladeStart, bladeEnd);
         }
     }
 
@@ -154,48 +167,27 @@ public class SwordFighter : MonoBehaviour
         Transform probe = go.transform;
         probe.position = bladeHandle.position;
         probe.rotation = bladeHandle.rotation;
-        probe.parent = transform;
+        probe.parent = null;
 
         probe.LookAt(bladeHandle.position + desireDirection, Vector3.up);
         probe.Rotate(Vector3.right, 90);
 
-        bladeHandle.rotation = Quaternion.Lerp(bladeHandle.rotation, probe.rotation, progress);
+        //Есть текущее положение, и есть точка-цель с поворотом.
+        //Чтобы поворот осуществлялся так, как мне нужно, надо виртуально ставить probe в ту же точку, с которой начинаем движение
+        //Причём ставить надо, как бы, поворотом. То-есть брать её, и вращать на расстоянии от центра vital.
+        //Так получится именно тот поворот, которой надо осуществлять.
+        //Например, Если поворот старта и поворот в результате совпадают - поворота не будет совсем, и из-за position-смещения probe порежет vital.
+        //
+
+
+        bladeHandle.rotation = Quaternion.Lerp(bladeHandle.rotation, transform.rotation * probe.rotation, progress);
+
+        Debug.DrawRay(bladeHandle.position, probe.rotation * Vector3.up);
 
         Destroy(go);
         #endregion
         
-        
-        const float push = 0.1f;
-        while(true) //TODO : Не работает, доделать!
-        {
-            Vector3 up = blade.upperPoint.position;
-            Vector3 down = blade.downerPoint.position;
-            float length = (up - down).magnitude;
-
-            var hitsDown = Physics.RaycastAll(down, (up-down).normalized, length);
-            var hitsUp = Physics.RaycastAll(up, (down - up).normalized, length);
-            var hitsAll = new RaycastHit[hitsDown.Length + hitsUp.Length];
-            hitsDown.CopyTo(hitsAll, 0);
-            hitsUp.CopyTo(hitsAll, hitsDown.Length);
-
-            bool vitalFound = false;
-            foreach(RaycastHit hit in hitsAll) 
-            {
-                vitalFound = hit.transform == vital.transform;
-                if(vitalFound)
-                {
-                    break;
-                }
-            }
-
-            if (!vitalFound)
-                break;
-
-            Vector3 pushDirection = (desirePosition - formalCenter).normalized;
-            desirePosition += pushDirection * push;
-            Debug.DrawRay(formalCenter, pushDirection, Color.cyan);
-        }
-        
+        //TODO : добавить сюда систему выталкивания меча из vital после предсказывания
     }
 
     private void OnDrawGizmos()

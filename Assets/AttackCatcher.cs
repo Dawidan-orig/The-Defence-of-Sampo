@@ -37,6 +37,9 @@ public class AttackCatcher : MonoBehaviour
     {
         foreach (GameObject thing in controlled)
         {
+            if (!thing) // Позволяет пропустить удалённые в этом кадре объекты
+                continue;
+
             // У thing гарантированно есть Rigidbody. Это условие добавление в список.
             Rigidbody rb = thing.GetComponent<Rigidbody>();
             if (ignored.Contains(rb))
@@ -119,8 +122,15 @@ public class AttackCatcher : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.transform.TryGetComponent(out Blade blade))
-            Debug.Log("Slash!", collision.transform);
+        if (collision.transform.TryGetComponent(out Blade blade))
+        {
+            if (blade == GetComponent<SwordFighter>().blade)
+                Debug.Log("Selfslash", collision.transform);
+            else
+                Debug.Log("Skipped slash", collision.transform);
+
+            Debug.DrawLine(blade.downerPoint.position, blade.upperPoint.position, new Color(0.5f, 0, 0), 3); 
+        }
     }
 
     private void OnTriggerEnter(Collider other)
