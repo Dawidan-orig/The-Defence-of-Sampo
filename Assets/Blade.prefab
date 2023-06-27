@@ -118,8 +118,8 @@ MonoBehaviour:
   downerPoint: {fileID: 3518550696206137202}
   body: {fileID: 0}
   DEBUG_AngularVelocityEuler: {x: 0, y: 0, z: 0}
-  visualPrediction: 1
-  alwaysDraw: 1
+  visualPrediction: 0
+  alwaysDraw: 0
   iterations: 10
 --- !u!54 &3518550695108105090
 Rigidbody:

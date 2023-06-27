@@ -1,20 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DirectHandle : MonoBehaviour
-    // Контроль за Rigidbody, чтобы континуально перемещать объекты.
+    // Контроль за Rigidbody; Континуальное перемещение объектов.
 {
     public Transform bladeHandle;
     public Rigidbody bladeTarget;
 
     private Vector3 desirePoint;
-    private Vector3 desireRotation;
 
     private void FixedUpdate()
     {
         desirePoint = transform.position;
-        desireRotation = bladeTarget.transform.rotation.eulerAngles;
 
         bladeTarget.velocity = (desirePoint - bladeHandle.position) / Time.fixedDeltaTime;
 

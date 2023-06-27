@@ -7,12 +7,12 @@ public class AttackCatcher : MonoBehaviour
 {
 
     [Header("init-s")]
-    [Range(0, 15)]
+    [Range(0, 30)]
     public int predictions = 10;
-    public bool draw = true;
+    public bool Debug_Draw = true;
     [Min(0.75f)]
     public float ignoredDistance = 10; // Домножается на CriticalDistance. Чем выше - тем больше предсказаний будет учтено.
-    public float ignoredSpeed = 5; // Эта штука слишком медленная, чтобы о ней переживать.
+    public float ignoredSpeed = 5; // Определеяет минимальную скорость, начиная с которой объект надо отбить. TODO : Заменить на импульс f=mv
     public List<Rigidbody> ignored = new List<Rigidbody>();
 
     [Header("Readonly")]
@@ -23,7 +23,7 @@ public class AttackCatcher : MonoBehaviour
     public class AttackEventArgs : EventArgs
     {
         public Rigidbody body;
-        public bool free; // Определяет, что направление не имеет значение.
+        public bool free; /// <summary> Определяет, что направление не имеет значение. <\summary>
         public Vector3 start;
         public Vector3 end;
         public Vector3 direction;
@@ -49,9 +49,13 @@ public class AttackCatcher : MonoBehaviour
                 continue;
 
             if (thing.TryGetComponent(out Blade blade))
-                SwordIncoming(blade);
-            else
-                StuffIncoming(rb);
+                if (blade.host != null)
+                {
+                    SwordIncoming(blade);
+                    continue;
+                }
+            
+            StuffIncoming(rb);
         }
     }
 
@@ -60,64 +64,81 @@ public class AttackCatcher : MonoBehaviour
         // Тут вычисляем две точки: Куда прилетит меч?
         Vector3 center = vital.bounds.center;
         List<Blade.border> preditionList = blade.FixedPredict(predictions);
+        preditionList.Reverse();
+
         Blade.border closest = preditionList[0];
-        foreach (Blade.border border in preditionList)
+
+        foreach (Blade.border border in preditionList) // Проходимся по всем предсказаням
         {
             Vector3 borderCenter = Vector3.Lerp(border.posDown, border.posUp, 0.5f);
             if (Vector3.Dot(border.direction, vital.bounds.center - borderCenter) < 0)
                 continue;
-            // В этом предсказании меч будет направлен в сторону vital.
+            // В этом предсказании вектор движения меча будет направлен в сторону vital.
 
             if ((center - border.posUp).magnitude > ignoredDistance)
             {
                 continue;
             }
-            // В это предсказании верхний край меча находится достаточно близко
+            // В этом предсказании верхний край меча находится достаточно близко
 
-            RaycastHit hit;
-            if (Physics.Raycast(border.posDown, (border.posUp - border.posDown).normalized, out hit, (border.posUp - border.posDown).magnitude, 64))
+            if (Physics.Raycast(border.posDown, (border.posUp - border.posDown).normalized, (border.posUp - border.posDown).magnitude) //Снизу вверх
+                || 
+                Physics.Raycast(border.posUp, (border.posDown-border.posUp).normalized, (border.posUp - border.posDown).magnitude) //Сверху вниз
+                )
             {
                 continue;
             }
             // Игнорируем всё, что ударяется во внейшний коллайдер - оно далеко.
             // А так же всё, что ударяется во внутренний - оно уже чрезвычайно близко.
 
-            if (MathF.Abs((center - borderCenter).magnitude) <
-                MathF.Abs((center - Vector3.Lerp(closest.posDown, closest.posUp, 0.5f)).magnitude))
-            {
-                closest = border;
-            }
+            closest = border;
         }
 
         // Нет смысла делать что-то с самим мечом - в следующем кадре он уже будет в vital коллайдере.
-        // У struc'ов нет "==", но сравнить достаточно и по одному значению, чтобы убедится в полном равенстве.
+        // У struct'ов нет "==", но сравнить достаточно и по одному значению, чтобы убедится в полном равенстве.
         if (closest.posUp == preditionList[0].posUp)
             return;
 
-        if (draw)
+        if (Debug_Draw)
         {
             Debug.DrawLine(closest.posUp, closest.posDown, Color.yellow);
             Debug.DrawRay(closest.posUp, closest.direction * 0.1f, Color.green);
         }
-        OnIncomingAttack?.Invoke(this, new AttackEventArgs { body = blade.body, free = false, start = closest.posUp, end = closest.posDown, direction = closest.direction, impulse = blade.body.mass * blade.body.velocity.magnitude });
+
+        OnIncomingAttack?.Invoke(this,
+            new AttackEventArgs { body = blade.body, free = false, start = closest.posUp, end = closest.posDown, direction = closest.direction, impulse = blade.body.mass * blade.body.velocity.magnitude });
     }
 
     private void StuffIncoming(Rigidbody rb)
     {
-        if (!Physics.Raycast(rb.position, rb.velocity.normalized))
+        if (Vector3.Dot(rb.velocity, vital.bounds.center - rb.position) < 0)
             return;
         // Штука летит в сторону этого transform
 
-        if ((transform.position - rb.position).magnitude >= ignoredDistance)
+        Vector3 center = rb.GetComponent<Collider>().bounds.center;
+
+        if ((transform.position - center).magnitude >= ignoredDistance)
             return;
         // Штука уже близко!
 
-        //TODO: Тут вычисляем две точки, вдоль которых надо ударить, чтобы отбить случайный объект.
+        if (rb.velocity.magnitude < ignoredSpeed)
+            return;
+        // У штуки достаточно высокая скорость
 
+        if (Debug_Draw)        
+            Debug.DrawRay(rb.position, predictions * Time.fixedDeltaTime * rb.velocity, Color.blue);
 
-        if(draw)
-            Debug.DrawLine(transform.position, transform.position + Vector3.up * 5, Color.red);
-        OnIncomingAttack?.Invoke(this, new AttackEventArgs { body = rb, free = true, impulse = rb.mass * rb.velocity.magnitude });
+        Vector3 predictionPoint = rb.position + predictions * Time.fixedDeltaTime * rb.velocity;
+
+        // Если точка пролетела насквозь - уже надо брать максимально близкую позицию к себе
+        if (Vector3.Dot(rb.velocity, predictionPoint - rb.position) < 0)        
+            predictionPoint = (rb.position - center).normalized * ((rb.position - center).magnitude - 0.5f);
+        
+
+        if (Debug_Draw)
+            Debug.DrawLine(rb.position, predictionPoint, Color.yellow);
+
+        OnIncomingAttack?.Invoke(this, new AttackEventArgs { body = rb,direction = rb.velocity.normalized, start = predictionPoint, end = predictionPoint, free = true, impulse = rb.mass * rb.velocity.magnitude });
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -129,8 +150,10 @@ public class AttackCatcher : MonoBehaviour
             else
                 Debug.Log("Skipped slash", collision.transform);
 
-            Debug.DrawLine(blade.downerPoint.position, blade.upperPoint.position, new Color(0.5f, 0, 0), 3); 
+            Debug.DrawLine(blade.downerPoint.position, blade.upperPoint.position, new Color(0.5f, 0, 0), 3);
         }
+        else
+            Debug.Log("Blunt damage", collision.transform);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -142,6 +165,7 @@ public class AttackCatcher : MonoBehaviour
 
         // Этого уже достаточно, чтобы постоянно фиксировать объект в поле видимости.
         controlled.Add(body.gameObject);
+        controlled.RemoveAll(item => item == null);
     }
 
     private void OnTriggerExit(Collider other)

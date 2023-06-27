@@ -9,6 +9,7 @@ public class Blade : MonoBehaviour
     public Transform upperPoint;
     public Transform downerPoint;
 
+    public GameObject host { get; private set; }
     [Header("lookonly")]
     public Rigidbody body;
     public Vector3 DEBUG_AngularVelocityEuler;
@@ -29,6 +30,11 @@ public class Blade : MonoBehaviour
     {
         body = GetComponent<Rigidbody>();
         body.centerOfMass = Vector3.up / 3;
+    }
+
+    public void SetHost(GameObject newHost) 
+    {
+        host = newHost;   
     }
 
     public List<border> FixedPredict(int prediction)
@@ -69,7 +75,7 @@ public class Blade : MonoBehaviour
             border.posDown = transform.position + rotatedPosDown + offset_i * body.velocity * Time.fixedDeltaTime;
 
             //Считаем по PosUp, Так как он имеет наибольшее изменение
-            border.direction = Quaternion.FromToRotation(start.posUp - start.posDown, border.posUp - border.posDown) * body.velocity.normalized;
+            border.direction = body.velocity.normalized;
 
             //TODO : Проработать идею со смещением всего меча в предсказании к HandlePoint, Чтобы учитывать привязанность меча к handlepoint 
 
@@ -141,18 +147,5 @@ public class Blade : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(downerPoint.position, upperPoint.position);
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        //Если об этот меч ударяется какой-то другой - отбросить его нафиг!
-        // И пусть пока не будет клинчей - их в любом случае тяжело реализовать.
-
-        //TODO : Придумать что-то с коллизиями. Мечи проходят насквозь.
-
-        if (collision.gameObject.TryGetComponent(out Blade other))
-        {
-            other.body.AddForce(body.velocity * -1, ForceMode.VelocityChange);
-        }
     }
 }

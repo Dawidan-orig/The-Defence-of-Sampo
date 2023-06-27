@@ -27,6 +27,8 @@ public class ThrowerInspector : Editor
         Action d = ((ThrowingStuff)target).Throw;
         myButton.clicked += d;
         myInspector.Add(myButton);
+        if (!EditorApplication.isPlaying)
+            myButton.SetEnabled(false);
 
         // Return the finished inspector UI
         return myInspector;
