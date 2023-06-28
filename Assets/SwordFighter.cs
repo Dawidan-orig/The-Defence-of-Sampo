@@ -9,7 +9,7 @@ public class SwordFighter : MonoBehaviour
     [Header("constraints")]
     public float actionSpeed = 10; // Скорость движения меча в руке
     public float angluarSpeed = 10; // Скорость поворота тела
-    public float swingImpulse = 2; // Насколько сильно бьёт меч
+    public float swingDistanceMultiplier = 2; // Насколько сильно бьёт меч
     public float criticalImpulse = 200; // Лучше увернуться, чем отбить объект с импульсом больше этого!
     public float bladeMaxDistance = 2;
 
@@ -21,7 +21,7 @@ public class SwordFighter : MonoBehaviour
 
     [Header("lookonly")]
     [SerializeField]
-    Vector3 formalCenter;
+    Vector3 formalBladeCenter;
     [SerializeField]
     GameObject bladeObject;
     [SerializeField]
@@ -49,7 +49,7 @@ public class SwordFighter : MonoBehaviour
 
     void Update()
     {
-        formalCenter = blade.downerPoint.position + (blade.upperPoint.position - blade.downerPoint.position)/2;
+        formalBladeCenter = blade.downerPoint.position + (blade.upperPoint.position - blade.downerPoint.position)/2;
 
         if (desireBlade.hasChanged)
             SetDesires(desireBlade.position, desireBlade.up);
@@ -70,9 +70,9 @@ public class SwordFighter : MonoBehaviour
         {
             // Это неконтроллируемый объект, который просто летит в нашу сторону. Либо отбить, либо увернуться!
             if (e.impulse < criticalImpulse)
-                Swing(e.body.position + e.start);
+                Swing(e.start);
             else
-            {// Evade() -- Должен быть в другом скрипте
+            {// Evade() -- Должен быть в другом скрипте, тут - только вызов
             }    
         }
         else
@@ -115,29 +115,34 @@ public class SwordFighter : MonoBehaviour
                 // Меч втыкается куда-то, игнорируем.
                 //Debug.Log("returning, because precition in: " + hit.collider.transform.name + ", Layermask: " + ignored, hit.collider.gameObject);
                 return;
-            }
-
-            if ((formalCenter - bladeUp).magnitude < (formalCenter - bladeDown).magnitude)
-                Block(bladeDown, bladeUp);
-            else
-                Block(bladeDown, bladeUp);
+            }            
+            
+            Block(bladeDown, bladeUp);
         }
+    }
+
+    // Возвращает значение от 0 до until с возрастанием raise в точке x. Чем больше x - тем ближе результат к until.
+    private float Influence_Func(float x, float until, float raise)
+    {
+        if (x < 0)
+            return 0;
+        return Mathf.Pow(raise, -1 / x) * until;
     }
 
     // Атака оружием по какой-то точке из текущей позиции.
     private void Swing(Vector3 toPoint)
     {
         isSwinging = true;
-
-        Vector3 bladeCenter = blade.transform.position;        
-
-        Vector3 moveTo = toPoint - bladeCenter;
-        moveTo += moveTo.normalized * swingImpulse;
+        
+        Vector3 moveTo = toPoint + (toPoint - bladeHandle.position).normalized * swingDistanceMultiplier;    
 
         Vector3 pointDir = (moveTo - vital.bounds.center).normalized;
-        Debug.DrawLine(bladeCenter, bladeCenter + moveTo);
+
+        // Притягиваем ближе к vital
+        float distance = (toPoint - vital.ClosestPointOnBounds(toPoint)).magnitude;
+        moveTo = vital.ClosestPointOnBounds(moveTo) + (moveTo - vital.ClosestPointOnBounds(moveTo)).normalized * distance;
         
-        SetDesires(bladeCenter + moveTo, pointDir);
+        SetDesires(moveTo, pointDir);
     }
 
     // Взмах мечом из точки в точку
@@ -241,7 +246,11 @@ public class SwordFighter : MonoBehaviour
 
         bladeHandle.position = Vector3.Slerp(from, to, moveProgress) + new Vector3(0, Mathf.Lerp(heightFrom, heightTo, moveProgress), 0);
 
-        bladeHandle.up = (vital.bounds.center - bladeHandle.position).normalized;
+        bladeHandle.up = (bladeHandle.position-vital.bounds.center).normalized * swingDistanceMultiplier;
+
+        Vector3 closestPos = vital.bounds.center;
+        if (Vector3.Distance(desireBlade.position, closestPos) > bladeMaxDistance)
+            desireBlade.position = closestPos + (desireBlade.position - closestPos).normalized * bladeMaxDistance;        
     }
 
     private void SetDesires(Vector3 pos, Vector3 dir) 

@@ -476,17 +476,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c2275bb520efa1409f345deb4c11d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startSpeed: 5
-  randomization: 30
+  startSpeed: 10
+  randomization: 100
   target: {fileID: 1644912353}
   prefab1: {fileID: 3518550695108105116, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
   prefab2: {fileID: 758895929829113782, guid: d0ab32eb37b75554db21ab014217e298, type: 3}
   prefab3: {fileID: 0}
-  v: 1
+  v: 0
   recharge: 50
   charge: 100
   current: 0
-  repeat: 0
+  repeat: 1
 --- !u!4 &733845681
 Transform:
   m_ObjectHideFlags: 0
@@ -779,7 +779,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   predictions: 30
   Debug_Draw: 1
-  ignoredDistance: 2
+  ignoredDistance: 3
   ignoredSpeed: 1
   ignored:
   - {fileID: 216456144}
@@ -859,18 +859,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81c59e318e4fd314c82157102d272429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionSpeed: 3
+  actionSpeed: 5
   angluarSpeed: 10
-  swingImpulse: 1.5
-  criticalImpulse: 200
+  swingDistanceMultiplier: 1
+  criticalImpulse: 400
   bladeMaxDistance: 1
   blade: {fileID: 216456145}
   bladeHandle: {fileID: 1129816226}
   vital: {fileID: 1644912350}
   desireBlade: {fileID: 239636284}
-  formalCenter: {x: 0, y: 0, z: 0}
+  formalBladeCenter: {x: 0, y: 0, z: 0}
   bladeObject: {fileID: 0}
   moveProgress: 0
+  isSwinging: 0
+  isRepositioning: 0
 --- !u!1 &1688954892
 GameObject:
   m_ObjectHideFlags: 0

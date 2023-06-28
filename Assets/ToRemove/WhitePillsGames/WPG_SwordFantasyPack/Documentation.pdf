@@ -1,0 +1,23 @@
+WhitePillsGames 2023
+
+Importation du pack de modèles 3D dans Unity :
+
+Tout d'abord, téléchargez le pack de modèles 3D que vous souhaitez utiliser. Assurez-vous que le format est compatible avec Unity. Les formats les plus courants pour les modèles 3D sont .fbx, .obj, .dae, .max et .blend.
+
+Ouvrez votre projet Unity et créez un nouveau dossier dans le dossier Assets. Nommez-le "Models" ou "3D Models" pour garder les choses organisées.
+
+Faites glisser et déposez le fichier de modèle 3D téléchargé dans le dossier Models que vous venez de créer.
+
+Attendez que Unity termine l'importation. Selon la complexité du modèle, cela peut prendre un certain temps. Une fois l'importation terminée, vous devriez voir le modèle dans votre dossier Models.
+
+Utilisation du pack de modèles 3D dans Unity :
+
+Faites glisser le modèle à partir du dossier Models dans votre scène Unity. Vous pouvez également créer un nouvel objet vide et lui ajouter le modèle en tant que composant Mesh Renderer.
+
+Vous pouvez maintenant modifier les propriétés du modèle, telles que sa position, sa rotation et sa mise à l'échelle, en utilisant l'onglet Inspector de Unity.
+
+Vous pouvez également appliquer des textures au modèle en faisant glisser et déposer les images dans votre dossier Assets, puis en les appliquant en tant que matériau au modèle.
+
+Enfin, vous pouvez animer le modèle en utilisant l'éditeur d'animation Unity ou en ajoutant des scripts personnalisés pour créer des animations spécifiques.
+
+Et voilà, vous savez maintenant comment importer et utiliser un pack de modèles 3D dans Unity! N'oubliez pas que vous pouvez personnaliser les modèles pour les adapter à vos besoins spécifiques en modifiant leurs propriétés et en leur appliquant des textures et des animations personnalisées. Amusez-vous bien !

@@ -117,7 +117,7 @@ public class AttackCatcher : MonoBehaviour
 
         Vector3 center = rb.GetComponent<Collider>().bounds.center;
 
-        if ((transform.position - center).magnitude >= ignoredDistance)
+        if ((rb.position - center).magnitude >= ignoredDistance)
             return;
         // Штука уже близко!
 
@@ -125,15 +125,20 @@ public class AttackCatcher : MonoBehaviour
             return;
         // У штуки достаточно высокая скорость
 
-        if (Debug_Draw)        
-            Debug.DrawRay(rb.position, predictions * Time.fixedDeltaTime * rb.velocity, Color.blue);
-
         Vector3 predictionPoint = rb.position + predictions * Time.fixedDeltaTime * rb.velocity;
 
         // Если точка пролетела насквозь - уже надо брать максимально близкую позицию к себе
-        if (Vector3.Dot(rb.velocity, predictionPoint - rb.position) < 0)        
-            predictionPoint = (rb.position - center).normalized * ((rb.position - center).magnitude - 0.5f);
-        
+        if (Vector3.Dot(rb.velocity, vital.bounds.center - predictionPoint) < 0)
+        {
+            predictionPoint = NearestPointOnLine(rb.position, rb.velocity, vital.ClosestPointOnBounds(rb.position));
+            //Debug.DrawLine(vital.bounds.center, predictionPoint, Color.cyan, 2);
+        }
+
+        const float BLADE_MIN_DIST = 0.5f;
+
+        // Отталкиваем
+        if(Vector3.Distance(predictionPoint, vital.ClosestPointOnBounds(predictionPoint)) < BLADE_MIN_DIST)
+            predictionPoint = predictionPoint + (rb.position - predictionPoint).normalized * BLADE_MIN_DIST;
 
         if (Debug_Draw)
             Debug.DrawLine(rb.position, predictionPoint, Color.yellow);
@@ -172,5 +177,16 @@ public class AttackCatcher : MonoBehaviour
     {
         // Объект вышел из поля, за ним больше не нужно постоянно наблюдать.
         controlled.Remove(other.gameObject);
+    }
+
+    //linePnt - point the line passes through
+    //lineDir - unit vector in direction of line, either direction works
+    //pnt - the point to find nearest on line for
+    private Vector3 NearestPointOnLine(Vector3 linePnt, Vector3 lineDir, Vector3 pnt)
+    {
+        lineDir.Normalize();//this needs to be a unit vector
+        var v = pnt - linePnt;
+        var d = Vector3.Dot(v, lineDir);
+        return linePnt + lineDir * d;
     }
 }

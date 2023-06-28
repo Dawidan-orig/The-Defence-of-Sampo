@@ -143,6 +143,15 @@ public class Blade : MonoBehaviour
             FixedPredict(iterations);
     }
 
+    
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.TryGetComponent(out Blade b)) 
+        {
+            b.body.velocity = b.body.velocity * 0.5f;
+        }
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
