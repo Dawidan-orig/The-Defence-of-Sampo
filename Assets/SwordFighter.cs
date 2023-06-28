@@ -17,13 +17,18 @@ public class SwordFighter : MonoBehaviour
     public Blade blade;
     public Transform bladeHandle;
     public Collider vital;
-    public Transform desireBlade;    
+    public Transform desireBlade;
 
     [Header("lookonly")]
-    public Vector3 formalCenter;
-    public GameObject bladeObject;    
-    public float moveProgress = 0;
+    [SerializeField]
+    Vector3 formalCenter;
+    [SerializeField]
+    GameObject bladeObject;
+    [SerializeField]
+    float moveProgress = 0;
+    [SerializeField]
     bool isSwinging = false;
+    [SerializeField]
     bool isRepositioning = false;
 
     //TODO : Состояния. Всего два: Idle и Busy. Busy означает, что меч сейчас используется.
@@ -102,7 +107,6 @@ public class SwordFighter : MonoBehaviour
             int ignored = blade.gameObject.layer; // Игнорируем при проверке на самовтыкание все мечи.
             ignored = ~ignored;
 
-            // Проверяем снизу вверх
             if (Physics.Raycast(bladeDown, bladeUp - bladeDown, (bladeDown - bladeUp).magnitude, ignored) // Снизу вверх
                 ||
                 Physics.Raycast(bladeUp, bladeDown - bladeUp, (bladeDown - bladeUp).magnitude, ignored) // Сверху вниз
@@ -225,6 +229,19 @@ public class SwordFighter : MonoBehaviour
         // Дальше вот тут нужно просто двинуть меч от текущей позиции до целевой, направление -- всегда ОТ vital.
         // Скорость - impulse.
         // Альтернативная версия перемещения меча Mathf.Lerp'у, поскольку мне нужен полный контроль точного движения, а не максимально краткий вариант.
+
+        if (moveProgress < 1)
+            moveProgress += actionSpeed * Time.fixedDeltaTime;
+
+        float heightFrom = bladeHandle.position.y;
+        float heightTo = desireBlade.position.y;
+
+        Vector3 from = new Vector3(bladeHandle.position.x, 0, bladeHandle.position.z);
+        Vector3 to = new Vector3(desireBlade.position.x, 0, desireBlade.position.z);
+
+        bladeHandle.position = Vector3.Slerp(from, to, moveProgress) + new Vector3(0, Mathf.Lerp(heightFrom, heightTo, moveProgress), 0);
+
+        bladeHandle.up = (vital.bounds.center - bladeHandle.position).normalized;
     }
 
     private void SetDesires(Vector3 pos, Vector3 dir) 
