@@ -64,7 +64,7 @@ public class AttackCatcher : MonoBehaviour
         // Тут вычисляем две точки: Куда прилетит меч?
         Vector3 center = vital.bounds.center;
         List<Blade.border> preditionList = blade.FixedPredict(predictions);
-        preditionList.Reverse();
+        //preditionList.Reverse();
 
         Blade.border closest = preditionList[0];
 
@@ -88,8 +88,14 @@ public class AttackCatcher : MonoBehaviour
             {
                 continue;
             }
+
             // Игнорируем всё, что ударяется во внейшний коллайдер - оно далеко.
             // А так же всё, что ударяется во внутренний - оно уже чрезвычайно близко.
+
+            const float TOO_CLOSE = 0.5f; // Определяем минимальную дистанцию предсказания
+            if (Vector3.Distance(border.posDown, vital.ClosestPointOnBounds(border.posDown)) < TOO_CLOSE
+                || Vector3.Distance(border.posUp, vital.ClosestPointOnBounds(border.posUp)) < TOO_CLOSE)
+                continue;
 
             closest = border;
         }

@@ -204,7 +204,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &239636284
 Transform:
   m_ObjectHideFlags: 0
@@ -839,7 +839,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1644912348}
   serializedVersion: 2
-  m_Mass: 1
+  m_Mass: 80
   m_Drag: 1
   m_AngularDrag: 1
   m_UseGravity: 1
@@ -859,17 +859,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81c59e318e4fd314c82157102d272429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionSpeed: 5
+  actionSpeed: 10
   angluarSpeed: 10
   swingDistanceMultiplier: 1
+  startSwingDistance: 2
   criticalImpulse: 400
   bladeMaxDistance: 1
+  close_enough: 0.1
   blade: {fileID: 216456145}
   bladeHandle: {fileID: 1129816226}
   vital: {fileID: 1644912350}
   desireBlade: {fileID: 239636284}
-  formalBladeCenter: {x: 0, y: 0, z: 0}
-  bladeObject: {fileID: 0}
+  initialBlade: {fileID: 0}
   moveProgress: 0
   isSwinging: 0
   isRepositioning: 0
@@ -1162,7 +1163,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 0c5964cf455b1d34ca4d52e577782be1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1199,6 +1200,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1317963581}
     m_Modifications:
+    - target: {fileID: 3518550695108105089, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0c5964cf455b1d34ca4d52e577782be1, type: 2}
+    - target: {fileID: 3518550695108105090, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3518550695108105116, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
       propertyPath: m_Name
       value: Blade

@@ -9,9 +9,11 @@ public class SwordFighter : MonoBehaviour
     [Header("constraints")]
     public float actionSpeed = 10; // Скорость движения меча в руке
     public float angluarSpeed = 10; // Скорость поворота тела
-    public float swingDistanceMultiplier = 2; // Насколько сильно бьёт меч
+    public float swingDistanceMultiplier = 2; // Насколько далеко должен двинуться меч после отбивания.
+    public float startSwingDistance = 2; // Насколько далеко должен двинуться меч до удара.
     public float criticalImpulse = 200; // Лучше увернуться, чем отбить объект с импульсом больше этого!
-    public float bladeMaxDistance = 2;
+    public float bladeMaxDistance = 2; // Максимальное расстояние от vital до рукояти меча. По сути, длина руки.
+    public float close_enough = 0.1f; // Расстояние до цели, при котором можно менять состояние.    
 
     [Header("init-s")]
     public Blade blade;
@@ -21,9 +23,7 @@ public class SwordFighter : MonoBehaviour
 
     [Header("lookonly")]
     [SerializeField]
-    Vector3 formalBladeCenter;
-    [SerializeField]
-    GameObject bladeObject;
+    Transform initialBlade;
     [SerializeField]
     float moveProgress = 0;
     [SerializeField]
@@ -38,27 +38,37 @@ public class SwordFighter : MonoBehaviour
         AttackCatcher catcher = gameObject.GetComponent<AttackCatcher>();
         catcher.OnIncomingAttack += Incoming;
         catcher.ignored.Add(blade.body);
-        bladeObject = blade.gameObject;
 
         blade.SetHost(gameObject);
 
+        desireBlade.gameObject.SetActive(true);
         desireBlade.position = bladeHandle.position;
         desireBlade.up = Vector3.up;
         desireBlade.forward = Vector3.forward;
+
+        GameObject initialBladeGO = new GameObject();
+        initialBlade = initialBladeGO.transform;
+        initialBlade.position = desireBlade.position;
+        initialBlade.rotation = desireBlade.rotation;
     }
 
     void Update()
     {
-        formalBladeCenter = blade.downerPoint.position + (blade.upperPoint.position - blade.downerPoint.position)/2;
-
+        // Чтобы при изменении в Editor'е работало, добавил это:
         if (desireBlade.hasChanged)
             SetDesires(desireBlade.position, desireBlade.up);
     }
 
     private void FixedUpdate()
     {
+        //TODO : Чтобы не городить огороды со всякими isSwinging, есть смысл перейти на корутины для работы с мечами
         if (!isSwinging)
+        {            
+            if (Vector3.Distance(bladeHandle.position, desireBlade.position) < close_enough)
+                SetDesires(initialBlade.position, initialBlade.up);
+            
             Control_MoveSword();
+        }
         else
             Control_SwingSword();
     }
@@ -69,26 +79,29 @@ public class SwordFighter : MonoBehaviour
         if (e.free)
         {
             // Это неконтроллируемый объект, который просто летит в нашу сторону. Либо отбить, либо увернуться!
-            if (e.impulse < criticalImpulse)
-                Swing(e.start);
+            if (e.impulse < criticalImpulse && !isSwinging)
+            {
+                Vector3 bladeCenter = Vector3.Lerp(blade.upperPoint.position, blade.downerPoint.position, 0.5f);
+
+                if (Vector3.Distance(vital.bounds.center, e.body.position) <
+                    Vector3.Distance(vital.bounds.center, bladeCenter) + bladeMaxDistance) // Достаточно близко, чтобы бить.
+                {
+                    if (Vector3.Distance(e.start, bladeCenter) > startSwingDistance)
+                        Swing(e.start);
+                    else
+                        Swing(e.start + (bladeCenter - e.start).normalized * startSwingDistance,to : e.start);
+                }
+            }
             else
             {// Evade() -- Должен быть в другом скрипте, тут - только вызов
             }    
         }
         else
         {
-            // С этим объектом нужно действовать уже с определённого угла.
-            // Скорее всего, это чужое лезвие.
-            // Можно поставить обычный блок,
-            // Иногда нужно сделать жёсткий блок (Удар-отбивание)
-            // А иногда лучше вообще увернуться, если атака совсем сильная.
-
-            // Надо взять перпендикуляр от меча
-
-            Vector3 bladeCenter = Vector3.Lerp(e.start, e.end, 0.5f); // Центр атаки, центр нашего меча должен быть в этой же точке.
+            Vector3 enemyBladeCenter = Vector3.Lerp(e.start, e.end, 0.5f); // Центр атаки, центр нашего меча должен быть в этой же точке.
 
             GameObject bladePrediction = new();
-            bladePrediction.transform.position = bladeCenter;
+            bladePrediction.transform.position = enemyBladeCenter;
 
             GameObject start = new();
             start.transform.position = e.start;
@@ -98,13 +111,21 @@ public class SwordFighter : MonoBehaviour
             end.transform.position = e.end;
             end.transform.parent = bladePrediction.transform;
 
-            bladePrediction.transform.Rotate(e.direction, 90);
+            //TODO : Это логика рапиры, из-за чего отбиваемое оружие "отражается".
+            //bladePrediction.transform.Rotate(e.direction, 90);
+
+            bladePrediction.transform.rotation = Quaternion.FromToRotation((end.transform.position - start.transform.position).normalized, transform.up);
+
+            Vector3 closest = vital.ClosestPointOnBounds(enemyBladeCenter);            
+            Vector3 toBlade_Dir = (bladePrediction.transform.position - closest).normalized;
+            toBlade_Dir.y = 0;
+            bladePrediction.transform.Rotate(toBlade_Dir, 90);
 
             Vector3 bladeDown = start.transform.position;
             Vector3 bladeUp = end.transform.position;
 
             Destroy(bladePrediction);
-            int ignored = blade.gameObject.layer; // Игнорируем при проверке на самовтыкание все мечи.
+            int ignored = blade.gameObject.layer; // Для игнора лезвий при проверке.
             ignored = ~ignored;
 
             if (Physics.Raycast(bladeDown, bladeUp - bladeDown, (bladeDown - bladeUp).magnitude, ignored) // Снизу вверх
@@ -119,14 +140,6 @@ public class SwordFighter : MonoBehaviour
             
             Block(bladeDown, bladeUp);
         }
-    }
-
-    // Возвращает значение от 0 до until с возрастанием raise в точке x. Чем больше x - тем ближе результат к until.
-    private float Influence_Func(float x, float until, float raise)
-    {
-        if (x < 0)
-            return 0;
-        return Mathf.Pow(raise, -1 / x) * until;
     }
 
     // Атака оружием по какой-то точке из текущей позиции.
@@ -148,6 +161,8 @@ public class SwordFighter : MonoBehaviour
     // Взмах мечом из точки в точку
     private void Swing(Vector3 from, Vector3 to) 
     {
+        throw new NotImplementedException();
+
         // Выполняем взмах мечом до тех пор, пока не достигнем цели.
         isRepositioning = true;
         isSwinging = true;
@@ -162,15 +177,11 @@ public class SwordFighter : MonoBehaviour
     // Чёткая установка меча по двум точкам. Start - позиция, end - определяет направление меча.
     private void Block(Vector3 start, Vector3 end)
     {
-        // Входные данные - это то, что надо заблокировать.
-
         SetDesires(start, (end - start).normalized);
     }
 
     private void Control_MoveSword()
-    {
-        //TODO : Пусть меч "Подтягивается" ближе во время перемещений. Это и выглядит естественнее, и быстрее!
-        //TODO : Попробовать сделать не как в Lerp, а относительно Distance(current, desire) < CLOSE_ENOUGH. То-есть как в Control_SwingSword()
+    {        
         if(moveProgress < 1)
             moveProgress += actionSpeed * Time.fixedDeltaTime;
 
@@ -199,20 +210,25 @@ public class SwordFighter : MonoBehaviour
             //probe.Rotate(probe.up,180);
         }
 
-        Debug.DrawRay(probe.position, probe.forward, Color.green);
-        Debug.DrawRay(probe.position, probe.up, Color.yellow);
-
         bladeHandle.rotation = Quaternion.Lerp(bladeHandle.rotation, transform.rotation * probe.rotation, actionSpeed * Time.fixedDeltaTime);
+        bladeHandle.LookAt(probe);
 
         Destroy(go);
         #endregion
         
-        // Пока что выключил притягивание меча. TODO : Вернуть.
-        /*
+        // Притягиваем меч ближе
         Vector3 closestPos = vital.bounds.center;
         if (Vector3.Distance(desireBlade.position, closestPos) > bladeMaxDistance)        
-            desireBlade.position = closestPos + (desireBlade.position - closestPos).normalized * bladeMaxDistance;     
-        */
+            desireBlade.position = closestPos + (desireBlade.position - closestPos).normalized * bladeMaxDistance;
+
+        //TODO (На 01.07.2023) :
+        // - Сделать перемещение меча в idle к initialPosition
+        // - Пусть меч всё время "смотрит" верхом перпендикулярно ближайшей позиции к vital. Должно выглядеть красивенько.
+        // - Это:
+        //TODO : Пусть меч "Подтягивается" ближе во время перемещений. Это и выглядит естественнее, и быстрее!
+        //TODO : Попробовать сделать не как в Lerp, а относительно Distance(current, desire) < CLOSE_ENOUGH. То-есть как в Control_SwingSword()
+        // Итого три итерации: "Притягивание"; Потом движение; Потом "Отталкивание" с нужным поворотом.
+        // И придётся отойти от логики Lerp'а. Мне нужен полный контроль.
 
         // На будущее:
         //TODO : Добавить событий на начало движения меча, состояние в прогрессе и конец движения.
@@ -220,20 +236,16 @@ public class SwordFighter : MonoBehaviour
 
     private void Control_SwingSword() 
     {
-        const float CLOSE_ENOUGH = 0.1f;
-
-        if (Vector3.Distance(bladeHandle.position, desireBlade.position) < CLOSE_ENOUGH)
+        if (Vector3.Distance(bladeHandle.position, desireBlade.position) < close_enough)
             isSwinging = false;
 
         if (isRepositioning)
         {
             Control_MoveSword();
+            if (Vector3.Distance(bladeHandle.position, desireBlade.position) < close_enough)
+                isRepositioning = false;
             return;
         }
-
-        // Дальше вот тут нужно просто двинуть меч от текущей позиции до целевой, направление -- всегда ОТ vital.
-        // Скорость - impulse.
-        // Альтернативная версия перемещения меча Mathf.Lerp'у, поскольку мне нужен полный контроль точного движения, а не максимально краткий вариант.
 
         if (moveProgress < 1)
             moveProgress += actionSpeed * Time.fixedDeltaTime;
@@ -247,10 +259,11 @@ public class SwordFighter : MonoBehaviour
         bladeHandle.position = Vector3.Slerp(from, to, moveProgress) + new Vector3(0, Mathf.Lerp(heightFrom, heightTo, moveProgress), 0);
 
         bladeHandle.up = (bladeHandle.position-vital.bounds.center).normalized * swingDistanceMultiplier;
-
+        /*
         Vector3 closestPos = vital.bounds.center;
         if (Vector3.Distance(desireBlade.position, closestPos) > bladeMaxDistance)
-            desireBlade.position = closestPos + (desireBlade.position - closestPos).normalized * bladeMaxDistance;        
+            desireBlade.position = closestPos + (desireBlade.position - closestPos).normalized * bladeMaxDistance;
+        */
     }
 
     private void SetDesires(Vector3 pos, Vector3 dir) 
@@ -264,7 +277,7 @@ public class SwordFighter : MonoBehaviour
     {
         Gizmos.color = Color.white;
         Gizmos.DrawSphere(bladeHandle.position, 0.05f);
-        Gizmos.color = new Color(0.9f, 0.9f, 0.9f);
+        Gizmos.color = new Color(0.5f, 0.5f, 0.5f);
         Gizmos.DrawSphere(desireBlade.position, 0.05f);
         Gizmos.DrawRay(desireBlade.position, desireBlade.up.normalized * (blade.upperPoint.position - blade.downerPoint.position).magnitude);
     }

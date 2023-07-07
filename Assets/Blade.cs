@@ -137,20 +137,21 @@ public class Blade : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //TODO : Добавить boxcast для проверки на коллизию при высокой скорости.
         DEBUG_AngularVelocityEuler = body.angularVelocity * 360 / (2 * Mathf.PI);
 
         if (alwaysDraw)
             FixedPredict(iterations);
     }
 
-    
+    /*
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.gameObject.TryGetComponent(out Blade b)) 
         {
             b.body.velocity = b.body.velocity * 0.5f;
         }
-    }
+    }*/
 
     private void OnDrawGizmosSelected()
     {
