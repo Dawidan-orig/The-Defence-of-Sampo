@@ -8,6 +8,7 @@ using UnityEngine;
 public class ThrowingStuff : MonoBehaviour
 {
     public float startSpeed;
+    public float lifetime = 5;
 
     [Range(0,100)]
     public float randomization = 0;
@@ -69,6 +70,6 @@ public class ThrowingStuff : MonoBehaviour
         o.GetComponent<Rigidbody>().angularVelocity = new Vector3(UnityEngine.Random.Range(0, randomization), 0, UnityEngine.Random.Range(0, randomization));
         o.transform.rotation =  Quaternion.FromToRotation(o.transform.rotation* Vector3.forward, delta);
 
-        Destroy(o, 5);
+        Destroy(o, lifetime);
     }
 }

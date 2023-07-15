@@ -49,7 +49,7 @@ public class AttackCatcher : MonoBehaviour
                 continue;
 
             if (thing.TryGetComponent(out Blade blade))
-                if (blade.host != null)
+                //if (blade.host != null)
                 {
                     SwordIncoming(blade);
                     continue;
@@ -154,17 +154,20 @@ public class AttackCatcher : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.GetComponent<Rigidbody>() == null)
+            return;
+
         if (collision.transform.TryGetComponent(out Blade blade))
         {
             if (blade == GetComponent<SwordFighter>().blade)
-                Debug.Log("Selfslash", collision.transform);
+                Debug.Log($"Selfslash at speed {blade.body.velocity.magnitude}", collision.transform);
             else
-                Debug.Log("Skipped slash", collision.transform);
+                Debug.Log($"Skipped slash at speed {blade.body.velocity.magnitude}", collision.transform);
 
             Debug.DrawLine(blade.downerPoint.position, blade.upperPoint.position, new Color(0.5f, 0, 0), 3);
         }
         else
-            Debug.Log("Blunt damage", collision.transform);
+            Debug.Log($"Blunt damage at speed {collision.rigidbody.velocity.magnitude}", collision.transform);
     }
 
     private void OnTriggerEnter(Collider other)
