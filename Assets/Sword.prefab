@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3518550695108105091}
   - component: {fileID: 3518550695108105090}
   m_Layer: 7
-  m_Name: Blade
+  m_Name: Sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,10 +65,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upperPoint: {fileID: 3518550696813727528}
   downerPoint: {fileID: 3518550696206137202}
+  handle: {fileID: 3518550695537259928}
   body: {fileID: 0}
   DEBUG_AngularVelocityEuler: {x: 0, y: 0, z: 0}
   visualPrediction: 0
   alwaysDraw: 0
+  predictionColor: {r: 1, g: 0.5981132, b: 0.5981132, a: 0.4117647}
   iterations: 10
 --- !u!54 &3518550695108105090
 Rigidbody:

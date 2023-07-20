@@ -9,7 +9,7 @@ public class AttackCatcher : MonoBehaviour
     [Header("init-s")]
     [Range(0, 30)]
     public int predictions = 10;
-    public bool Debug_Draw = true;
+    public bool debug_Draw = true;
     [Min(0.75f)]
     public float ignoredDistance = 10; // Домножается на CriticalDistance. Чем выше - тем больше предсказаний будет учтено.
     public float ignoredSpeed = 5; // Определеяет минимальную скорость, начиная с которой объект надо отбить. TODO : Заменить на импульс f=mv
@@ -35,12 +35,14 @@ public class AttackCatcher : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //TODO : Формулу, учитывающую ActionSpeed у SwordControlAI, чтобы чётко знать, когда отбивать летящий объект
+
         foreach (GameObject thing in controlled)
         {
             if (!thing) // Позволяет пропустить удалённые в этом кадре объекты
                 continue;
 
-            // У thing гарантированно есть Rigidbody. Это условие добавление в список.
+            // У thing гарантированно есть Rigidbody. Это условие добавления в список.
             Rigidbody rb = thing.GetComponent<Rigidbody>();
             if (ignored.Contains(rb))
                 continue;
@@ -49,7 +51,7 @@ public class AttackCatcher : MonoBehaviour
                 continue;
 
             if (thing.TryGetComponent(out Blade blade))
-                //if (blade.host != null)
+                if (blade.host != null)
                 {
                     SwordIncoming(blade);
                     continue;
@@ -105,10 +107,12 @@ public class AttackCatcher : MonoBehaviour
         if (closest.posUp == preditionList[0].posUp)
             return;
 
-        if (Debug_Draw)
+        if (debug_Draw)
         {
             Debug.DrawLine(closest.posUp, closest.posDown, Color.yellow);
             Debug.DrawRay(closest.posUp, closest.direction * 0.1f, Color.green);
+            Debug.DrawLine(vital.bounds.center, closest.posDown, Color.yellow/1.3f);
+            Debug.DrawLine(vital.bounds.center, closest.posUp, Color.yellow / 1.3f);
         }
 
         OnIncomingAttack?.Invoke(this,
@@ -146,25 +150,31 @@ public class AttackCatcher : MonoBehaviour
         if(Vector3.Distance(predictionPoint, vital.ClosestPointOnBounds(predictionPoint)) < BLADE_MIN_DIST)
             predictionPoint = predictionPoint + (rb.position - predictionPoint).normalized * BLADE_MIN_DIST;
 
-        if (Debug_Draw)
+        if (debug_Draw)
+        {
             Debug.DrawLine(rb.position, predictionPoint, Color.yellow);
+        }
 
         OnIncomingAttack?.Invoke(this, new AttackEventArgs { body = rb,direction = rb.velocity.normalized, start = predictionPoint, end = predictionPoint, free = true, impulse = rb.mass * rb.velocity.magnitude });
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.GetComponent<Rigidbody>() == null)
+        if (collision.gameObject.GetComponent<Rigidbody>() == null || !debug_Draw)
             return;
 
         if (collision.transform.TryGetComponent(out Blade blade))
         {
-            if (blade == GetComponent<SwordFighter>().blade)
+            if (blade == GetComponent<SwordControlAI>().blade)
+            {
                 Debug.Log($"Selfslash at speed {blade.body.velocity.magnitude}", collision.transform);
+                Debug.DrawLine(blade.downerPoint.position, blade.upperPoint.position, new Color(0.8f,0.2f,0), 3);
+            }
             else
+            {
                 Debug.Log($"Skipped slash at speed {blade.body.velocity.magnitude}", collision.transform);
-
-            Debug.DrawLine(blade.downerPoint.position, blade.upperPoint.position, new Color(0.5f, 0, 0), 3);
+                Debug.DrawLine(blade.downerPoint.position, blade.upperPoint.position, new Color(0.5f, 0, 0), 3);
+            }
         }
         else
             Debug.Log($"Blunt damage at speed {collision.rigidbody.velocity.magnitude}", collision.transform);

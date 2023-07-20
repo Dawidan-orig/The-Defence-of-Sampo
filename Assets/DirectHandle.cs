@@ -6,6 +6,9 @@ public class DirectHandle : MonoBehaviour
     public Transform bladeHandle;
     public Rigidbody bladeTarget;
 
+    public float maxAngularVelocity = 20;
+    public float angularPower = 0.95f;
+
     private Vector3 desirePoint;
 
     private void FixedUpdate()
@@ -14,12 +17,12 @@ public class DirectHandle : MonoBehaviour
 
         bladeTarget.velocity = (desirePoint - bladeHandle.position) / Time.fixedDeltaTime;
 
-        bladeTarget.maxAngularVelocity = 20;
+        bladeTarget.maxAngularVelocity = maxAngularVelocity;
         Quaternion detailRot = transform.rotation * Quaternion.Inverse(bladeTarget.transform.rotation);
         Vector3 euler = new(Mathf.DeltaAngle(0, detailRot.eulerAngles.x),
             Mathf.DeltaAngle(0, detailRot.eulerAngles.y),
             Mathf.DeltaAngle(0, detailRot.eulerAngles.z));
-        euler *= 0.95f;
+        euler *= angularPower;
         euler *= Mathf.Deg2Rad;
         bladeTarget.angularVelocity = euler / Time.fixedDeltaTime;
     }

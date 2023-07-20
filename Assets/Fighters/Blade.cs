@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -8,6 +10,7 @@ public class Blade : MonoBehaviour
     [Header("Init-s")]
     public Transform upperPoint;
     public Transform downerPoint;
+    public Transform handle;
 
     public GameObject host { get; private set; }
     [Header("lookonly")]
@@ -17,7 +20,10 @@ public class Blade : MonoBehaviour
     [Header("Constraints")]
     public bool visualPrediction = true;
     public bool alwaysDraw = false;
+    public Color predictionColor = Color.red;
     public int iterations = 1;
+
+    public event EventHandler<Collision> OnBladeCollision; //Расшариваю здешнюю коллизию в MeleeFighter'a
 
     public struct border
     {
@@ -28,8 +34,13 @@ public class Blade : MonoBehaviour
 
     private void Start()
     {
+        GameObject massCenterGo = new("MassCenter");
+        massCenterGo.transform.parent = transform;        
+
         body = GetComponent<Rigidbody>();
-        body.centerOfMass = Vector3.up / 3;
+        body.centerOfMass = handle.localPosition;
+
+        massCenterGo.transform.position = body.worldCenterOfMass;
     }
 
     public void SetHost(GameObject newHost) 
@@ -99,7 +110,7 @@ public class Blade : MonoBehaviour
                 Debug.DrawLine(border.posDown, border.posDown + Vector3.up * 0.05f);
 
 
-                Debug.DrawLine(border.posDown, border.posUp, Color.red);
+                Debug.DrawLine(border.posDown, border.posUp, predictionColor);
 
 
                 Vector3 center = Vector3.Lerp(border.posDown, border.posUp, 0.5f);
@@ -144,14 +155,11 @@ public class Blade : MonoBehaviour
             FixedPredict(iterations);
     }
 
-    /*
+    
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.TryGetComponent(out Blade b)) 
-        {
-            b.body.velocity = b.body.velocity * 0.5f;
-        }
-    }*/
+        OnBladeCollision?.Invoke(this, collision);
+    }
 
     private void OnDrawGizmosSelected()
     {
