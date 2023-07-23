@@ -2,7 +2,6 @@ using UnityEngine;
 
 [RequireComponent(typeof(AttackCatcher))]
 public class SwordControlAI : MonoBehaviour
-// Управляет мечом, который вертится в воздухе перед объектом.
 {
     [Header("constraints")]
     public float actionSpeed = 10; // Скорость движения меча в руке
@@ -218,8 +217,7 @@ public class SwordControlAI : MonoBehaviour
             // Что вот буквально ещё шаг - и уже будет столкновение.
 
             Block(bladeDown, bladeUp, toEnemyBlade_Dir);
-            if ((currentIncoming != lastIncoming) // Если новый объект летит - обновляем движение
-                || (Vector3.Distance(bladeHandle.position, desireBlade.position) > close_enough)) // Также обновляем, если старый далеко
+            if ((currentIncoming != lastIncoming)) // Если новый объект летит - обновляем движение
                 NullifyProgress();
         }
 
@@ -239,7 +237,6 @@ public class SwordControlAI : MonoBehaviour
 
         if (stateOfBlade == ControlState.interruptable)
         {
-            Debug.Log("Hard prepare for strike", transform);
             Vector3 toPoint_dir = (bladeCenter - toPoint).normalized;
             Vector3 bladeStart = toPoint + toPoint_dir * swing_startDistance;
             Vector3 closest = vital.ClosestPointOnBounds(bladeStart);
@@ -273,7 +270,6 @@ public class SwordControlAI : MonoBehaviour
         }
         else if (stateOfBlade == ControlState.interruptable)
         {
-            Debug.Log("Preparing for swing", transform);
             SetDesires(toPoint + (bladeCenter - toPoint).normalized * swing_startDistance,
                     (bladeCenter - vital.bounds.center).normalized,
                     (toPoint - bladeHandle.position).normalized);
@@ -285,8 +281,6 @@ public class SwordControlAI : MonoBehaviour
     // Атака оружием по какой-то точке из текущей позиции.
     public void Swing(Vector3 toPoint)
     {
-        Debug.Log("Swinging", transform);
-
         attackRecharge = 0;
         stateOfBlade = ControlState.swinging;
 
@@ -303,7 +297,6 @@ public class SwordControlAI : MonoBehaviour
     // Установка меча по всем возможным параметрам
     public void Block(Vector3 start, Vector3 end, Vector3 SlashingDir)
     {
-        Debug.Log("Blocking", transform);
         SetDesires(start, (end - start).normalized, SlashingDir);
     }
 
@@ -391,8 +384,6 @@ public class SwordControlAI : MonoBehaviour
 
     private void BeginTransitionToDestire()
     {
-        Debug.Log("Transitioning to desire", transform);
-
         currentToInitialAwait = 0;
         stateOfBlade = ControlState.hard_repositioning;
         SetDesires(desireBlade.position, desireBlade.up, desireBlade.forward);
@@ -401,8 +392,6 @@ public class SwordControlAI : MonoBehaviour
 
     private void BeginTransitionToInitial()
     {
-        Debug.Log("Returnin to initial", transform);
-
         stateOfBlade = ControlState.hard_repositioning;
         SetDesires(initialBlade.position, initialBlade.up, initialBlade.forward);
         NullifyProgress();
