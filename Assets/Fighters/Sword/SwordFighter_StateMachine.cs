@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SwordFighter_StateMachine : MonoBehaviour
@@ -27,7 +28,7 @@ public class SwordFighter_StateMachine : MonoBehaviour
     [SerializeField]
     private Collider _vital;
     [SerializeField]
-    private SwordControlAI enemy; //TODO : Заменить на MeleeFighter
+    private SwordFighter_StateMachine enemy; //TODO : Заменить на MeleeFighter
     //TODO : Автоматизировать выбор этого самого enemy
 
     [Header("lookonly")]
@@ -45,6 +46,24 @@ public class SwordFighter_StateMachine : MonoBehaviour
     float _attackRecharge = 0;
     [SerializeField]
     AttackCatcher _catcher;
+    [SerializeField]
+    bool _attackReposition = false; //TODO : Удалить, заменить на систему комбо.
+    [SerializeField]
+    Stack<ActionJoint> _combo = new Stack<ActionJoint>(); //TODO : Добавить в этот класс функцию, возвращающую новое состояние, а так же убирающее уже сделанное действие.
+    // Эта штука позволит создавать комбо разной длины.
+
+    enum ActionType 
+    {
+        Swing,
+        Reposition
+    }
+
+    public struct ActionJoint 
+    {
+        public Transform currentDesire;
+        public Transform nextDesire;
+        ActionType nextActionType;
+    }
 
     SwordFighter_BaseState _currentState;
     SwordFighter_StateFactory _states;
@@ -60,6 +79,10 @@ public class SwordFighter_StateMachine : MonoBehaviour
     public float CurrentToInitialAwait { get => _currentToInitialAwait; set => _currentToInitialAwait = value; }
     public Collider Vital { get => _vital; set => _vital = value; }
     public AttackCatcher AttackCatcher { get => _catcher; set => _catcher = value; }
+    public float AttackRecharge { get => _attackRecharge; set => _attackRecharge = value; }
+    public SwordFighter_StateMachine Enemy { get => enemy; set => enemy = value; }
+    public bool AttackReposition { get => _attackReposition; set => _attackReposition = value; } //TODO : Заменить на обработку комбинаций ударов!
+    
 
     [Header("Debug")]
     [SerializeField]
@@ -147,20 +170,24 @@ public class SwordFighter_StateMachine : MonoBehaviour
 
     private void FixDesire()
     {
+        if (!isSwordFixing)
+            return;
+
         Vector3 closestPos = _vital.ClosestPointOnBounds(DesireBlade.position);
-        if (Vector3.Distance(DesireBlade.position, closestPos) > toBladeHandle_MaxDistance)
-            DesireBlade.position = closestPos + (DesireBlade.position - closestPos).normalized * toBladeHandle_MaxDistance;
-        if (Vector3.Distance(DesireBlade.position, closestPos) < toBladeHandle_MinDistance)
-            DesireBlade.position = closestPos + (DesireBlade.position - closestPos).normalized * toBladeHandle_MinDistance;
+        if (Vector3.Distance(_desireBlade.position, closestPos) > toBladeHandle_MaxDistance)
+            _desireBlade.position = closestPos + (_desireBlade.position - closestPos).normalized * toBladeHandle_MaxDistance;
+
+        if (Vector3.Distance(_desireBlade.position, closestPos) < toBladeHandle_MinDistance)
+            _desireBlade.position = closestPos + (_desireBlade.position - closestPos).normalized * toBladeHandle_MinDistance;
     }
 
     public void SetDesires(Vector3 pos, Vector3 up, Vector3 forward)
     {
-        DesireBlade.position = pos;
-        DesireBlade.LookAt(pos + forward, up);
+        _desireBlade.position = pos;
+        _desireBlade.LookAt(pos + up, pos + forward);
+        _desireBlade.RotateAround(_desireBlade.position, _desireBlade.right, 90);
 
-        if (isSwordFixing)
-            FixDesire();
+        FixDesire();
 
         if (MoveProgress >= 1)
         {
@@ -182,11 +209,23 @@ public class SwordFighter_StateMachine : MonoBehaviour
     {
         if (_moveFrom != null)
             Destroy(_moveFrom.gameObject);
-        GameObject moveFromGO = new("BladeIsMovingFromThatTransform");
+        GameObject moveFromGO = new("BladeMoveStart");
         _moveFrom = moveFromGO.transform;
         _moveFrom.position = BladeHandle.position;
         _moveFrom.rotation = BladeHandle.rotation;
         _moveFrom.parent = _bladeContainer;
         _moveProgress = 0;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (_desireBlade != null)
+        {
+            Gizmos.color = Color.black;
+            Gizmos.DrawLine(_desireBlade.position, _moveFrom.position);
+            Gizmos.color = Color.gray;
+            Gizmos.DrawRay(_desireBlade.position, _desireBlade.up);
+            Gizmos.DrawRay(_moveFrom.position, _moveFrom.up);
+        }
     }
 }

@@ -6,13 +6,9 @@ public class SwordFighter_StateFactory
     {
         _context = currentContext;
     }
-    public SwordFighter_BaseState Initial() 
-    {
-        return new SwordFighter_InitialState(_context, this);
-    }
     public SwordFighter_BaseState Repositioning()
     {
-        return new SwordFighter_InterruptableRepositioningState(_context, this);
+        return new SwordFighter_RepositioningState(_context, this);
     }
     public SwordFighter_BaseState Swinging()
     {

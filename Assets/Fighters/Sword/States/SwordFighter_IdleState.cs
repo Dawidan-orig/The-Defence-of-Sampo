@@ -13,6 +13,25 @@ public class SwordFighter_IdleState : SwordFighter_BaseState
 
     public override void CheckSwitchStates()
     {
+        if(_ctx.AttackRecharge >= _ctx.minimalTimeBetweenAttacks && _ctx.Enemy != null) 
+        {
+            Vector3 toPoint = _ctx.Enemy.transform.position;
+
+            Vector3 bladeCenter = Vector3.Lerp(_ctx.Blade.upperPoint.position, _ctx.Blade.downerPoint.position, 0.5f);
+
+            Plane transformXY = new Plane(_ctx.transform.forward, _ctx.transform.position);
+            Vector3 toNewPosDir = (transformXY.ClosestPointOnPlane(_ctx.BladeHandle.position) - _ctx.transform.position).normalized;
+
+            _ctx.SetDesires(_ctx.Vital.ClosestPointOnBounds(toNewPosDir * _ctx.swing_startDistance) + toNewPosDir*_ctx.swing_startDistance,
+                   (bladeCenter - _ctx.Vital.bounds.center).normalized,
+                   (toPoint - _ctx.BladeHandle.position).normalized);
+            _ctx.NullifyProgress();
+            SwitchStates(_factory.Repositioning());
+
+            _ctx.AttackReposition = true;
+            return;
+        }
+
         if (_ctx.CurrentToInitialAwait < _ctx.toInitialAwait)
             _ctx.CurrentToInitialAwait += Time.deltaTime;
         else
@@ -24,7 +43,7 @@ public class SwordFighter_IdleState : SwordFighter_BaseState
                 _ctx.NullifyProgress();
                 _ctx.CurrentToInitialAwait = _ctx.toInitialAwait;
 
-                SwitchStates(_factory.Repositioning());
+                SwitchStates(_factory.Repositioning()); 
             }
         }
     }
@@ -125,26 +144,43 @@ public class SwordFighter_IdleState : SwordFighter_BaseState
             Vector3 bladeDown = start.transform.position;
             Vector3 bladeUp = end.transform.position;
 
-            UnityEngine.Object.Destroy(bladePrediction);
             int ignored = _ctx.Blade.gameObject.layer; // Для игнора лезвий при проверке.
             ignored = ~ignored;
 
-            //TODO : Поменять на BoxCast'ы
-            if (Physics.Raycast(bladeDown, bladeUp - bladeDown, (bladeDown - bladeUp).magnitude, ignored) // Снизу вверх
+            BoxCollider bladeCollider = _ctx.Blade.GetComponent<BoxCollider>();
+            Vector3 bladeHalfWidthLength = new Vector3((bladeCollider.size.x * bladeCollider.transform.lossyScale.x) / 2, 0.1f, (bladeCollider.size.z * bladeCollider.transform.lossyScale.z) / 2);
+
+            if (Utilities.VisualisedBoxCast(bladeDown,
+                bladeHalfWidthLength,
+                (bladeUp - bladeDown).normalized,
+                out _,
+                Quaternion.FromToRotation(Vector3.up, (bladeUp - bladeDown).normalized),
+                (bladeDown - bladeUp).magnitude,
+                ignored,
+                true,
+                new Color(0.5f, 0.5f, 1f, 0.6f))
                 ||
-                Physics.Raycast(bladeUp, bladeDown - bladeUp, (bladeDown - bladeUp).magnitude, ignored) // Сверху вниз
-                )
+                Utilities.VisualisedBoxCast(bladeUp,
+                bladeHalfWidthLength,
+                (bladeDown - bladeUp).normalized,
+                out _,
+                Quaternion.FromToRotation(Vector3.up, (bladeDown - bladeUp).normalized),
+                (bladeDown - bladeUp).magnitude,
+                ignored,
+                true,
+                new Color(0.5f, 0.5f, 1f, 0.6f)))
             {
-                //Debug.DrawLine(bladeUp,bladeDown,Color.gray, 2);
                 return;
             }
+
+            UnityEngine.Object.Destroy(bladePrediction);
 
             //IDEA : Усложнение, которое сделает лучше.
             // Сейчас очень много предсказаний аннулируются из-за коллизий. Есть альтернативное решение: Подбирать при коллизии ближайшие точки от меча до коллайдера такие,
             // Что вот буквально ещё шаг - и уже будет столкновение.
 
             _ctx.Block(bladeDown, bladeUp, toEnemyBlade_Dir);
-            if ((currentIncoming != _lastIncoming)) // Если новый объект летит - обновляем движение
+            //if ((currentIncoming != _lastIncoming)) // Если новый объект летит - обновляем движение
                 _ctx.NullifyProgress();
 
             SwitchStates(_factory.Repositioning());

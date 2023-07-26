@@ -160,12 +160,15 @@ public class AttackCatcher : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.GetComponent<Rigidbody>() == null || !debug_Draw)
+        if (!collision.gameObject.TryGetComponent<Rigidbody>(out _))
+            return;
+
+        if (!debug_Draw)
             return;
 
         if (collision.transform.TryGetComponent(out Blade blade))
         {
-            if (blade == GetComponent<SwordControlAI>().blade)
+            if (blade == GetComponent<SwordFighter_StateMachine>().Blade)
             {
                 Debug.Log($"Selfslash at speed {blade.body.velocity.magnitude}", collision.transform);
                 Debug.DrawLine(blade.downerPoint.position, blade.upperPoint.position, new Color(0.8f,0.2f,0), 3);

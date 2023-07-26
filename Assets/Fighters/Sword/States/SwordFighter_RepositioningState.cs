@@ -4,9 +4,9 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
-public class SwordFighter_InterruptableRepositioningState : SwordFighter_BaseState
+public class SwordFighter_RepositioningState : SwordFighter_BaseState
 {
-    public SwordFighter_InterruptableRepositioningState(SwordFighter_StateMachine currentContext, SwordFighter_StateFactory factory)
+    public SwordFighter_RepositioningState(SwordFighter_StateMachine currentContext, SwordFighter_StateFactory factory)
         : base(currentContext, factory) { }
 
     Rigidbody _lastIncoming = null;
@@ -40,6 +40,15 @@ public class SwordFighter_InterruptableRepositioningState : SwordFighter_BaseSta
     {
         if (_ctx.AlmostDesire()) 
         {
+            if (_ctx.AttackReposition)
+            {
+                _ctx.Swing(_ctx.Enemy.transform.position);
+                _ctx.NullifyProgress();
+                SwitchStates(_factory.Swinging());
+                _ctx.AttackReposition = false;
+                return;
+            }
+
             SwitchStates(_factory.Idle());
         }
     }
@@ -93,6 +102,7 @@ public class SwordFighter_InterruptableRepositioningState : SwordFighter_BaseSta
             Vector3 toEnemyBlade_Dir = (bladePrediction.transform.position - _ctx.Vital.bounds.center).normalized;
             bladePrediction.transform.Rotate(toEnemyBlade_Dir, 90); // Ставим перпендикулярно
 
+            
             if (e.body.GetComponent<Blade>().host != null) // Притягиваем меч максимально близко к себе.
             {
                 //TODO : Заменить на handle
@@ -100,34 +110,50 @@ public class SwordFighter_InterruptableRepositioningState : SwordFighter_BaseSta
                 Vector3 boundsClosest = _ctx.Vital.ClosestPointOnBounds(bladePrediction.transform.position);
                 bladePrediction.transform.position = boundsClosest
                     + (bladePrediction.transform.position - boundsClosest).normalized * _ctx.block_minDistance;
-            }
+            }            
 
             Vector3 bladeDown = start.transform.position;
             Vector3 bladeUp = end.transform.position;
 
-            UnityEngine.Object.Destroy(bladePrediction);
             int ignored = _ctx.Blade.gameObject.layer; // Для игнора лезвий при проверке.
             ignored = ~ignored;
 
-            //TODO : Поменять на BoxCast'ы
-            if (Physics.Raycast(bladeDown, bladeUp - bladeDown, (bladeDown - bladeUp).magnitude, ignored) // Снизу вверх
+            BoxCollider bladeCollider = _ctx.Blade.GetComponent<BoxCollider>();
+            Vector3 bladeHalfWidthLength = new Vector3((bladeCollider.size.x * bladeCollider.transform.lossyScale.x) / 2, 0.1f, (bladeCollider.size.z * bladeCollider.transform.lossyScale.z) / 2);
+
+            if (Utilities.VisualisedBoxCast(bladeDown,
+                bladeHalfWidthLength,
+                (bladeUp - bladeDown).normalized,
+                out _,
+                Quaternion.FromToRotation(Vector3.up, (bladeUp - bladeDown).normalized),
+                (bladeDown - bladeUp).magnitude,
+                ignored,
+                true,
+                new Color(0.5f, 0.5f, 1f, 0.6f))
                 ||
-                Physics.Raycast(bladeUp, bladeDown - bladeUp, (bladeDown - bladeUp).magnitude, ignored) // Сверху вниз
-                )
+                Utilities.VisualisedBoxCast(bladeUp,
+                bladeHalfWidthLength,
+                (bladeDown - bladeUp).normalized,
+                out _,
+                Quaternion.FromToRotation(Vector3.up, (bladeDown - bladeUp).normalized),
+                (bladeDown - bladeUp).magnitude,
+                ignored,
+                true,
+                new Color(0.5f, 0.5f, 1f, 0.6f)))
             {
-                //Debug.DrawLine(bladeUp,bladeDown,Color.gray, 2);
                 return;
             }
+
+            UnityEngine.Object.Destroy(bladePrediction);
 
             //IDEA : Усложнение, которое сделает лучше.
             // Сейчас очень много предсказаний аннулируются из-за коллизий. Есть альтернативное решение: Подбирать при коллизии ближайшие точки от меча до коллайдера такие,
             // Что вот буквально ещё шаг - и уже будет столкновение.
 
             _ctx.Block(bladeDown, bladeUp, toEnemyBlade_Dir);
-            if ((currentIncoming != _lastIncoming)) // Если новый объект летит - обновляем движение
-                _ctx.NullifyProgress();
-
-            SwitchStates(_factory.Repositioning());
+            //if ((currentIncoming != _lastIncoming)) // Если новый объект летит - обновляем движение
+            MoveSword(); // Одна итерация - чтобы сохранять движение.
+            _ctx.NullifyProgress();            
         }
 
         _lastIncoming = currentIncoming;
