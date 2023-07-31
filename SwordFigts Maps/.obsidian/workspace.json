@@ -1,0 +1,171 @@
+{
+  "main": {
+    "id": "de894c02ba2feabd",
+    "type": "split",
+    "children": [
+      {
+        "id": "369c0087b7b8b4c6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6336bb91ce7e7cee",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Планировка/ИИ/NavMesh - Заметки.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "991fa2e012bc9799",
+    "type": "split",
+    "children": [
+      {
+        "id": "bb5e7fab843c4a3d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1d3d60b5c384d7dc",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "22e4b47fb871a989",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "c876272313c1d136",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "bebc7b97adafe241",
+    "type": "split",
+    "children": [
+      {
+        "id": "5ac7e3c693d032fc",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1246f5723492bcb5",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Планировка/ИИ/NavMesh - Заметки.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "1f146c10a7496a9d",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Планировка/ИИ/NavMesh - Заметки.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "c62232fa5afa1d9d",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "8c17fd4eae781165",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Планировка/ИИ/NavMesh - Заметки.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "6336bb91ce7e7cee",
+  "lastOpenFiles": [
+    "Взаимодействия/Базовый Юнит.md",
+    "Планировка/ИИ/NavMesh - Заметки.md",
+    "Планировка/ИИ/Состояния исполнителя ИИ.md",
+    "Планировка/ИИ/Менеджер ИИ.md",
+    "Планировка/ИИ/Различные ИИ отн. базового.md",
+    "Untitled.canvas",
+    "2023-07-31.md",
+    "Взаимодействия/Мельница Сампо.md",
+    "Калевала и её интерпретация в игру",
+    "Взаимодействия/Игрок.md",
+    "Взаимодействия/Менеджер.md",
+    "Планировка/Визуал/Анимации/Inverse Kinematics Мечей.md",
+    "Планировка/Визуал/Анимации/Модели и анимации из файла.md",
+    "Планировка/ИИ/Исполнитель и Установщик ИИ - Слияние.md",
+    "Планировка/Визуал/Анимации",
+    "Планировка/Визуал",
+    "Планировка/ИИ",
+    "Взаимодействия",
+    "Планировка"
+  ]
+}
