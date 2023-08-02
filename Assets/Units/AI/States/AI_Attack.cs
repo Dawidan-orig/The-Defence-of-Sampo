@@ -12,16 +12,17 @@ public class AI_Attack : UtilityAI_BaseState
 
     public override void CheckSwitchStates()
     {
-        Vector3 closestToMe;
-        if (_ctx.CurrentActivity.data.target.TryGetComponent<Collider>(out var c))
-            closestToMe = c.ClosestPointOnBounds(_ctx.transform.position);
-        else
-            closestToMe = _ctx.CurrentActivity.data.target.position;
-
-
-        if (Vector3.Distance(_ctx.transform.position, closestToMe) > _ctx.CurrentActivity.actDistance)
+        if (_ctx.CurrentActivity.actWith is SimplestShooting)
         {
-            SwitchStates(_factory.Reposition());
+            if (!((SimplestShooting)_ctx.CurrentActivity.actWith).AvilableToShoot(_ctx.CurrentActivity.data.target))
+                SwitchStates(_factory.Deciding());
+
+            return;
+        }
+
+        if (!_ctx.ActionReachable(_ctx.CurrentActivity.actWith.additionalMeleeReach + _ctx.baseReachDistance))
+        {
+            SwitchStates(_factory.Deciding());
             return;
         }
     }
@@ -43,6 +44,8 @@ public class AI_Attack : UtilityAI_BaseState
 
     public override void UpdateState()
     {
+        Debug.DrawRay(_ctx.transform.position, Vector3.up * 2, Color.red);
+
         _ctx.AttackUpdate(_ctx.CurrentActivity.data.target);
 
         CheckSwitchStates();

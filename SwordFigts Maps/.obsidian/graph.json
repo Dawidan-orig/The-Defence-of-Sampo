@@ -6,7 +6,36 @@
   "hideUnresolved": false,
   "showOrphans": true,
   "collapse-color-groups": false,
-  "colorGroups": [],
+  "colorGroups": [
+    {
+      "query": "path:Взаимодействия",
+      "color": {
+        "a": 1,
+        "rgb": 5526240
+      }
+    },
+    {
+      "query": "tag:Сделано path:Планировка",
+      "color": {
+        "a": 1,
+        "rgb": 65297
+      }
+    },
+    {
+      "query": "path:Планировка tag:#Доделать",
+      "color": {
+        "a": 1,
+        "rgb": 16514816
+      }
+    },
+    {
+      "query": "path:Планировка tag:#Проблемно",
+      "color": {
+        "a": 1,
+        "rgb": 14701138
+      }
+    }
+  ],
   "collapse-display": true,
   "showArrow": true,
   "textFadeMultiplier": 0,
@@ -17,6 +46,6 @@
   "repelStrength": 16.5696465696466,
   "linkStrength": 1,
   "linkDistance": 242,
-  "scale": 0.9681621550828209,
-  "close": true
+  "scale": 0.96816215508282,
+  "close": false
 }

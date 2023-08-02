@@ -33,7 +33,7 @@ public class AI_Decide : UtilityAI_BaseState
                 NavMesh.Raycast(_ctx.transform.position, _ctx.CurrentActivity.data.target.position, out destination, NavMesh.AllAreas);
                 NavMeshPath path = new NavMeshPath();
                 NavMesh.CalculatePath(_ctx.transform.position, destination.position, NavMesh.AllAreas, path);
-                if (Utilities.NavMeshPathLength(path) > _ctx.CurrentActivity.actDistance) {
+                if (Utilities.NavMeshPathLength(path) > _ctx.CurrentActivity.actWith.additionalMeleeReach + _ctx.baseReachDistance) {
                     SwitchStates(_factory.Reposition());
                     break;
                 }
@@ -60,6 +60,8 @@ public class AI_Decide : UtilityAI_BaseState
 
     public override void UpdateState()
     {
+        Debug.DrawRay(_ctx.transform.position, Vector3.up * 2, Color.black);
+
         CheckSwitchStates();
     }
     public override void FixedUpdateState()

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -9,28 +7,27 @@ public class SwordFighter_IdleState : SwordFighter_BaseState
     public SwordFighter_IdleState(SwordFighter_StateMachine currentContext, SwordFighter_StateFactory factory)
         : base(currentContext, factory) { }
 
-    Rigidbody _lastIncoming = null;
-
     public override void CheckSwitchStates()
     {
-        if(_ctx.AttackRecharge >= _ctx.minimalTimeBetweenAttacks && _ctx.Enemy != null) 
-        {
-            Vector3 toPoint = _ctx.Enemy.transform.position;
+        if (_ctx.CurrentActivity.data.target != null)
+            if (_ctx.SwingReady && _ctx.ActionReachable())
+            {
+                Vector3 toPoint = _ctx.CurrentActivity.data.target.position;
 
-            Vector3 bladeCenter = Vector3.Lerp(_ctx.Blade.upperPoint.position, _ctx.Blade.downerPoint.position, 0.5f);
+                Vector3 bladeCenter = Vector3.Lerp(_ctx.Blade.upperPoint.position, _ctx.Blade.downerPoint.position, 0.5f);
 
-            Plane transformXY = new Plane(_ctx.transform.forward, _ctx.transform.position);
-            Vector3 toNewPosDir = (transformXY.ClosestPointOnPlane(_ctx.BladeHandle.position) - _ctx.transform.position).normalized;
+                Plane transformXY = new Plane(_ctx.transform.forward, _ctx.transform.position);
+                Vector3 toNewPosDir = (transformXY.ClosestPointOnPlane(_ctx.BladeHandle.position) - _ctx.transform.position).normalized;
 
-            _ctx.SetDesires(_ctx.Vital.ClosestPointOnBounds(toNewPosDir * _ctx.swing_startDistance) + toNewPosDir*_ctx.swing_startDistance,
-                   (bladeCenter - _ctx.Vital.bounds.center).normalized,
-                   (toPoint - _ctx.BladeHandle.position).normalized);
-            _ctx.NullifyProgress();
-            SwitchStates(_factory.Repositioning());
+                _ctx.SetDesires(_ctx.Vital.ClosestPointOnBounds(toNewPosDir * _ctx.swing_startDistance) + toNewPosDir * _ctx.swing_startDistance,
+                       (bladeCenter - _ctx.Vital.bounds.center).normalized,
+                       (toPoint - _ctx.BladeHandle.position).normalized);
+                _ctx.NullifyProgress();
+                SwitchStates(_factory.Repositioning());
 
-            _ctx.AttackReposition = true;
-            return;
-        }
+                _ctx.AttackReposition = true;
+                return;
+            }
 
         if (_ctx.CurrentToInitialAwait < _ctx.toInitialAwait)
             _ctx.CurrentToInitialAwait += Time.deltaTime;
@@ -43,7 +40,7 @@ public class SwordFighter_IdleState : SwordFighter_BaseState
                 _ctx.NullifyProgress();
                 _ctx.CurrentToInitialAwait = _ctx.toInitialAwait;
 
-                SwitchStates(_factory.Repositioning()); 
+                SwitchStates(_factory.Repositioning());
             }
         }
     }
@@ -60,12 +57,12 @@ public class SwordFighter_IdleState : SwordFighter_BaseState
 
     public override void FixedUpdateState()
     {
-        
+
     }
 
     public override void InitializeSubState()
     {
-        
+
     }
 
     public override void UpdateState()
@@ -94,11 +91,11 @@ public class SwordFighter_IdleState : SwordFighter_BaseState
                     _ctx.NullifyProgress();
                     SwitchStates(_factory.Swinging());
                 }
-                else 
+                else
                 {
                     _ctx.SetDesires(toPoint + (bladeCenter - toPoint).normalized * _ctx.swing_startDistance,
                     (bladeCenter - _ctx.Vital.bounds.center).normalized,
-                    (toPoint - _ctx.BladeHandle.position).normalized);                    
+                    (toPoint - _ctx.BladeHandle.position).normalized);
                     _ctx.NullifyProgress();
                     SwitchStates(_factory.Repositioning());
                 }
@@ -181,12 +178,10 @@ public class SwordFighter_IdleState : SwordFighter_BaseState
 
             _ctx.Block(bladeDown, bladeUp, toEnemyBlade_Dir);
             //if ((currentIncoming != _lastIncoming)) // Если новый объект летит - обновляем движение
-                _ctx.NullifyProgress();
+            _ctx.NullifyProgress();
 
             SwitchStates(_factory.Repositioning());
         }
-
-        _lastIncoming = currentIncoming;
     }
 
     public override string ToString()

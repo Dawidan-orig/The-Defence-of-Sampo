@@ -41,6 +41,9 @@ public class Blade : MonoBehaviour
         body.centerOfMass = handle.localPosition;
 
         massCenterGo.transform.position = body.worldCenterOfMass;
+
+        if (TryGetComponent<MeleeTool>(out var tool))
+            tool.additionalMeleeReach = Vector3.Distance(upperPoint.position, handle.position);
     }
 
     public void SetHost(GameObject newHost) 

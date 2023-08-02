@@ -44,5 +44,10 @@ public abstract class UtilityAI_BaseState
     {
         _currentSubState = newSubState;
         newSubState.SetSuperState(this);
-    }    
+    }
+    
+    public void ForceDecideState() 
+    {
+        SwitchStates(_factory.Deciding());
+    }
 }

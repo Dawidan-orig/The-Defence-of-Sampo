@@ -363,7 +363,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!136 &171614055
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -420,6 +420,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40a72d121ab7166418f3982579712e38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseReachDistance: 1
+  hands: {fileID: 0}
+  _currentActivity:
+    data:
+      target: {fileID: 0}
+      name: 
+    weight: 0
+    actWith: {fileID: 0}
+  _possibleActions: []
+  weapon: {fileID: 0}
+  _swingReady: 1
   actionSpeed: 1
   block_minDistance: 0.3
   swing_EndDistanceMultiplier: 1.5
@@ -430,18 +441,15 @@ MonoBehaviour:
   close_enough: 0.1
   angle_enough: 10
   toInitialAwait: 2
-  minimalTimeBetweenAttacks: 2
   _blade: {fileID: 1498425389}
   _bladeContainer: {fileID: 1595407901}
   _bladeHandle: {fileID: 2090208356}
   _vital: {fileID: 171614055}
-  enemy: {fileID: 0}
   _initialBlade: {fileID: 0}
   _moveFrom: {fileID: 0}
   _desireBlade: {fileID: 0}
   _moveProgress: 0
   _currentToInitialAwait: 0
-  _attackRecharge: 0
   _catcher: {fileID: 0}
   _attackReposition: 0
   isSwordFixing: 1

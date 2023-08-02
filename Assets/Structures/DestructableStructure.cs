@@ -8,9 +8,14 @@ public class DestructableStructure : Interactable_UtilityAI, IDamagable
 
     public GameObject remainsPrefab;
 
-    public void Damage(float harm)
+    public void Damage(float harm, IDamagable.DamageType type)
     {
-        health -= harm;
+        if (type == IDamagable.DamageType.sharp)
+            health -= harm * 0.2f;
+        else if (type == IDamagable.DamageType.blunt)
+            health -= harm;
+        else if (type == IDamagable.DamageType.thermal)
+            health -= harm;
 
         if (health < 0)
             Destroy(gameObject);

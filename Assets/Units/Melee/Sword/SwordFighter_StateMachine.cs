@@ -16,7 +16,6 @@ public class SwordFighter_StateMachine : MeleeFighter
 
     [Header("timers")]
     public float toInitialAwait = 2; // Сколько времени ожидать до установки меча в обычную позицию?
-    public float minimalTimeBetweenAttacks = 2;
 
     [Header("init-s")]
     [SerializeField]
@@ -27,9 +26,6 @@ public class SwordFighter_StateMachine : MeleeFighter
     private Transform _bladeHandle;
     [SerializeField]
     private Collider _vital;
-    [SerializeField]
-    private Transform enemy; //TODO : Заменить на MeleeFighter
-    //TODO : Автоматизировать выбор этого самого enemy
 
     [Header("lookonly")]
     [SerializeField]
@@ -42,8 +38,6 @@ public class SwordFighter_StateMachine : MeleeFighter
     float _moveProgress;
     [SerializeField]
     float _currentToInitialAwait;
-    [SerializeField]
-    float _attackRecharge = 0;
     [SerializeField]
     AttackCatcher _catcher;
     [SerializeField]
@@ -65,11 +59,11 @@ public class SwordFighter_StateMachine : MeleeFighter
         ActionType nextActionType;
     }
 
-    SwordFighter_BaseState _currentState;
+    SwordFighter_BaseState _currentSwordState;
     SwordFighter_StateFactory _states;
 
     //Getters and setters
-    public SwordFighter_BaseState CurrentState { get { return _currentState; } set { _currentState = value; } }
+    public SwordFighter_BaseState CurrentSwordState { get { return _currentSwordState; } set { _currentSwordState = value; } }
     public Transform BladeHandle { get { return _bladeHandle; } }
     public Transform DesireBlade { get { return _desireBlade; } }
     public Transform MoveFrom { get { return _moveFrom; } }
@@ -79,8 +73,6 @@ public class SwordFighter_StateMachine : MeleeFighter
     public float CurrentToInitialAwait { get => _currentToInitialAwait; set => _currentToInitialAwait = value; }
     public Collider Vital { get => _vital; set => _vital = value; }
     public AttackCatcher AttackCatcher { get => _catcher; set => _catcher = value; }
-    public float AttackRecharge { get => _attackRecharge; set => _attackRecharge = value; }
-    public Transform Enemy { get => enemy; set => enemy = value; }
     public bool AttackReposition { get => _attackReposition; set => _attackReposition = value; } //TODO : Заменить на обработку комбинаций ударов!
     
 
@@ -90,17 +82,18 @@ public class SwordFighter_StateMachine : MeleeFighter
     [SerializeField]
     private string currentState;
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         _catcher = gameObject.GetComponent<AttackCatcher>();
         _catcher.ignored.Add(_blade.body);
 
         _currentToInitialAwait = toInitialAwait;
-        _attackRecharge = minimalTimeBetweenAttacks;
 
         _states = new SwordFighter_StateFactory(this);
-        _currentState = _states.Idle();
-        _currentState.EnterState();
+        _currentSwordState = _states.Idle();
+        _currentSwordState.EnterState();
 
         _blade.SetHost(gameObject);
 
@@ -125,34 +118,35 @@ public class SwordFighter_StateMachine : MeleeFighter
         _moveProgress = 1;
     }
 
-    private void Update()
+    protected override void Update()
     {
-        _currentState.UpdateState();
+        base.Update();
+        _currentSwordState.UpdateState();
 
-        currentState = _currentState.ToString();
+        currentState = _currentSwordState.ToString();
     }
 
-    private void FixedUpdate()
+    protected override void FixedUpdate()
     {
-        _currentState.FixedUpdateState();
+        base.FixedUpdate();
+        _currentSwordState.FixedUpdateState();
 
         if (_moveProgress < 1)
             _moveProgress += actionSpeed * Time.fixedDeltaTime / Vector3.Distance(_moveFrom.position, _desireBlade.position);
-
-        if (_attackRecharge < minimalTimeBetweenAttacks)
-            _attackRecharge += Time.fixedDeltaTime;
     }
 
     // Установка меча по всем возможным параметрам
     public override void Block(Vector3 start, Vector3 end, Vector3 SlashingDir)
     {
+        base.Block(start, end, SlashingDir);
+
         SetDesires(start, (end - start).normalized, SlashingDir);
     }
 
     // Атака оружием по какой-то точке из текущей позиции.
     public override void Swing(Vector3 toPoint)
     {
-        _attackRecharge = 0;
+        base.Swing(toPoint);
 
         Vector3 moveTo = toPoint + (toPoint - BladeHandle.position).normalized * swing_EndDistanceMultiplier;
 

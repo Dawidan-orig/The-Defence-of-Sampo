@@ -42,7 +42,7 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
         {
             if (_ctx.AttackReposition)
             {
-                _ctx.Swing(_ctx.Enemy.transform.position);
+                _ctx.Swing(_ctx.CurrentActivity.data.target.position);
                 _ctx.NullifyProgress();
                 SwitchStates(_factory.Swinging());
                 _ctx.AttackReposition = false;

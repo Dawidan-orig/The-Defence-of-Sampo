@@ -4,5 +4,12 @@ using UnityEngine;
 
 public interface IDamagable
 {
-    public abstract void Damage(float harm);
+    public enum DamageType 
+    {
+        sharp,
+        blunt,
+        thermal
+    }
+
+    public abstract void Damage(float harm, DamageType damage);
 }

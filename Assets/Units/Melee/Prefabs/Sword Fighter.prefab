@@ -114,6 +114,52 @@ Transform:
   m_Father: {fileID: 7388240217562942896}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7341185362266086682
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5986330346156573961}
+  - component: {fileID: 8235279732083082774}
+  m_Layer: 6
+  m_Name: RightHand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5986330346156573961
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7341185362266086682}
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -19.449991, y: 49.84, z: 2.949995}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7388240217562942896}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8235279732083082774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7341185362266086682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7c643220423b09438ea5b29014f378e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  additionalMeleeReach: 0
+  cooldownBetweenAttacks: 1
 --- !u!1 &8495609851824826303
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,6 +196,7 @@ Transform:
   - {fileID: 1950024359016561843}
   - {fileID: 4193853052514488003}
   - {fileID: 6059586918556703997}
+  - {fileID: 5986330346156573961}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -186,6 +233,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40a72d121ab7166418f3982579712e38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseReachDistance: 1
+  hands: {fileID: 0}
+  _currentActivity:
+    data:
+      target: {fileID: 0}
+      name: 
+    weight: 0
+    actWith: {fileID: 0}
+  _possibleActions: []
+  weapon: {fileID: 0}
   actionSpeed: 1
   block_minDistance: 0.3
   swing_EndDistanceMultiplier: 1.5

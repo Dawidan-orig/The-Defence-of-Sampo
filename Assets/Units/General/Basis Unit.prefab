@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3297365479413488265
+--- !u!1 &68575704950510737
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,55 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 826167059320294887}
-  - component: {fileID: 6794421485318169783}
-  - component: {fileID: 6080479188434780663}
+  - component: {fileID: 68575704950510736}
+  - component: {fileID: 68575704950510739}
+  m_Layer: 6
+  m_Name: RightHand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &68575704950510736
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 68575704950510737}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2141527101241126520}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &68575704950510739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 68575704950510737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7c643220423b09438ea5b29014f378e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  additionalMeleeReach: 0
+  cooldownBetweenAttacks: 1
+--- !u!1 &3583977104416154994
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1659966578040664604}
+  - component: {fileID: 4770686434889947980}
+  - component: {fileID: 5196155363413966348}
   m_Layer: 6
   m_Name: Visual
   m_TagString: Untagged
@@ -18,36 +64,36 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &826167059320294887
+--- !u!4 &1659966578040664604
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3297365479413488265}
+  m_GameObject: {fileID: 3583977104416154994}
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 1, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 127925787785515395}
+  m_Father: {fileID: 2141527101241126520}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &6794421485318169783
+--- !u!33 &4770686434889947980
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3297365479413488265}
+  m_GameObject: {fileID: 3583977104416154994}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &6080479188434780663
+--- !u!23 &5196155363413966348
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3297365479413488265}
+  m_GameObject: {fileID: 3583977104416154994}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -61,7 +107,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0c5964cf455b1d34ca4d52e577782be1, type: 2}
+  - {fileID: 2100000, guid: ec147b7338395574699adea3ebd630af, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -83,7 +129,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &6896047833725797937
+--- !u!1 &4885823581115398602
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,11 +137,12 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 127925787785515395}
-  - component: {fileID: 6276373559003816398}
-  - component: {fileID: 5667323012913299489}
-  - component: {fileID: 616871083308757543}
-  - component: {fileID: 1902426448751675698}
+  - component: {fileID: 2141527101241126520}
+  - component: {fileID: 5969556619381456836}
+  - component: {fileID: 5969556619381456839}
+  - component: {fileID: 5969556619381456858}
+  - component: {fileID: 1509216759383330268}
+  - component: {fileID: 439248952973260489}
   m_Layer: 6
   m_Name: Basis Unit
   m_TagString: Untagged
@@ -103,57 +150,57 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &127925787785515395
+--- !u!4 &2141527101241126520
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6896047833725797937}
+  m_GameObject: {fileID: 4885823581115398602}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 20}
+  m_LocalPosition: {x: 62.5, y: 2.74, z: 30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 826167059320294887}
+  - {fileID: 1659966578040664604}
+  - {fileID: 68575704950510736}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6276373559003816398
+--- !u!114 &5969556619381456836
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6896047833725797937}
+  m_GameObject: {fileID: 4885823581115398602}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef89be94fd9256a40afca2caf7b5d264, type: 3}
+  m_Script: {fileID: 11500000, guid: 9fa13b9e96b49ba409c82c996b147f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  sampo: {fileID: 0}
-  closeToDestination: 0.01
-  _currentActivity:
-    data:
-      target: {fileID: 0}
-      name: 
-    weight: 0
-    whatDo: 0
-  _moveTo: {fileID: 0}
-  _possibleActions:
-  - data:
-      target: {fileID: 0}
-      name: Reach Sampo
-    weight: 0
-    whatDo: 2
---- !u!195 &5667323012913299489
+  weight: 1
+  health: 100
+--- !u!114 &5969556619381456839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4885823581115398602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 1
+--- !u!195 &5969556619381456858
 NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6896047833725797937}
+  m_GameObject: {fileID: 4885823581115398602}
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.3
@@ -166,16 +213,16 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
-  m_BaseOffset: 1
+  m_BaseOffset: 0.99
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!54 &616871083308757543
+--- !u!54 &1509216759383330268
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6896047833725797937}
+  m_GameObject: {fileID: 4885823581115398602}
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 0
@@ -185,13 +232,13 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!136 &1902426448751675698
+--- !u!136 &439248952973260489
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6896047833725797937}
+  m_GameObject: {fileID: 4885823581115398602}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1

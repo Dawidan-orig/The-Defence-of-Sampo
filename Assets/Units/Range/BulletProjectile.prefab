@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8495980136924756693}
   - component: {fileID: 2645310774671778765}
   - component: {fileID: -1803669465693450383}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BulletProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,3 +127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d93366bc085d8e24ba3c206f751fe964, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startPoint: {x: 0, y: 0, z: 0}
+  possibleDistance: 1000
+  remainingTime: 300

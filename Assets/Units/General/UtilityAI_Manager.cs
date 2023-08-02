@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -17,7 +18,19 @@ public class UtilityAI_Manager : MonoBehaviour
     [SerializeField]
     private GameObject _sampo;
 
-    private Dictionary<GameObject, int> interactables = new Dictionary<GameObject, int>();
+    private Dictionary<GameObject, int> _interactables = new Dictionary<GameObject, int>();
+
+    public EventHandler<UAIData> changeHappened;
+
+    public class UAIData : EventArgs
+    {
+        public Dictionary<GameObject, int> interactables;
+
+        public UAIData(Dictionary<GameObject, int> interactables)
+        {
+            this.interactables = interactables;
+        }
+    }    
 
     private void Awake()
     {
@@ -29,14 +42,16 @@ public class UtilityAI_Manager : MonoBehaviour
         {
             instance = this;
         }
+    }
 
-        //interactables.Add(_sampo, 0);
-        //interactables.Add(_player, 1);
+    public Dictionary<GameObject, int> GetInteractables ()
+    {
+        return _interactables;
     }
 
     public void AddNewInteractable(GameObject interactable, int weight) 
     {
-        if(interactables.ContainsKey(interactable)) 
+        if(_interactables.ContainsKey(interactable)) 
         {
             Debug.LogWarning($"{interactable.transform.name} уже был добавлен в список, отмена");
             return;
@@ -44,15 +59,8 @@ public class UtilityAI_Manager : MonoBehaviour
 
         //TODO : Обновлять списки, когда interactable изчез. Например, когда целевое здание уничтожили.
 
-        interactables.Add(interactable, weight);
-    }
+        _interactables.Add(interactable, weight);
 
-    public Dictionary<GameObject, int> GetPossibleActivities() 
-    {
-        // TODO : Добавить фильтры, чтобы возвращать только то, что может быть нужно:
-        // - Конкретной фракции
-        // - Конкретному типу ИИ
-        // И так далее
-        return interactables;
+        changeHappened?.Invoke(this, new UAIData(_interactables));
     }
 }

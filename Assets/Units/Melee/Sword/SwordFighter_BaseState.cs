@@ -34,7 +34,7 @@ public abstract class SwordFighter_BaseState
     protected void SwitchStates(SwordFighter_BaseState newState) {
         ExitState();
         newState.EnterState();
-        _ctx.CurrentState = newState;
+        _ctx.CurrentSwordState = newState;
     }
 
     protected void SetSuperState(SwordFighter_BaseState newSuperState)
