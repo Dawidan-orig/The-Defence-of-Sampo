@@ -175,7 +175,7 @@ GameObject:
   - component: {fileID: 9200753443297842824}
   - component: {fileID: 3806217039505362743}
   m_Layer: 6
-  m_Name: Sword Fighter
+  m_Name: Sword Fighter Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

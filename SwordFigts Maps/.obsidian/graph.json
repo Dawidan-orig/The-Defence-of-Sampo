@@ -5,10 +5,10 @@
   "showAttachments": false,
   "hideUnresolved": false,
   "showOrphans": true,
-  "collapse-color-groups": false,
+  "collapse-color-groups": true,
   "colorGroups": [
     {
-      "query": "path:Взаимодействия",
+      "query": "path:\"Систематика и описания\"",
       "color": {
         "a": 1,
         "rgb": 5526240
@@ -34,6 +34,13 @@
         "a": 1,
         "rgb": 14701138
       }
+    },
+    {
+      "query": "path:\"Калевала и её интерпретация в игру\"",
+      "color": {
+        "a": 1,
+        "rgb": 14745855
+      }
     }
   ],
   "collapse-display": true,
@@ -42,10 +49,10 @@
   "nodeSizeMultiplier": 1.5516632016632,
   "lineSizeMultiplier": 4.15956340956341,
   "collapse-forces": true,
-  "centerStrength": 0.628898128898129,
-  "repelStrength": 16.5696465696466,
+  "centerStrength": 0.154885654885655,
+  "repelStrength": 10.9147609147609,
   "linkStrength": 1,
-  "linkDistance": 242,
-  "scale": 0.96816215508282,
+  "linkDistance": 30,
+  "scale": 1.0784195722552592,
   "close": false
 }

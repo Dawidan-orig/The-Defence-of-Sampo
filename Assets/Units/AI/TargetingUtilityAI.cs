@@ -4,20 +4,20 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class TargetingUtilityAI : MonoBehaviour
+public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 // ИИ, ставящий приоритеты выполнения действий
-// Использует StateMachine для чёткого
+// Использует StateMachine в качестве исполнителя
 {
-    //TODO : Сами объекты предоставляют вес действия, а так же то, что с ними надо делать!
-    // Сампо: Враги подходят и ломают
-    // 
-
     [Header("Setup")]
-    [SerializeField]
     public float baseReachDistance = 1; // Или же длина конечности, что держит оружие
     [SerializeField]
     protected MeleeTool hands; // То, что используется в качестве базового оружия ближнего боя и не может быть выброшено.
+    [SerializeField]
+    protected Transform distanceFrom; // Определяет начало конечности, откуда и происходит отсчёт.
 
+    [Header("Ground")]
+    public Collider vital;
+    public float toGroundDist = 0.3f;
 
     [Header("lookonly")]
     [SerializeField]
@@ -37,13 +37,15 @@ public class TargetingUtilityAI : MonoBehaviour
     [Serializable]
     public struct AIAction
     {
-        public ActionData data;
+        public Transform target;
+        public string name;
         public int weight;
         public Tool actWith;
         public UtilityAI_BaseState whatDoWhenClose;
-        public AIAction(ActionData data, int weight, Tool actWith, UtilityAI_BaseState alignedState)
+        public AIAction(Transform target, string name, int weight, Tool actWith, UtilityAI_BaseState alignedState)
         {
-            this.data = data;
+            this.target = target;
+            this.name = name;
             this.weight = weight;
             this.actWith = actWith;
             whatDoWhenClose = alignedState;
@@ -56,21 +58,21 @@ public class TargetingUtilityAI : MonoBehaviour
 
             AIAction casted = (AIAction)obj;
 
-            return (data.target == casted.data.target) && (whatDoWhenClose == casted.whatDoWhenClose) && (actWith == casted.actWith);
+            return (target == casted.target) && (whatDoWhenClose == casted.whatDoWhenClose) && (actWith == casted.actWith);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(data, weight, whatDoWhenClose);
+            return HashCode.Combine(target, name, weight, whatDoWhenClose);
         }
 
         public static bool operator ==(AIAction c1, AIAction c2)
         {
-            return (c1.data.target == c2.data.target) && (c1.whatDoWhenClose == c2.whatDoWhenClose) && (c1.actWith == c2.actWith);
+            return (c1.target == c2.target) && (c1.whatDoWhenClose == c2.whatDoWhenClose) && (c1.actWith == c2.actWith);
         }
         public static bool operator !=(AIAction c1, AIAction c2)
         {
-            return (c1.data.target != c2.data.target) || (c1.data.name != c2.data.name) || (c1.actWith != c2.actWith);
+            return (c1.target != c2.target) || (c1.name != c2.name) || (c1.actWith != c2.actWith);
         }
     }
 
@@ -98,18 +100,18 @@ public class TargetingUtilityAI : MonoBehaviour
 
     protected virtual void OnEnable()
     {
-        if(UtilityAI_Manager.instance!= null)
-        DistributeActivityFromManager(this, new UtilityAI_Manager.UAIData(UtilityAI_Manager.instance.GetInteractables()));
+        if(UtilityAI_Manager.Instance!= null)
+            DistributeActivityFromManager(this, new UtilityAI_Manager.UAIData(UtilityAI_Manager.Instance.GetInteractables()));
     }
 
     protected virtual void Start()
     {
-        UtilityAI_Manager.instance.changeHappened += DistributeActivityFromManager;
+        UtilityAI_Manager.Instance.changeHappened += DistributeActivityFromManager;
 
         _noAction = new AIAction();
         _currentActivity = _noAction;
 
-        DistributeActivityFromManager(this, new UtilityAI_Manager.UAIData(UtilityAI_Manager.instance.GetInteractables())); // Костыль!
+        DistributeActivityFromManager(this, new UtilityAI_Manager.UAIData(UtilityAI_Manager.Instance.GetInteractables())); // Костыль!
         // Но без него Singleton в Awake не успевает инициализироваться,
         // А в Start события уже проходят, из-за чего не всю картину можно уловить.
         // то что я сделал сейчас - гарантирует, что всё точно было уловлено.
@@ -134,12 +136,12 @@ public class TargetingUtilityAI : MonoBehaviour
         //TODO : Проверка на добавление target'а с treatment'ом таких, что уже есть в списке - выдавать ошибку в таком случае.
         // Выполняемые задачи не должны дублироваться!
 
-        AIAction action = new AIAction(new ActionData(target, name), weight, actWith, treatment);
+        AIAction action = new AIAction(target, name, weight, actWith, treatment);
 
-        Faction.Type other = target.GetComponent<Faction>().type;
+        Faction.FType other = target.GetComponent<Faction>().type;
 
         if (other == GetComponent<Faction>().type
-            || other == Faction.Type.neutral)
+            || other == Faction.FType.neutral)
             return;
 
         if(_possibleActions.Contains(action))
@@ -165,7 +167,7 @@ public class TargetingUtilityAI : MonoBehaviour
         NavMeshPath path = new();
 
         // Проверяем достижимость NavMesh'а до цели.
-        while(!NavMesh.CalculatePath(transform.position, _possibleActions[bestActivityIndex].data.target.position, -1, path))
+        while(!NavMesh.CalculatePath(transform.position, _possibleActions[bestActivityIndex].target.position, -1, path))
         {
             bestActivityIndex++;
 
@@ -180,10 +182,10 @@ public class TargetingUtilityAI : MonoBehaviour
     public bool ActionReachable()
     {
         Vector3 closestToMe;
-        if (_currentActivity.data.target.TryGetComponent<Collider>(out var c))
-            closestToMe = c.ClosestPointOnBounds(_currentActivity.data.target.position);
+        if (_currentActivity.target.TryGetComponent<Collider>(out var c))
+            closestToMe = c.ClosestPointOnBounds(_currentActivity.target.position);
         else
-            closestToMe = _currentActivity.data.target.position;
+            closestToMe = _currentActivity.target.position;
 
         return Vector3.Distance(transform.position, closestToMe) < _currentActivity.actWith.additionalMeleeReach + baseReachDistance;
     }
@@ -191,10 +193,10 @@ public class TargetingUtilityAI : MonoBehaviour
     public bool ActionReachable(float actDistance) 
     {
         Vector3 closestToMe;
-        if (_currentActivity.data.target.TryGetComponent<Collider>(out var c))
-            closestToMe = c.ClosestPointOnBounds(_currentActivity.data.target.position);
+        if (_currentActivity.target.TryGetComponent<Collider>(out var c))
+            closestToMe = c.ClosestPointOnBounds(_currentActivity.target.position);
         else
-            closestToMe = _currentActivity.data.target.position;
+            closestToMe = _currentActivity.target.position;
 
         return Vector3.Distance(transform.position, closestToMe) < actDistance;
     }
@@ -228,4 +230,25 @@ public class TargetingUtilityAI : MonoBehaviour
 
     // Обычный Update, но когда юнит действует
     public virtual void ActionUpdate(Transform target) { }
+
+    public Vector3 GetLookTarget()
+    {
+        return (_currentActivity.target ? _currentActivity.target.position : Vector3.zero);
+    }
+
+    public bool IsGrounded()
+    {
+        return Physics.BoxCast(vital.bounds.center, new Vector3(vital.bounds.size.x / 2, 0.1f, vital.bounds.size.z / 2),
+            transform.up * -1, out _, transform.rotation, vital.bounds.size.y / 2 + toGroundDist);
+    }
+
+    public bool IsInJump()
+    {
+        return NMAgent.isOnOffMeshLink;
+    }
+
+    public virtual Vector3 GetRightHandTarget() 
+    {
+        return hands.transform.position;
+    }
 }

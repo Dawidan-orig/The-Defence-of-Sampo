@@ -1,21 +1,19 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Blade : MonoBehaviour
+public class Blade : MeleeTool
 {
     [Header("Init-s")]
     public Transform upperPoint;
     public Transform downerPoint;
     public Transform handle;
 
-    public GameObject host { get; private set; }
     [Header("lookonly")]
     public Rigidbody body;
     public Vector3 DEBUG_AngularVelocityEuler;
+    public Faction faction;
 
     [Header("Constraints")]
     public bool visualPrediction = true;
@@ -24,6 +22,7 @@ public class Blade : MonoBehaviour
     public int iterations = 1;
 
     public event EventHandler<Collision> OnBladeCollision; //Расшариваю здешнюю коллизию в MeleeFighter'a
+    public event EventHandler<Collider> OnBladeTrigger;
 
     public struct border
     {
@@ -34,21 +33,27 @@ public class Blade : MonoBehaviour
 
     private void Start()
     {
+        Physics.IgnoreCollision(GetComponent<Collider>(), host.GetComponent<SwordFighter_StateMachine>().Vital);
+
+        faction = GetComponent<Faction>();
+
         GameObject massCenterGo = new("MassCenter");
-        massCenterGo.transform.parent = transform;        
+        massCenterGo.transform.parent = transform;
 
         body = GetComponent<Rigidbody>();
         body.centerOfMass = handle.localPosition;
 
         massCenterGo.transform.position = body.worldCenterOfMass;
 
-        if (TryGetComponent<MeleeTool>(out var tool))
-            tool.additionalMeleeReach = Vector3.Distance(upperPoint.position, handle.position);
+        additionalMeleeReach = Vector3.Distance(upperPoint.position, handle.position);
     }
 
-    public void SetHost(GameObject newHost) 
+    private void Update()
     {
-        host = newHost;   
+        if (host)
+            faction.type = host.GetComponent<Faction>().type;
+        else
+            faction.type = Faction.FType.neutral;
     }
 
     public List<border> FixedPredict(int prediction)
@@ -141,7 +146,7 @@ public class Blade : MonoBehaviour
             ))
         {
             if (hit.transform.TryGetComponent(out Blade _))
-            {   
+            {
                 //TODO : Отладить, непонятно, работает ли вообще.
                 Vector3 closest = gameObject.GetComponent<Collider>().ClosestPointOnBounds(hit.point);
                 transform.position = closest;
@@ -158,10 +163,15 @@ public class Blade : MonoBehaviour
             FixedPredict(iterations);
     }
 
-    
+
     private void OnCollisionEnter(Collision collision)
     {
         OnBladeCollision?.Invoke(this, collision);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        OnBladeTrigger?.Invoke(this, other);
     }
 
     private void OnDrawGizmosSelected()

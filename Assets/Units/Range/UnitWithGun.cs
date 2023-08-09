@@ -31,4 +31,9 @@ public class UnitWithGun : TargetingUtilityAI
             }
         }
     }
+
+    public override Vector3 GetRightHandTarget()
+    {
+        return weapon.transform.position;
+    }
 }

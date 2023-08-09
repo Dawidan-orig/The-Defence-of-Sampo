@@ -13,11 +13,13 @@ public class SwordFighter_SwingingState : SwordFighter_BaseState
     public override void EnterState()
     {
         _ctx.Blade.OnBladeCollision += BladeCollisionEnter;
+        _ctx.Blade.OnBladeTrigger += BladeTriggerEnter;
     }
 
     public override void ExitState()
     {
         _ctx.Blade.OnBladeCollision -= BladeCollisionEnter;
+        _ctx.Blade.OnBladeTrigger -= BladeTriggerEnter;
     }
 
     public override void FixedUpdateState()
@@ -77,6 +79,20 @@ public class SwordFighter_SwingingState : SwordFighter_BaseState
         // IDEA: Отключать коллизию корутином на некоторое время после столкновения. (Можно это делать в случае комбо)
         // IDEA: Это отбивание происходит не мгновенно, первые несколько кадров после отбивания летящий меч колбасит, как следствие и реакцию - тоже.
         // Вариант: Сделать время "Контузии" после столкновения, при котором не происходит никакой реакции (Incoming игнорируется)
+    }
+
+    private void BladeTriggerEnter(object sender, Collider other)
+    {
+        if ((!other.gameObject.TryGetComponent<Rigidbody>(out _)) ||
+            other.gameObject.TryGetComponent<Blade>(out _))
+        {
+            _ctx.SetDesires(_ctx.InitialBlade.position, _ctx.InitialBlade.up, _ctx.InitialBlade.forward);
+            _ctx.NullifyProgress();
+            _ctx.CurrentToInitialAwait = _ctx.toInitialAwait;
+
+            SwitchStates(_factory.Repositioning());
+            return;
+        }
     }
 
     public override string ToString()

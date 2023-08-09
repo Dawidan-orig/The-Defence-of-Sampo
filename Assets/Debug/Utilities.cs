@@ -223,12 +223,11 @@ public class Utilities
         return false;
     }
 
-    //TODO : Ограничение по дальности, чтобы даже при нажатии в пустоту он работал
     public static bool GetMouseInWorldCollision(out Vector3 hitPoint)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        if (Physics.Raycast(ray, out RaycastHit hit, 200))
         {
             hitPoint = hit.point;
             return true;
@@ -236,7 +235,12 @@ public class Utilities
 
         hitPoint = Vector3.zero;
         return false;
-    } //TODO: Он должен возврщаать не вектор, а точку! Так же должно быть и у остальных функций.
+    }
+
+    public static bool ValueInArea(Vector3 input, Vector3 targetValue, float area) 
+    {
+        return Vector3.Distance(input, targetValue) < area;
+    }
 
     public static bool ValueInArea(float input, float targetValue, float area)
     {

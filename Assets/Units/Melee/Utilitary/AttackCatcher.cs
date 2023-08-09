@@ -35,12 +35,16 @@ public class AttackCatcher : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //TODO : Формулу, учитывающую ActionSpeed у SwordControlAI, чтобы чётко знать, когда отбивать летящий объект
-
         foreach (GameObject thing in controlled)
         {
             if (!thing) // Позволяет пропустить удалённые в этом кадре объекты
                 continue;
+
+            if(thing.TryGetComponent(out Faction f)) 
+            {
+                if (f.type == GetComponent<Faction>().type)
+                    continue;
+            }
 
             // У thing гарантированно есть Rigidbody. Это условие добавления в список.
             Rigidbody rb = thing.GetComponent<Rigidbody>();
@@ -170,17 +174,20 @@ public class AttackCatcher : MonoBehaviour
         {
             if (blade == GetComponent<SwordFighter_StateMachine>().Blade)
             {
-                Debug.Log($"Selfslash at speed {blade.body.velocity.magnitude}", collision.transform);
-                Debug.DrawLine(blade.downerPoint.position, blade.upperPoint.position, new Color(0.8f,0.2f,0), 3);
+                //Debug.Log($"Selfslash at speed {blade.body.velocity.magnitude}", collision.transform);
+                Debug.DrawLine(blade.downerPoint.position, blade.upperPoint.position, new Color(0.8f, 0.2f, 0), 3);
             }
             else
             {
-                Debug.Log($"Skipped slash at speed {blade.body.velocity.magnitude}", collision.transform);
+                //Debug.Log($"Skipped slash at speed {blade.body.velocity.magnitude}", collision.transform);
                 Debug.DrawLine(blade.downerPoint.position, blade.upperPoint.position, new Color(0.5f, 0, 0), 3);
             }
         }
         else
-            Debug.Log($"Blunt damage at speed {collision.rigidbody.velocity.magnitude}", collision.transform);
+        {
+            Utilities.DrawSphere(collision.GetContact(0).point,color : Color.red, duration : 3);
+            //Debug.Log($"Blunt damage at speed {collision.rigidbody.velocity.magnitude}", collision.transform);
+        }
     }
 
     private void OnTriggerEnter(Collider other)

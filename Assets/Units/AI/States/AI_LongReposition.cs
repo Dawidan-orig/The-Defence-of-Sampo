@@ -16,7 +16,7 @@ public class AI_LongReposition : UtilityAI_BaseState
 
         if (_ctx.CurrentActivity.actWith is SimplestShooting)
         {
-            if (((SimplestShooting)_ctx.CurrentActivity.actWith).AvilableToShoot(_ctx.CurrentActivity.data.target))
+            if (((SimplestShooting)_ctx.CurrentActivity.actWith).AvilableToShoot(_ctx.CurrentActivity.target))
                 SwitchStates(_factory.Attack());
 
             return;
@@ -57,7 +57,7 @@ public class AI_LongReposition : UtilityAI_BaseState
         Debug.DrawRay(_ctx.transform.position, Vector3.up * 2, Color.blue);
 
 
-        if (_ctx.CurrentActivity.data.target.hasChanged)
+        if (_ctx.CurrentActivity.target.hasChanged)
         {
             Repath();
         }
@@ -68,7 +68,7 @@ public class AI_LongReposition : UtilityAI_BaseState
     private void Repath()
     {
         _ctx.NMAgent.path.ClearCorners();
-        _ctx.NMAgent.SetDestination(_ctx.CurrentActivity.data.target.position);
+        _ctx.NMAgent.SetDestination(_ctx.CurrentActivity.target.position);
     }
 
     public override string ToString()

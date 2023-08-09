@@ -30,7 +30,7 @@ public class AI_Decide : UtilityAI_BaseState
             default:
                 // Проверяем, что мы далеко:
                 NavMeshHit destination;
-                NavMesh.Raycast(_ctx.transform.position, _ctx.CurrentActivity.data.target.position, out destination, NavMesh.AllAreas);
+                NavMesh.Raycast(_ctx.transform.position, _ctx.CurrentActivity.target.position, out destination, NavMesh.AllAreas);
                 NavMeshPath path = new NavMeshPath();
                 NavMesh.CalculatePath(_ctx.transform.position, destination.position, NavMesh.AllAreas, path);
                 if (Utilities.NavMeshPathLength(path) > _ctx.CurrentActivity.actWith.additionalMeleeReach + _ctx.baseReachDistance) {

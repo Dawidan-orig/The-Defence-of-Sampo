@@ -68,7 +68,7 @@ public class SwordControlAI : MonoBehaviour
         currentToInitialAwait = toInitialAwait;
         attackRecharge = minimalTimeBetweenAttacks;
 
-        blade.SetHost(gameObject);
+        blade.GetComponent<Tool>().SetHost(transform);
         blade.OnBladeCollision += BladeCollisionEnter;
 
         if (bladeContainer == null)
@@ -186,7 +186,7 @@ public class SwordControlAI : MonoBehaviour
             Vector3 toEnemyBlade_Dir = (bladePrediction.transform.position - vital.bounds.center).normalized;
             bladePrediction.transform.Rotate(toEnemyBlade_Dir, 90); // Ставим перпендикулярно
 
-            if (e.body.GetComponent<Blade>().host != null) // Притягиваем меч максимально близко к себе.
+            if (e.body.GetComponent<Tool>().host != null) // Притягиваем меч максимально близко к себе.
             {
                 //TODO : Заменить на handle
                 //TODO : Заменить на SDF; Во время блока меч влезает внутрь тела.  

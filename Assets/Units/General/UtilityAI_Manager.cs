@@ -8,7 +8,7 @@ public class UtilityAI_Manager : MonoBehaviour
     // Собирает все объекты на сцене, с которыми можно взаимодействовать, и предоставляет информацию для всех UtilityAI
     // Singleton
 {
-    public static UtilityAI_Manager instance { get; private set; }
+    private static UtilityAI_Manager _instance;
 
     [Header("Setup")]
     // Оба нужны для динамического изменения уровня сложности, а так же реакции на игрока и само Сампо.
@@ -22,6 +22,22 @@ public class UtilityAI_Manager : MonoBehaviour
 
     public EventHandler<UAIData> changeHappened;
 
+    public static UtilityAI_Manager Instance 
+    { 
+        get
+            {
+            if (!_instance)
+            {
+                _instance = new GameObject().AddComponent<UtilityAI_Manager>();
+                // name it for easy recognition
+                _instance.name = _instance.GetType().ToString();
+                // mark root as DontDestroyOnLoad();
+                DontDestroyOnLoad(_instance.gameObject);
+            }
+            return _instance;
+        } 
+    }
+
     public class UAIData : EventArgs
     {
         public Dictionary<GameObject, int> interactables;
@@ -31,18 +47,6 @@ public class UtilityAI_Manager : MonoBehaviour
             this.interactables = interactables;
         }
     }    
-
-    private void Awake()
-    {
-        if (instance != null && instance != this)
-        {
-            Destroy(this);
-        }
-        else
-        {
-            instance = this;
-        }
-    }
 
     public Dictionary<GameObject, int> GetInteractables ()
     {
@@ -60,6 +64,13 @@ public class UtilityAI_Manager : MonoBehaviour
         //TODO : Обновлять списки, когда interactable изчез. Например, когда целевое здание уничтожили.
 
         _interactables.Add(interactable, weight);
+
+        changeHappened?.Invoke(this, new UAIData(_interactables));
+    }
+
+    public void RemoveInteractable(GameObject interactable) 
+    {
+        _interactables.Remove(interactable);
 
         changeHappened?.Invoke(this, new UAIData(_interactables));
     }

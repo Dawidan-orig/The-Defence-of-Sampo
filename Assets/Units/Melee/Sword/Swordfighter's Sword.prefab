@@ -92,9 +92,17 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 0c5964cf455b1d34ca4d52e577782be1, type: 2}
-    - target: {fileID: 3518550695108105090, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 0
+    - target: {fileID: 3518550695108105091, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
+      propertyPath: rightHandHandle
+      value: 
+      objectReference: {fileID: 7455112557078766969}
+    - target: {fileID: 3518550695108105091, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
+      propertyPath: additionalMeleeReach
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3518550695108105091, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
+      propertyPath: cooldownBetweenAttacks
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3518550695108105116, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
       propertyPath: m_Name

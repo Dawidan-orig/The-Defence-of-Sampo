@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Faction : MonoBehaviour
 {
-    public enum Type
+    public enum FType
     {
         sampo,
         enemy,
@@ -13,5 +13,5 @@ public class Faction : MonoBehaviour
         aggressive // Нападает вообще на всех без разбору
     }
 
-    public Type type = Type.neutral;
+    public FType type = FType.neutral;
 }

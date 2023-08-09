@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SimplestShooting : Tool
@@ -12,7 +10,7 @@ public class SimplestShooting : Tool
     public ForceMode forceMode;
 
     private bool readyToFire = true;
-    public virtual void Shoot() 
+    public virtual void Shoot()
     {
         if (!readyToFire)
             return;
@@ -22,7 +20,13 @@ public class SimplestShooting : Tool
         bullet.transform.rotation = shootPoint.rotation;
         bullet.GetComponent<Rigidbody>().AddForce(shootPoint.forward * gunPower, forceMode);
 
-        Physics.IgnoreCollision(GetComponent<Collider>(), bullet.GetComponent <Collider>());
+        Faction BFac;
+        if (!bullet.TryGetComponent(out BFac))
+            BFac = bullet.AddComponent<Faction>();
+        BFac.type = host.GetComponent<Faction>().type;
+
+        Physics.IgnoreCollision(GetComponent<Collider>(), bullet.GetComponent<Collider>());
+        Physics.IgnoreCollision(host.GetComponent<Collider>(), bullet.GetComponent<Collider>());
 
         Bullet b = bullet.GetComponent<Bullet>();
         b.possibleDistance = range;
@@ -31,7 +35,7 @@ public class SimplestShooting : Tool
         Invoke(nameof(NextShotReady), timeBetweenBullets);
     }
 
-    public bool AvilableToShoot(Transform to) 
+    public bool AvilableToShoot(Transform to)
     {
         Utilities.VisualisedRaycast(transform.position,
                 (to.position - transform.position).normalized,
@@ -39,10 +43,19 @@ public class SimplestShooting : Tool
                 out RaycastHit hit,
                 ~2);
 
+        if (hit.transform == host)
+        {
+            Utilities.VisualisedRaycast(hit.point,
+                (to.position - transform.position).normalized,
+                range - (transform.position - hit.point).magnitude,
+                out hit,
+                ~2);
+        }
+
         return hit.transform == to;
     }
 
-    private void NextShotReady() 
+    private void NextShotReady()
     {
         readyToFire = true;
     }

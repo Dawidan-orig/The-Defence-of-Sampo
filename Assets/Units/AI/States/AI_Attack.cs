@@ -14,7 +14,7 @@ public class AI_Attack : UtilityAI_BaseState
     {
         if (_ctx.CurrentActivity.actWith is SimplestShooting)
         {
-            if (!((SimplestShooting)_ctx.CurrentActivity.actWith).AvilableToShoot(_ctx.CurrentActivity.data.target))
+            if (!((SimplestShooting)_ctx.CurrentActivity.actWith).AvilableToShoot(_ctx.CurrentActivity.target))
                 SwitchStates(_factory.Deciding());
 
             return;
@@ -46,7 +46,7 @@ public class AI_Attack : UtilityAI_BaseState
     {
         Debug.DrawRay(_ctx.transform.position, Vector3.up * 2, Color.red);
 
-        _ctx.AttackUpdate(_ctx.CurrentActivity.data.target);
+        _ctx.AttackUpdate(_ctx.CurrentActivity.target);
 
         CheckSwitchStates();
     }

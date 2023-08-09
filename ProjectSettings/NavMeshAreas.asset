@@ -11,9 +11,9 @@ NavMeshProjectSettings:
     cost: 1
   - name: Jump
     cost: 2
-  - name: Sampo-Side Danger
+  - name: 
     cost: 1
-  - name: Overall Danger
+  - name: 
     cost: 1
   - name: 
     cost: 1

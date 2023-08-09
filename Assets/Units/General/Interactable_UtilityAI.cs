@@ -12,8 +12,13 @@ public class Interactable_UtilityAI : MonoBehaviour
 {
     public int weight = 1;
 
-    private void Start()
+    protected virtual void OnEnable()
     {
-        UtilityAI_Manager.instance.AddNewInteractable(gameObject, weight);
+        UtilityAI_Manager.Instance.AddNewInteractable(gameObject, weight);
+    }
+
+    protected virtual void OnDisable()
+    {
+        UtilityAI_Manager.Instance.RemoveInteractable(gameObject);
     }
 }
