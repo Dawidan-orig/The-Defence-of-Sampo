@@ -97,6 +97,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7455112557078766969}
     - target: {fileID: 3518550695108105091, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
+      propertyPath: damageMultiplier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3518550695108105091, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
       propertyPath: additionalMeleeReach
       value: 2
       objectReference: {fileID: 0}

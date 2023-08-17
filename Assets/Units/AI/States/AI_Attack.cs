@@ -10,21 +10,45 @@ public class AI_Attack : UtilityAI_BaseState
     {
     }
 
-    public override void CheckSwitchStates()
+    public override bool CheckSwitchStates()
     {
-        if (_ctx.CurrentActivity.actWith is SimplestShooting)
-        {
-            if (!((SimplestShooting)_ctx.CurrentActivity.actWith).AvilableToShoot(_ctx.CurrentActivity.target))
-                SwitchStates(_factory.Deciding());
-
-            return;
-        }
-
-        if (!_ctx.ActionReachable(_ctx.CurrentActivity.actWith.additionalMeleeReach + _ctx.baseReachDistance))
+        if (_ctx.DecidingStateRequired())
         {
             SwitchStates(_factory.Deciding());
-            return;
+            return true;
         }
+
+        Tool weapon = _ctx.CurrentActivity.actWith;
+
+        if (weapon is SimplestShooting)
+        {
+            if (!((SimplestShooting)weapon).AvilableToShoot(_ctx.CurrentActivity.target, out RaycastHit hit))
+            {
+                if (hit.rigidbody)
+                {
+                    Vector3 targetDirection = (_ctx.CurrentActivity.target.position - _ctx.transform.position).normalized;
+                    Vector3 strafePoint = Utilities.NearestPointOnLine(_ctx.transform.position, targetDirection, hit.point);
+                    Vector3 strafeDir = (strafePoint - hit.point).normalized;
+                    Debug.DrawRay(_ctx.transform.position, strafeDir);
+                    //_ctx.Body.AddForce(strafeDir * _ctx.retreatSpeed * Time.fixedDeltaTime, ForceMode.VelocityChange);
+                }
+                else
+                {
+                    SwitchStates(_factory.Deciding());
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        if (!_ctx.NavMeshMeleeReachable())
+        {
+            SwitchStates(_factory.Deciding());
+            return true;
+        }
+
+        return false;
     }
 
     public override void EnterState()
@@ -46,9 +70,10 @@ public class AI_Attack : UtilityAI_BaseState
     {
         Debug.DrawRay(_ctx.transform.position, Vector3.up * 2, Color.red);
 
-        _ctx.AttackUpdate(_ctx.CurrentActivity.target);
+        if (CheckSwitchStates())
+            return;
 
-        CheckSwitchStates();
+        _ctx.AttackUpdate(_ctx.CurrentActivity.target);
     }
     public override void FixedUpdateState()
     {

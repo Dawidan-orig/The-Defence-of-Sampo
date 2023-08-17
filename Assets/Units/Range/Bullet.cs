@@ -16,7 +16,7 @@ public class Bullet : MonoBehaviour
     //TODO : Добавить GFX
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.TryGetComponent<IDamagable>(out var c))
+        if (collision.collider.transform.TryGetComponent<IDamagable>(out var c))
         {
             Rigidbody r = GetComponent<Rigidbody>();
             c.Damage(r.mass * r.velocity.magnitude, IDamagable.DamageType.blunt);

@@ -18,12 +18,16 @@ public class UnitWithGun : TargetingUtilityAI
     protected override void DistributeActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
     {
         _possibleActions.Clear();
+        _currentActivity = _noAction;
 
         var activities = e.interactables;
         foreach (KeyValuePair<GameObject, int> activity in activities)
         {
             GameObject target = activity.Key;
             int weight = activity.Value;
+
+            if (!target.activeSelf)
+                continue;
 
             if (target.TryGetComponent<Interactable_UtilityAI>(out _))
             {
@@ -32,8 +36,8 @@ public class UnitWithGun : TargetingUtilityAI
         }
     }
 
-    public override Vector3 GetRightHandTarget()
+    public override Transform GetRightHandTarget()
     {
-        return weapon.transform.position;
+        return weapon.transform;
     }
 }

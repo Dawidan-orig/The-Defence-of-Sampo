@@ -46,7 +46,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   host: {fileID: 0}
   additionalMeleeReach: 0
+  alive:
+    serializedVersion: 2
+    m_Bits: 0
+  structures:
+    serializedVersion: 2
+    m_Bits: 0
   cooldownBetweenAttacks: 1
+  damageMultiplier: 1
   rightHandHandle: {fileID: 0}
 --- !u!1 &1526482222200477036
 GameObject:
@@ -123,7 +130,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40a72d121ab7166418f3982579712e38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AIActive: 1
   baseReachDistance: 1
+  maxSpeed: 3.5
+  retreatSpeed: 0.5
   hands: {fileID: 1333285464684098757}
   distanceFrom: {fileID: 1414065828752686693}
   vital: {fileID: 6060500822727802340}
@@ -134,7 +144,7 @@ MonoBehaviour:
     weight: 0
     actWith: {fileID: 0}
   _possibleActions: []
-  weapon: {fileID: 5901850496304380719}
+  weapon: {fileID: 0}
   _swingReady: 1
   actionSpeed: 4
   block_minDistance: 0.3
@@ -231,6 +241,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weight: 4
   health: 100
+  vital: {fileID: 6060500822727802340}
 --- !u!195 &6974210331038364384
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -404,10 +415,6 @@ PrefabInstance:
       value: Swordfighter's Sword
       objectReference: {fileID: 0}
     - target: {fileID: 7455112557779443599, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7455112557779443599, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -441,17 +448,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
---- !u!114 &5901850496304380719 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7811674867235215537, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
-  m_PrefabInstance: {fileID: 4435818199808320414}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7c643220423b09438ea5b29014f378e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6555781427904815356 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7455112556665308002, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}

@@ -6,7 +6,7 @@ public interface IAnimationProvider
 {
     public abstract Vector3 GetLookTarget();
 
-    public abstract Vector3 GetRightHandTarget();
+    public abstract Transform GetRightHandTarget();
 
     public abstract bool IsGrounded();
 

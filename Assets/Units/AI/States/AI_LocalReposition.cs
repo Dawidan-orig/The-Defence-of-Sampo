@@ -11,7 +11,7 @@ public class AI_LocalReposition : UtilityAI_BaseState
     {
     }
 
-    public override void CheckSwitchStates()
+    public override bool CheckSwitchStates()
     {
         throw new System.NotImplementedException();
     }

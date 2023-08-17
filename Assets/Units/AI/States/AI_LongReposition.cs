@@ -9,23 +9,38 @@ public class AI_LongReposition : UtilityAI_BaseState
 
     }
 
-    public override void CheckSwitchStates()
+    public override bool CheckSwitchStates()
     {
-        if (_ctx.NMAgent.pathStatus != NavMeshPathStatus.PathComplete)
+        if (_ctx.DecidingStateRequired())
+        {
             SwitchStates(_factory.Deciding());
+            return true;
+        }
+
+        if (_ctx.NMAgent.pathStatus != NavMeshPathStatus.PathComplete)
+        {
+            SwitchStates(_factory.Deciding());
+            return true;
+        }
 
         if (_ctx.CurrentActivity.actWith is SimplestShooting)
         {
-            if (((SimplestShooting)_ctx.CurrentActivity.actWith).AvilableToShoot(_ctx.CurrentActivity.target))
+            if (((SimplestShooting)_ctx.CurrentActivity.actWith).AvilableToShoot(_ctx.CurrentActivity.target, out _))
+            {
                 SwitchStates(_factory.Attack());
+                return true;
+            }
 
-            return;
+            return false;
         }
 
-        if (_ctx.ActionReachable(_ctx.CurrentActivity.actWith.additionalMeleeReach + _ctx.baseReachDistance))
+        if (_ctx.MeleeReachable())
         {
             SwitchStates(_ctx.CurrentActivity.whatDoWhenClose); //  ак дошли - выполн€ем указанное действие
+            return true;
         }
+
+        return false;
     }
 
     public override void EnterState()
@@ -56,13 +71,11 @@ public class AI_LongReposition : UtilityAI_BaseState
     {
         Debug.DrawRay(_ctx.transform.position, Vector3.up * 2, Color.blue);
 
+        if (CheckSwitchStates())
+            return;
 
         if (_ctx.CurrentActivity.target.hasChanged)
-        {
             Repath();
-        }
-
-        CheckSwitchStates();
     }
 
     private void Repath()

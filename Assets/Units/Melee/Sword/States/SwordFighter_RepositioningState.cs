@@ -41,8 +41,9 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
     {
         if (_ctx.AlmostDesire()) 
         {
-            if (_ctx.AttackReposition)
+            if (_ctx.AttackReposition && _ctx.CurrentActivity.target)
             {
+                //TODO : Когда нет цели, тут происходит nullReference
                 _ctx.Swing(_ctx.CurrentActivity.target.position);
                 _ctx.NullifyProgress();
                 SwitchStates(_factory.Swinging());

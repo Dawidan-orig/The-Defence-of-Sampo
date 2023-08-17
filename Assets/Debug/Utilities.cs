@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
 
 public class Utilities
 {
+    public static GameObject utility = new("Utilitary");
+
     //Краткая запись, дабы сократить сильнее нужен TODO : Ray.
     public static bool VisualisedBoxCast(Vector3 center, Vector3 halfExtends, Vector3 direction, float maxDistance, LayerMask layerMask, bool drawHit, Color? color = null, float duration = 0)
     {
@@ -53,12 +56,16 @@ public class Utilities
     }
 
     //TODO : Сделать всё с Ray!
-    public static bool VisualisedRaycast(Vector3 origin, Vector3 direction, float maxDistance, out RaycastHit hit, LayerMask layerMask, bool drawHit = true, Color? color = null, float duration = 0, bool visualise = true)
+    public static bool VisualisedRaycast(Vector3 origin, Vector3 direction,  out RaycastHit hit, float maxDistance, LayerMask? layerMask = null, bool drawHit = true, Color? color = null, float duration = 0, bool visualise = true)
     {
         if (color == null)
             color = Color.white;
 
-        bool result = Physics.Raycast(origin, direction, out hit, maxDistance, layerMask);
+        bool result;
+        if (layerMask != null)
+            result = Physics.Raycast(origin, direction, out hit, maxDistance, (LayerMask)layerMask);
+        else
+            result = Physics.Raycast(origin, direction, out hit, maxDistance);
 
         if (drawHit && result)
         {
@@ -77,7 +84,7 @@ public class Utilities
     //С подсчётом угла
     public static bool VisualisedRaycast(Vector3 origin, Vector3 direction, float maxDistance, out RaycastHit hit, out float angle, LayerMask layerMask, bool drawAngle = true, bool drawHit = true, Color? color = null, float duration = 0, bool visualise = true)
     {
-        bool result = VisualisedRaycast(origin, direction, maxDistance, out hit, layerMask, drawHit, color, duration, visualise);
+        bool result = VisualisedRaycast(origin, direction, out hit, maxDistance,  layerMask, drawHit, color, duration, visualise);
 
         if (color == null)
             color = Color.white;
@@ -94,7 +101,7 @@ public class Utilities
             if (drawAngle && visualise)
             {
                 Debug.DrawLine(hit.point, angleHit.point, (Color)color);
-                CreateTextInWorld(angle.ToString(), duration, hit.point + Vector3.left);
+                CreateTextInWorld(angle.ToString(), duration : duration, position : hit.point + Vector3.left);
             }
         }
         else
@@ -105,33 +112,41 @@ public class Utilities
         return result;
     }
 
-    public static TextMesh CreateTextInWorld(string text, float duration, Vector3 position)
+    public static void CreateFlowText(string text, float duration, Vector3 position, Color? color = null) 
     {
-        GameObject parent = new GameObject($"WillDie : \"{text}\"");
-        TextMesh res = CreateTextInWorld(text, parent.transform, textAnchor: TextAnchor.MiddleCenter, textAlignment: TextAlignment.Center);
-        parent.transform.position = position;
-        if (duration == 0)
-            duration = 0.05f;
-        res.transform.LookAt(Camera.main.transform);
-        Object.Destroy(parent, 0.1f);
-        return res;
+        var tMesh = CreateTextInWorld(text, duration : duration, position : position, color : color);
+        tMesh.AddComponent<TextFlow>();
     }
-    public static TextMesh CreateTextInWorld(string text, Transform parent = null, Vector3 localOffset = default(Vector3), Color? color = null, TextAnchor textAnchor = TextAnchor.UpperLeft, TextAlignment textAlignment = TextAlignment.Left, int fontSize = 40, int sortingOrder = 5000)
+    public static TextMesh CreateTextInWorld(string text, Transform parent = null,float duration = 0, Vector3 position = default(Vector3), Color? color = null, TextAnchor textAnchor = TextAnchor.MiddleCenter, TextAlignment textAlignment = TextAlignment.Center, int fontSize = 40, int sortingOrder = 5000)
     {
-        if (color == null) color = Color.gray;
+        if (color == null) color = Color.white;
 
         GameObject gameObject = new GameObject("TextMesh of " + (parent ? parent.ToString() : "nothing"), typeof(TextMesh));
+        gameObject.AddComponent<TextFaceCamera>();
         Transform transform = gameObject.transform;
-        transform.SetParent(parent, false);
-        transform.localPosition = localOffset;
+        if (parent != null)
+            transform.SetParent(parent);
+        else
+            transform.SetParent(utility.transform);
+        transform.position = position;
         TextMesh textMesh = gameObject.GetComponent<TextMesh>();
         textMesh.anchor = textAnchor;
         textMesh.alignment = textAlignment;
         textMesh.text = text;
         textMesh.fontSize = fontSize;
+        textMesh.characterSize = 0.1f;
         textMesh.color = (Color)color;
         textMesh.GetComponent<MeshRenderer>().sortingOrder = sortingOrder;
+        UnityEngine.Object.Destroy(gameObject, duration == 0 ? Time.deltaTime * 2 : duration);
         return textMesh;
+    }
+
+    public static void DrawLineWithDistance(Vector3 start, Vector3 end, Color? color = null, Transform parent = null, float duration = 0)
+    {
+        if (color == null) color = Color.white;
+        string text = Vector3.Distance(start, end).ToString();
+        CreateTextInWorld(text, duration: duration, position : Vector3.Lerp(start, end, 0.5f));
+        Debug.DrawLine(start, end, (Color)color, duration);
     }
 
     public static void DrawSphere(Vector3 center, float radius = 0.075f, Color? color = null, float duration = 0) //TODO : Не проверено! 
@@ -276,6 +291,17 @@ public class Utilities
         }
 
         return res;
+    }
+
+    //linePnt - point the line passes through
+    //lineDir - unit vector in direction of line, either direction works
+    //pnt - the point to find nearest on line for
+    public static Vector3 NearestPointOnLine(Vector3 pointOnLine, Vector3 lineDir, Vector3 targetPoint)
+    {
+        lineDir.Normalize();//this needs to be a unit vector
+        var v = targetPoint - pointOnLine;
+        var d = Vector3.Dot(v, lineDir);
+        return pointOnLine + lineDir * d;
     }
 
     public class GUI

@@ -23,7 +23,7 @@ public abstract class UtilityAI_BaseState
 
     public abstract void ExitState();
 
-    public abstract void CheckSwitchStates();
+    public abstract bool CheckSwitchStates();
 
     public abstract void InitializeSubState();
 

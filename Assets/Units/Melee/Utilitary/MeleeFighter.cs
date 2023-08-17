@@ -33,9 +33,9 @@ public class MeleeFighter : TargetingUtilityAI
         base.DistributeActivityFromManager(sender, e);
     }
 
-    public override Vector3 GetRightHandTarget()
+    public override Transform GetRightHandTarget()
     {
-        return weapon.rightHandHandle.position;
+        return weapon.rightHandHandle;
     }
 
     public virtual void Swing(Vector3 toPoint) 

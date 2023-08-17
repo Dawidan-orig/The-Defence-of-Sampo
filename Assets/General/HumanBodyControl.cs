@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Animations.Rigging;
 
 public class HumanBodyControl : MonoBehaviour
 {
@@ -11,6 +12,11 @@ public class HumanBodyControl : MonoBehaviour
     public Transform shouldersTarget;
     public Transform rightShoulder;
     public Animator controlled;
+
+    [Header("Constraints")]
+    public TwoBoneIKConstraint firstIK;
+    public TwoBoneIKConstraint recalculationIK;
+    public TwistCorrection shoulders;
 
     [Header("lookonly")]
     [SerializeField]
@@ -80,10 +86,26 @@ public class HumanBodyControl : MonoBehaviour
 
     private void RightHandControl() 
     {
-        Vector3 rHandPos = provider.GetRightHandTarget();
+        if(provider.GetRightHandTarget() == null)
+        {
+            firstIK.weight = 0;
+            recalculationIK.weight = 0;
+            return;
+        }
+
+        firstIK.weight = 1;
+        recalculationIK.weight = 1;
+
+        Vector3 rHandPos = provider.GetRightHandTarget().position;
+        Quaternion rHandRot = provider.GetRightHandTarget().rotation;
+        rHandRot *= Quaternion.Euler(90f, 90f, 0);
+        rHandRot *= Quaternion.Euler(180, 0, 180);
 
         if (rHandPos != Vector3.zero)
+        {
             rightHandTarget.position = rHandPos;
+            rightHandTarget.rotation = rHandRot;
+        }
         else
             rightHandTarget.position = transform.position + transform.rotation * nullRightHand; // TODO : Поменять на смену weight на ноль.
     }
@@ -92,7 +114,7 @@ public class HumanBodyControl : MonoBehaviour
     {
         Quaternion delta = rightShoulder.localRotation * Quaternion.Inverse(initialRightShoulder);
 
-        shouldersTarget.rotation = initialShoulders * delta;
+        shouldersTarget.rotation = transform.rotation * initialShoulders * delta;
     }
 
     private void SetAnimatorFromRigidbody()

@@ -8,7 +8,8 @@ public class Blade : MeleeTool
     [Header("Init-s")]
     public Transform upperPoint;
     public Transform downerPoint;
-    public Transform handle;
+    [SerializeField]
+    private Transform handle;
 
     [Header("lookonly")]
     public Rigidbody body;
@@ -20,6 +21,9 @@ public class Blade : MeleeTool
     public bool alwaysDraw = false;
     public Color predictionColor = Color.red;
     public int iterations = 1;
+    public float noDamageTime = 0.5f;
+
+    public Transform Handle { get => handle; private set => handle = value; }
 
     public event EventHandler<Collision> OnBladeCollision; //Расшариваю здешнюю коллизию в MeleeFighter'a
     public event EventHandler<Collider> OnBladeTrigger;
@@ -31,29 +35,34 @@ public class Blade : MeleeTool
         public Vector3 direction;
     }
 
+    private void Awake()
+    {
+        body = GetComponent<Rigidbody>();
+        faction = GetComponent<Faction>();
+    }
+
     private void Start()
     {
-        Physics.IgnoreCollision(GetComponent<Collider>(), host.GetComponent<SwordFighter_StateMachine>().Vital);
-
-        faction = GetComponent<Faction>();
+        if(host)
+            Physics.IgnoreCollision(GetComponent<Collider>(), host.GetComponent<AliveBeing>().vital);
 
         GameObject massCenterGo = new("MassCenter");
-        massCenterGo.transform.parent = transform;
-
-        body = GetComponent<Rigidbody>();
+        massCenterGo.transform.parent = transform;        
         body.centerOfMass = handle.localPosition;
-
         massCenterGo.transform.position = body.worldCenterOfMass;
 
-        additionalMeleeReach = Vector3.Distance(upperPoint.position, handle.position);
+        additionalMeleeReach = Vector3.Distance(upperPoint.position, handle.position)/2;
     }
 
     private void Update()
     {
-        if (host)
-            faction.type = host.GetComponent<Faction>().type;
-        else
-            faction.type = Faction.FType.neutral;
+        if (faction)
+        {
+            if (host)
+                faction.type = host.GetComponent<Faction>().type;
+            else
+                faction.type = Faction.FType.neutral;
+        }
     }
 
     public List<border> FixedPredict(int prediction)
@@ -167,6 +176,19 @@ public class Blade : MeleeTool
     private void OnCollisionEnter(Collision collision)
     {
         OnBladeCollision?.Invoke(this, collision);
+
+        if(collision.collider.transform.TryGetComponent<AliveBeing>(out var alive)) 
+        {
+            Utilities.DrawSphere(collision.GetContact(0).point, color: Color.red, duration: 3);
+            alive.Damage(body.velocity.magnitude * body.mass * damageMultiplier, IDamagable.DamageType.sharp);
+            GetComponent<Collider>().isTrigger = true;
+            Invoke(nameof(ResetCollision), noDamageTime);
+        }
+    }
+
+    private void ResetCollision() 
+    {
+        GetComponent<Collider>().isTrigger = false;
     }
 
     private void OnTriggerEnter(Collider other)

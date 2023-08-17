@@ -35,21 +35,31 @@ public class SimplestShooting : Tool
         Invoke(nameof(NextShotReady), timeBetweenBullets);
     }
 
-    public bool AvilableToShoot(Transform to)
+    public bool AvilableToShoot(Transform to, out RaycastHit hit)
     {
         Utilities.VisualisedRaycast(transform.position,
                 (to.position - transform.position).normalized,
-                range,
-                out RaycastHit hit,
-                ~2);
+                out hit,
+                range,                
+                alive + structures);
+
+        if (hit.collider)
+            if (hit.collider.isTrigger)
+            {
+                Utilities.VisualisedRaycast(hit.point,
+                (to.position - transform.position).normalized,
+                out hit,
+                range - (transform.position - hit.point).magnitude,                
+                alive + structures);
+            }
 
         if (hit.transform == host)
         {
             Utilities.VisualisedRaycast(hit.point,
                 (to.position - transform.position).normalized,
-                range - (transform.position - hit.point).magnitude,
                 out hit,
-                ~2);
+                range - (transform.position - hit.point).magnitude,                
+                alive + structures);
         }
 
         return hit.transform == to;

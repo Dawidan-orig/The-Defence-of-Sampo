@@ -8,8 +8,13 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 // ИИ, ставящий приоритеты выполнения действий
 // Использует StateMachine в качестве исполнителя
 {
+    public bool AIActive = true;
+
     [Header("Setup")]
     public float baseReachDistance = 1; // Или же длина конечности, что держит оружие
+    public float maxSpeed = 3.5f;
+    public float retreatMultiplier = 0.2f;
+    public float distanceMultiplier = 1;
     [SerializeField]
     protected MeleeTool hands; // То, что используется в качестве базового оружия ближнего боя и не может быть выброшено.
     [SerializeField]
@@ -18,6 +23,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     [Header("Ground")]
     public Collider vital;
     public float toGroundDist = 0.3f;
+    public Transform navMeshCalcFrom; // Указывать не обязательно. Нужно, чтобы NavMesh не бузил.
 
     [Header("lookonly")]
     [SerializeField]
@@ -25,30 +31,50 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     [SerializeField]
     protected List<AIAction> _possibleActions = new();
 
-    AIAction _noAction;
     NavMeshAgent _nmAgent;
+    Rigidbody _body;
+    protected AIAction _noAction;
     protected UtilityAI_Factory _factory;
     protected UtilityAI_BaseState _currentState;
 
     public UtilityAI_BaseState CurrentState { get => _currentState; set => _currentState = value; }
     public NavMeshAgent NMAgent { get => _nmAgent; set => _nmAgent = value; }
     public AIAction CurrentActivity { get => _currentActivity; }
+    public Rigidbody Body { get => _body; set => _body = value; }
 
     [Serializable]
-    public struct AIAction
+    public class AIAction
     {
         public Transform target;
         public string name;
-        public int weight;
+        private int totalWeight;
+        public int baseWeight;
+        public int distanceAddition;
         public Tool actWith;
         public UtilityAI_BaseState whatDoWhenClose;
+
+        public int TotalWeight { get => totalWeight; set => totalWeight = value; }
+
+        public AIAction()
+        {
+            target = default;
+            name = default;
+            totalWeight = default;
+            baseWeight = default;
+            distanceAddition = default;
+            actWith = default;
+            whatDoWhenClose = default;
+        }
+
         public AIAction(Transform target, string name, int weight, Tool actWith, UtilityAI_BaseState alignedState)
         {
             this.target = target;
             this.name = name;
-            this.weight = weight;
+            this.baseWeight = weight;
             this.actWith = actWith;
             whatDoWhenClose = alignedState;
+            totalWeight = weight;
+            distanceAddition = 0;
         }
 
         public override bool Equals(object obj)
@@ -63,7 +89,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(target, name, weight, whatDoWhenClose);
+            return HashCode.Combine(target, name, baseWeight, whatDoWhenClose);
         }
 
         public static bool operator ==(AIAction c1, AIAction c2)
@@ -76,66 +102,84 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
         }
     }
 
-    [Serializable]
-    public struct ActionData
-    {
-        public Transform target;
-        public string name;
-
-        public ActionData(Transform target, string name)
-        {
-            this.target = target;
-            this.name = name;
-        }
-    }
     #region Unity
-
-
     protected virtual void Awake()
     {
         _nmAgent = GetComponent<NavMeshAgent>();
+        _body = GetComponent<Rigidbody>();
         _factory = new UtilityAI_Factory(this);
-        _currentState = _factory.Deciding();        
+        _currentState = _factory.Deciding();
     }
 
     protected virtual void OnEnable()
     {
-        if(UtilityAI_Manager.Instance!= null)
-            DistributeActivityFromManager(this, new UtilityAI_Manager.UAIData(UtilityAI_Manager.Instance.GetInteractables()));
+        AIActive = true;
+        UtilityAI_Manager.Instance.changeHappened += DistributeActivityFromManager;
+    }
+
+    protected virtual void OnDisable()
+    {
+        UtilityAI_Manager.Instance.changeHappened -= DistributeActivityFromManager;
+        NullifyActivity();
+        AIActive = false;
     }
 
     protected virtual void Start()
     {
-        UtilityAI_Manager.Instance.changeHappened += DistributeActivityFromManager;
-
+        NMAgent.speed = maxSpeed;
         _noAction = new AIAction();
-        _currentActivity = _noAction;
-
-        DistributeActivityFromManager(this, new UtilityAI_Manager.UAIData(UtilityAI_Manager.Instance.GetInteractables())); // Костыль!
-        // Но без него Singleton в Awake не успевает инициализироваться,
-        // А в Start события уже проходят, из-за чего не всю картину можно уловить.
-        // то что я сделал сейчас - гарантирует, что всё точно было уловлено.
+        NullifyActivity();
     }
 
     protected virtual void Update()
     {
+        if (!AIActive)
+        {
+            return;
+        }
+
         _currentState.UpdateState();
     }
 
     protected virtual void FixedUpdate()
     {
+        if (!AIActive)
+        {
+            return;
+        }
+
         _currentState.FixedUpdateState();
+    }
+
+    protected virtual void OnDrawGizmosSelected()
+    {
+        if (EditorApplication.isPlaying && !EditorApplication.isPaused)
+
+            foreach (AIAction action in _possibleActions)
+            {
+                Reweight();
+
+                Utilities.CreateTextInWorld(action.baseWeight.ToString(), action.target, position: action.target.position + Vector3.up * 2);
+                Utilities.CreateTextInWorld(action.distanceAddition.ToString(), action.target, position: action.target.position + Vector3.up * 2.5f, color: Color.blue);
+            }
     }
 
     #endregion
 
-    #region onetime
+    private void Reweight()
+    {
+        for (int i = 0; i < _possibleActions.Count; i++)
+        {
+            _possibleActions[i].distanceAddition = Mathf.RoundToInt(Vector3.Distance(transform.position, _possibleActions[i].target.position) * distanceMultiplier);
+
+
+            _possibleActions[i].TotalWeight = _possibleActions[i].baseWeight - _possibleActions[i].distanceAddition;
+            //Utilities.DrawLineWithDistance(transform.position, action.target.position,Color.white , duration : 3);
+        }
+    }
 
     public void AddNewPossibleAction(Transform target, int weight, string name, Tool actWith, UtilityAI_BaseState treatment)
     {
-        //TODO : Проверка на добавление target'а с treatment'ом таких, что уже есть в списке - выдавать ошибку в таком случае.
-        // Выполняемые задачи не должны дублироваться!
-
         AIAction action = new AIAction(target, name, weight, actWith, treatment);
 
         Faction.FType other = target.GetComponent<Faction>().type;
@@ -144,7 +188,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
             || other == Faction.FType.neutral)
             return;
 
-        if(_possibleActions.Contains(action))
+        if (_possibleActions.Contains(action))
         {
             Debug.LogWarning("Уже был добавлен " + name, transform);
             return;
@@ -160,50 +204,77 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
             return null;
         }
 
+        Reweight();
+
         int bestActivityIndex = 0;
 
-        _possibleActions.Sort((i1, i2) => i2.weight.CompareTo(i1.weight));
+        _possibleActions.Sort((i1, i2) => i2.TotalWeight.CompareTo(i1.TotalWeight));
 
         NavMeshPath path = new();
+        if (Utilities.VisualisedRaycast(transform.position, Vector3.down,  out RaycastHit hit, toGroundDist + vital.bounds.size.y / 2))
+            // Проверяем достижимость NavMesh'а до цели.
+            while (!NavMesh.CalculatePath(hit.point, _possibleActions[bestActivityIndex].target.position, -1, path))
+            {
+                bestActivityIndex++;
 
-        // Проверяем достижимость NavMesh'а до цели.
-        while(!NavMesh.CalculatePath(transform.position, _possibleActions[bestActivityIndex].target.position, -1, path))
-        {
-            bestActivityIndex++;
+                if (bestActivityIndex >= _possibleActions.Count)
+                    return null;
+            }
+        else
+            return null;
 
-            if (bestActivityIndex >= _possibleActions.Count)
-                return null;
-        }
-        _currentActivity = _possibleActions[bestActivityIndex];        
+        _currentActivity = _possibleActions[bestActivityIndex];
 
         return _currentActivity.whatDoWhenClose;
     }
 
-    public bool ActionReachable()
+    public bool NavMeshMeleeReachable() 
+    {
+        // Проверяем, что мы далеко:
+        Vector3 countFrom = navMeshCalcFrom ? navMeshCalcFrom.position : transform.position;
+        NavMeshPath path = new NavMeshPath();
+
+        NavMesh.CalculatePath(countFrom, CurrentActivity.target.position, NavMesh.AllAreas, path);
+        return Utilities.NavMeshPathLength(path) < CurrentActivity.actWith.additionalMeleeReach + baseReachDistance;
+    }
+
+    public bool MeleeReachable()
     {
         Vector3 closestToMe;
-        if (_currentActivity.target.TryGetComponent<Collider>(out var c))
-            closestToMe = c.ClosestPointOnBounds(_currentActivity.target.position);
+        Vector3 calculateFrom = distanceFrom ? distanceFrom.position : transform.position;
+        if (_currentActivity.target.TryGetComponent<AliveBeing>(out var c))
+            closestToMe = c.vital.ClosestPointOnBounds(calculateFrom);
         else
             closestToMe = _currentActivity.target.position;
 
-        return Vector3.Distance(transform.position, closestToMe) < _currentActivity.actWith.additionalMeleeReach + baseReachDistance;
+        return Vector3.Distance(calculateFrom, closestToMe) < _currentActivity.actWith.additionalMeleeReach + baseReachDistance;
     }
 
-    public bool ActionReachable(float actDistance) 
+    public bool IsReachable(float actDistance)
     {
         Vector3 closestToMe;
         if (_currentActivity.target.TryGetComponent<Collider>(out var c))
-            closestToMe = c.ClosestPointOnBounds(_currentActivity.target.position);
+            closestToMe = c.ClosestPointOnBounds(distanceFrom.position);
         else
             closestToMe = _currentActivity.target.position;
 
-        return Vector3.Distance(transform.position, closestToMe) < actDistance;
+        return Vector3.Distance(distanceFrom.position, closestToMe) < actDistance;
     }
 
-    #endregion
+    private void NullifyActivity()
+    {
+        _currentActivity = _noAction; // Нужно, чтобы StateMachine перебросилась в состояние Decide и не ловила nullReference
+    }
+
+    public bool DecidingStateRequired()
+    {
+        return _currentActivity == _noAction;
+    }
+
+    #region virtual
     protected virtual void DistributeActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
     {
+        _currentActivity = _noAction;
         _possibleActions.Clear();
 
         var activities = e.interactables;
@@ -215,22 +286,25 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
             // Прямо сейчас ИИ будут бить атаковать всё живое и разрушаемое
             if (target.TryGetComponent<Interactable_UtilityAI>(out _))
             {
+                //TODO : У потомков только используемое оружие меняется. Есть смысл переделать override и как-то передавать сюда это оружие.
                 AddNewPossibleAction(target.transform, weight, target.transform.name, hands, _factory.Attack());
             }
-
-            //TODO : Сделать _currentState.ForceDecideState(); Когда происходит что-то срочное, типа метеорита какого-нибудь
         }
     }
 
     // Обычный Update, но вызываемый в состоянии, когда юнит атакует.
-    public virtual void AttackUpdate(Transform target) 
+    public virtual void AttackUpdate(Transform target)
     {
-        
     }
+
 
     // Обычный Update, но когда юнит действует
     public virtual void ActionUpdate(Transform target) { }
 
+    #endregion
+
+
+    #region animation
     public Vector3 GetLookTarget()
     {
         return (_currentActivity.target ? _currentActivity.target.position : Vector3.zero);
@@ -247,8 +321,9 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
         return NMAgent.isOnOffMeshLink;
     }
 
-    public virtual Vector3 GetRightHandTarget() 
+    public virtual Transform GetRightHandTarget()
     {
-        return hands.transform.position;
+        return hands.transform;
     }
+    #endregion
 }

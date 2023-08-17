@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Faction))]
 public class Interactable_UtilityAI : MonoBehaviour
     // Предоставляет менеджеру вес GameObject'а, делая его одной из возможных целей UtilityAI
     // Выполняет Debug-отрисовку: 

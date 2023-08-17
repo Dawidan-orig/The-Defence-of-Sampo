@@ -26,6 +26,14 @@ public class PlayerController : MonoBehaviour, IAnimationProvider
     public LayerMask ground;
     public Collider vital;
     public Transform handTarget;
+    [Header("Weaponry")]
+    [Header("MeleeWeapon")]
+    public SwordControl swordControl;
+    public float mouseDeltaForSwing = 80;
+    public float forwardWeaponDistance = 1;
+    public float swingDistance = 2;
+    public AnimationCurve casting;
+    public float castToWeaponSpaceK = 100;
 
     [Header("lookonly")]
     [SerializeField]
@@ -36,6 +44,8 @@ public class PlayerController : MonoBehaviour, IAnimationProvider
     bool _isGrounded = true;
     [SerializeField]
     bool _jumpReady = true;
+    [SerializeField]
+    Vector3 prevMouse;
 
     private Vector2 _inputMovement;
     private Rigidbody _rb;
@@ -50,6 +60,12 @@ public class PlayerController : MonoBehaviour, IAnimationProvider
         UpdateInput();
 
         FixMovement();
+
+        if(TryGetComponent<SwordControl>(out var c)) 
+        {
+            swordControl = c;
+            handTarget = c.bladeHandle;
+        }
     }
 
     private void FixedUpdate()
@@ -81,6 +97,46 @@ public class PlayerController : MonoBehaviour, IAnimationProvider
             Jump();
             Invoke(nameof(ResetJump), jumpCooldown);
         }
+
+        if (swordControl)
+        {
+            // Простое перемещение оружия
+            if (Input.GetMouseButton(0) && Vector3.Distance(Input.mousePosition, prevMouse) < mouseDeltaForSwing)
+            {
+                swordControl.ApplyNewDesire(CastMouseToSwordSpace(),transform.up, transform.forward);
+            }
+            // Взмах оружием
+            else if (Input.GetMouseButton(0) && Vector3.Distance(Input.mousePosition, prevMouse) > mouseDeltaForSwing) 
+            {
+                swordControl.Swing(transform.position + transform.forward * swingDistance);
+            }
+            else if (Input.GetMouseButton(1)) 
+            {
+                swordControl.Block(CastMouseToSwordSpace(), transform.position + transform.forward * forwardWeaponDistance, transform.forward);
+            }
+            else 
+            {
+                swordControl.ReturnToInitial();
+                prevMouse = new Vector3(Screen.width/2,Screen.height/2);
+            }
+
+
+            if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+                prevMouse = Input.mousePosition;
+        }
+    }
+
+    private Vector3 CastMouseToSwordSpace() 
+    {
+        Vector3 centralize = (Input.mousePosition - new Vector3(Screen.width/2, Screen.height/2))/ castToWeaponSpaceK;
+        Vector3 flatCast = transform.position + transform.forward * forwardWeaponDistance + transform.rotation * centralize;
+
+        float progress = (Input.mousePosition.x - Screen.width/2) / (Screen.width/2);
+        progress = Mathf.Clamp(progress, -1, 1);
+
+        Vector3 res = flatCast + casting.Evaluate(Mathf.Abs(progress))* (vital.bounds.center - swordControl.bladeHandle.position).normalized;
+
+        return res;
     }
 
     private void ApplyMovement()
@@ -167,8 +223,8 @@ public class PlayerController : MonoBehaviour, IAnimationProvider
         return inJump;
     }
 
-    public Vector3 GetRightHandTarget()
+    public Transform GetRightHandTarget()
     {
-        return handTarget.position;
+        return handTarget;
     }
 }

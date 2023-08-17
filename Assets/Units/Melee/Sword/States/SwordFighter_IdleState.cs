@@ -10,7 +10,7 @@ public class SwordFighter_IdleState : SwordFighter_BaseState
     public override void CheckSwitchStates()
     {
         if (_ctx.CurrentActivity.target != null)
-            if (_ctx.SwingReady && _ctx.ActionReachable())
+            if (_ctx.SwingReady && _ctx.MeleeReachable())
             {
                 Vector3 toPoint = _ctx.CurrentActivity.target.position;
 

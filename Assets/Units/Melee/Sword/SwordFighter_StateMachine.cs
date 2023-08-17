@@ -424,13 +424,34 @@ public class SwordFighter_StateMachine : MeleeFighter
         _moveProgress = 0;
     }
 
-    public override Vector3 GetRightHandTarget()
+    protected override void DistributeActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
     {
-        return _bladeHandle.position;
+        _currentActivity = _noAction;
+        _possibleActions.Clear();
+
+        var activities = e.interactables;
+        foreach (KeyValuePair<GameObject, int> activity in activities)
+        {
+            GameObject target = activity.Key;
+            int weight = activity.Value;
+
+            // Прямо сейчас ИИ будут бить атаковать всё живое и разрушаемое
+            if (target.TryGetComponent<Interactable_UtilityAI>(out _))
+            {
+                AddNewPossibleAction(target.transform, weight, target.transform.name, _blade, _factory.Attack());
+            }
+        }
     }
 
-    private void OnDrawGizmosSelected()
+    public override Transform GetRightHandTarget()
     {
+        return _bladeHandle;
+    }
+
+    protected override void OnDrawGizmosSelected()
+    {
+        base.OnDrawGizmosSelected();
+
         if (_desireBlade != null)
         {
             Gizmos.color = Color.black;
