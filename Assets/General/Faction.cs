@@ -18,4 +18,11 @@ public class Faction : MonoBehaviour
     // Сделать это простым get-set; Поле седлать private
 
     public FType type = FType.neutral;
+
+    public bool IsWillingToAttack(FType type) 
+    {
+        bool comparedFactions = this.type != type; // На будущее, если вдруг захочу какие-нибудь альянсы.
+
+        return (comparedFactions || this.type == FType.aggressive) && this.type != FType.neutral;
+    }
 }

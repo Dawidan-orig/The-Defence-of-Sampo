@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class AI_Attack : UtilityAI_BaseState
 // ИИ двигается и атакует в этом состоянии.
@@ -20,23 +17,25 @@ public class AI_Attack : UtilityAI_BaseState
 
         Tool weapon = _ctx.CurrentActivity.actWith;
 
+        //TODO : Чтобы не плодить все эти разделения на стреляющего, ближнего боя и прочих - лучше сделать реакцию прямо в _ctx.
+        // Это нужно в основном для существ, у которых оружие не классифицируемое.
         if (weapon is SimplestShooting)
         {
             if (!((SimplestShooting)weapon).AvilableToShoot(_ctx.CurrentActivity.target, out RaycastHit hit))
             {
-                if (hit.rigidbody)
-                {
-                    Vector3 targetDirection = (_ctx.CurrentActivity.target.position - _ctx.transform.position).normalized;
-                    Vector3 strafePoint = Utilities.NearestPointOnLine(_ctx.transform.position, targetDirection, hit.point);
-                    Vector3 strafeDir = (strafePoint - hit.point).normalized;
-                    Debug.DrawRay(_ctx.transform.position, strafeDir);
-                    //_ctx.Body.AddForce(strafeDir * _ctx.retreatSpeed * Time.fixedDeltaTime, ForceMode.VelocityChange);
-                }
-                else
-                {
-                    SwitchStates(_factory.Deciding());
-                    return true;
-                }
+                SwitchStates(_factory.Deciding());
+                return true;
+            }
+
+            // Отходим назад
+            if(_ctx.MovingAgent) 
+            {
+                //TODO : Переместить это в LocalReposition
+                float progress = 1 - (Vector3.Distance(_ctx.CurrentActivity.target.position, _ctx.transform.position) / (((SimplestShooting)weapon).range));
+                _ctx.MovingAgent.MoveIteration(
+                    _ctx.transform.position + _ctx.retreatInfluence.Evaluate(progress)
+                    * (_ctx.CurrentActivity.target.position - _ctx.transform.position),
+                    _ctx.CurrentActivity.target.position);
             }
 
             return false;
@@ -53,17 +52,17 @@ public class AI_Attack : UtilityAI_BaseState
 
     public override void EnterState()
     {
-        
+
     }
 
     public override void ExitState()
     {
-        
-    }    
+
+    }
 
     public override void InitializeSubState()
     {
-        
+
     }
 
     public override void UpdateState()

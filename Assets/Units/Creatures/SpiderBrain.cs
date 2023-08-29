@@ -1,12 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class SpiderBrain : TargetingUtilityAI
 {
     public float speed = 5;
-    public Legsharmoniser legsHarmony;
+    public LegsHarmoniser legsHarmony;
     public SpiderLegControl activeLeg;
     public Vector3 wholeInitial;
     public Vector3 stateInitial;
@@ -21,7 +19,7 @@ public class SpiderBrain : TargetingUtilityAI
     float stateProgress = 1;
     State state = State.nothing;
 
-    private enum State 
+    private enum State
     {
         nothing,
         prepare,
@@ -33,12 +31,12 @@ public class SpiderBrain : TargetingUtilityAI
     {
         base.AttackUpdate(target);
 
-        if (legsHarmony.legs.Count == 0)
-            return;
-
         if (activeLeg == null)
         {
             legsHarmony.legs.RemoveAll(item => item == null);
+
+            if (legsHarmony.legs.Count == 0)
+                return;
 
             activeLeg = legsHarmony.legs[Random.Range(0, legsHarmony.legs.Count)];
             activeLeg.enabled = false;
@@ -65,9 +63,9 @@ public class SpiderBrain : TargetingUtilityAI
 
     private void PrepareProcess(Transform target)
     {
-        activeLeg.legTarget.position = Vector3.LerpUnclamped(stateInitial,legDesire, prepare.Evaluate(stateProgress) );
+        activeLeg.legTarget.position = Vector3.LerpUnclamped(stateInitial, legDesire, prepare.Evaluate(stateProgress));
 
-        if(stateProgress > 1)
+        if (stateProgress > 1)
         {
             stateInitial = legDesire;
             legDesire = target.position;
@@ -91,7 +89,7 @@ public class SpiderBrain : TargetingUtilityAI
         }
     }
 
-    private void ReturnProcess() 
+    private void ReturnProcess()
     {
         activeLeg.legTarget.position = Vector3.LerpUnclamped(stateInitial, legDesire, returning.Evaluate(stateProgress));
 

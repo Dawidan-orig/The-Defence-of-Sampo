@@ -71,6 +71,6 @@ public class SpiderLegControl : MonoBehaviour
             stable = true;
         }
 
-        legTarget.position = Vector3.up * legMovement.Evaluate(progress) + Vector3.Lerp(legTarget.position, desire, progress);
+        legTarget.position = Vector3.up * legMovement.Evaluate(progress) + Vector3.Slerp(legTarget.position, desire, progress);
     }
 }

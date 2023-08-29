@@ -33,7 +33,7 @@ public class AI_Decide : UtilityAI_BaseState
                     SwitchStates(_factory.Reposition());
                     return true;
                 }
-                // Если же близко: Меняемся на указанное состояние.
+                
                 SwitchStates(newAcitivty);
                 return true;
         }

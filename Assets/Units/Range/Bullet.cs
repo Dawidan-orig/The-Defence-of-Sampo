@@ -13,7 +13,6 @@ public class Bullet : MonoBehaviour
         startPoint = transform.position;
     }
 
-    //TODO : Добавить GFX
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.transform.TryGetComponent<IDamagable>(out var c))

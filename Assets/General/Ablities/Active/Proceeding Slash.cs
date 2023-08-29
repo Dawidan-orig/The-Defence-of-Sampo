@@ -1,38 +1,105 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
+[Serializable]
 public class ProceedingSlash : Ability
 {
     public GameObject slashPrefab;
     public const float SPEED = 25;
     public const float LIFETIME = 10;
+    public const float RECHARGE = 10;
+    public const int SLICES = 20;
+    public const float UPFORCE_POWER = 4;
     SwordControl userActions;
 
-    public ProceedingSlash(Transform user, SwordControl controlSystem, GameObject slashPrefab) : base(user)
+    [SerializeField]
+    private float _slicesLeft;
+    [SerializeField]
+    private float _currentRecharge;
+    [SerializeField]
+    private Rigidbody _body;
+
+    public ProceedingSlash(Transform user, GameObject slashPrefab) : base(user)
     {
-        userActions = controlSystem;
-        userActions.OnSlashEnd += PerformAbility;
+        _slicesLeft = 0;
+        _currentRecharge = RECHARGE;
         this.slashPrefab = slashPrefab;
+        _body = user.GetComponent<Rigidbody>();
+    }
+
+    public override void Enable()
+    {
+        if (user.TryGetComponent<SwordControl>(out var control))
+        {
+            base.Enable();
+            userActions = control;
+            userActions.OnSlashEnd += PerformAbility;
+        }
+    }
+
+    public override void Disable()
+    {
+        base.Disable();
+
+        userActions.OnSlashEnd -= PerformAbility;
+        userActions = null;
+    }
+
+    public override void Activate()
+    {
+        if (_currentRecharge >= RECHARGE)
+        {
+            base.Activate();
+            _slicesLeft = SLICES;
+        }       
+    }
+
+    public override void Deactivate()
+    {
+        base.Deactivate();
+
+        _currentRecharge = 0;
     }
 
     public void PerformAbility(object sender, SwordControl.ActionData e)
     {
-        if (!Activated)
+        if (!AbleToUse() || _slicesLeft <= 0)
             return;
 
-        GameObject slash = GameObject.Instantiate(slashPrefab, Vector3.Lerp(e.moveStart.position,e.desire.position,0.5f),
+        _slicesLeft--;
+
+        _body.AddForce(!user.GetComponent<IAnimationProvider>().IsGrounded() ? Vector3.up * UPFORCE_POWER : Vector3.zero, ForceMode.VelocityChange);
+
+        GameObject slash = GameObject.Instantiate(slashPrefab, Vector3.Lerp(e.moveStart.position, e.desire.position, 0.5f),
             Quaternion.FromToRotation(Vector3.right,
-            Vector3.ProjectOnPlane((e.desire.position-e.moveStart.position).normalized,user.forward)));
+            Vector3.ProjectOnPlane((e.desire.position - e.moveStart.position).normalized, user.forward)));
 
         slash.GetComponent<Faction>().type = user.GetComponent<Faction>().type;
 
         Rigidbody body = slash.GetComponent<Rigidbody>();
-        body.AddForce(user.forward * 10, ForceMode.VelocityChange);
+
+        Vector3 direction = user.forward;
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out var hit, 300, LayerMask.NameToLayer("Default")))
+            direction = (hit.point - user.position).normalized;
+
+        body.AddForce(direction * 10, ForceMode.VelocityChange);
         body.drag = 0;
 
         Physics.IgnoreCollision(slash.GetComponent<Collider>(), e.blade.GetComponent<Collider>());
+        Physics.IgnoreCollision(slash.GetComponent<Collider>(), user.GetComponent<Collider>());
 
-        Object.Destroy(slash, LIFETIME);
+        GameObject.Destroy(slash, LIFETIME);
+
+        if (_slicesLeft <= 0)
+            Deactivate();
+    }
+
+    public override void Update()
+    {
+        if (_activated)
+            return;
+
+        if (_currentRecharge < RECHARGE)
+            _currentRecharge += Time.deltaTime;
     }
 }

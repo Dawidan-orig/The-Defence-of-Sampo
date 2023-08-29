@@ -48,16 +48,20 @@ public class SwordFighter_SwingingState : SwordFighter_BaseState
 
     private void ProcessSwingSword()
     {
-        float heightFrom = _ctx.MoveFrom.position.y;
-        float heightTo = _ctx.DesireBlade.position.y;
+        float relativeHeightFrom = _ctx.MoveFrom.position.y - _ctx.transform.position.y;
+        float relativeHeightTo = _ctx.DesireBlade.position.y - _ctx.transform.position.y;
 
-        Vector3 from = new Vector3(_ctx.MoveFrom.position.x, 0, _ctx.MoveFrom.position.z);
-        Vector3 to = new Vector3(_ctx.DesireBlade.position.x, 0, _ctx.DesireBlade.position.z);
+        Vector3 relativeFrom = _ctx.MoveFrom.position - _ctx.transform.position;
+        relativeFrom.y = 0;
+        Vector3 relativeTo = _ctx.DesireBlade.position - _ctx.transform.position;
+        relativeTo.y = 0;
 
-        _ctx.BladeHandle.position = Vector3.Slerp(from, to, _ctx.MoveProgress) + new Vector3(0, Mathf.Lerp(heightFrom, heightTo, _ctx.MoveProgress), 0);
+        _ctx.BladeHandle.position = _ctx.transform.position + Vector3.Slerp(relativeFrom, relativeTo, _ctx.MoveProgress) + new Vector3(0, Mathf.Lerp(relativeHeightFrom, relativeHeightTo, _ctx.MoveProgress), 0);
 
         _ctx.BladeHandle.LookAt(_ctx.BladeHandle.position + (_ctx.BladeHandle.position - _ctx.Vital.bounds.center).normalized, (_ctx.DesireBlade.position - _ctx.BladeHandle.position).normalized);
         _ctx.BladeHandle.RotateAround(_ctx.BladeHandle.position, _ctx.BladeHandle.right, 90);
+
+        Utilities.DrawSphere(_ctx.BladeHandle.position, duration: 0.5f);
     }
 
     private void BladeCollisionEnter(object sender, Collision collision)

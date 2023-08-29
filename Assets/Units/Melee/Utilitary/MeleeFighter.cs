@@ -28,9 +28,9 @@ public class MeleeFighter : TargetingUtilityAI
         _swingReady = true;
     }
 
-    protected override void DistributeActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
+    protected override Tool ToolCheck(Transform target)
     {
-        base.DistributeActivityFromManager(sender, e);
+        return weapon;
     }
 
     public override Transform GetRightHandTarget()

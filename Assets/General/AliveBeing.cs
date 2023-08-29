@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,7 +5,8 @@ public class AliveBeing : Interactable_UtilityAI, IDamagable
 {
     public float health = 100;
     public Collider vital;
-    public GameObject parent;
+    public Transform mainBody;
+    public Transform root;
 
     private void Awake()
     {
@@ -26,18 +25,18 @@ public class AliveBeing : Interactable_UtilityAI, IDamagable
 
         Utilities.CreateFlowText(Mathf.RoundToInt(harm).ToString(), 5, transform.position, Color.red);
 
-        if(health < 0) 
+        if (health < 0)
         {
-            if (parent == null)
+            if (root == null)
                 Destroy(gameObject);
             else
-                Destroy(parent);
+                Destroy(root.gameObject);
         }
     }
 
     private void OnDrawGizmosSelected()
     {
-        if(EditorApplication.isPlaying && !EditorApplication.isPaused)
-            Utilities.CreateTextInWorld(health.ToString(), transform, position: transform.position + GetComponent<Collider>().bounds.size.y/2 * Vector3.up, color : Color.green);
+        if (EditorApplication.isPlaying && !EditorApplication.isPaused)
+            Utilities.CreateTextInWorld(health.ToString(), transform, position: transform.position + GetComponent<Collider>().bounds.size.y / 2 * Vector3.up, color: Color.green);
     }
 }

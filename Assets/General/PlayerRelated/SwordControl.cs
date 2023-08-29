@@ -9,7 +9,7 @@ public class SwordControl : MonoBehaviour
     public float swing_EndDistanceMultiplier = 2; // Насколько далеко должен двинуться меч после отбивания.
     public float swing_startDistance = 2; // Насколько далеко должен двинуться меч до удара.
     public float criticalImpulse = 200; // Лучше увернуться, чем отбить объект с импульсом больше этого!
-    public float toBladeHandle_MaxDistance = 2; // Максимальное расстояние от vital до рукояти меча. По сути, длина руки.
+    public float toBladeHandle_MaxDistance = 0.6f; // Максимальное расстояние от vital до рукояти меча. По сути, длина руки.
     public float toBladeHandle_MinDistance = 0.1f; // Минимальное расстояние от vital.
     public float close_enough = 0.1f; // Расстояние до цели, при котором можно менять состояние.
 
@@ -23,23 +23,25 @@ public class SwordControl : MonoBehaviour
     [SerializeField]
     public Transform bladeHandle;
     [SerializeField]
+    public Transform bladeHolder;
+    [SerializeField]
     private Collider vital;
 
     [Header("lookonly")]
     [SerializeField]
-    Transform initialBlade;
+    Transform _initialBlade;
     [SerializeField]
-    Transform moveFrom;
+    Transform _moveFrom;
     [SerializeField]
-    Transform desireBlade;
+    Transform _desireBlade;
     [SerializeField]
-    float moveProgress;
+    float _moveProgress;
     [SerializeField]
-    float attackRecharge = 0;
+    float _attackRecharge = 0;
     [SerializeField]
-    private bool swinging = false;
+    private bool _swinging = false;
     [SerializeField]
-    private Vector3 swingEnd;
+    private Vector3 _swingEnd;
 
     public class ActionData : EventArgs 
     {
@@ -68,38 +70,38 @@ public class SwordControl : MonoBehaviour
 
     void Start()
     {
-        attackRecharge = minimalTimeBetweenAttacks;
+        _attackRecharge = minimalTimeBetweenAttacks;
 
         if (bladeContainer == null)
             bladeContainer = transform;
 
         GameObject desireGO = new("DesireBlade");
-        desireBlade = desireGO.transform;
-        desireBlade.parent = bladeContainer;
-        desireBlade.gameObject.SetActive(true);
-        desireBlade.position = bladeHandle.position;
-        desireBlade.rotation = bladeHandle.rotation;
+        _desireBlade = desireGO.transform;
+        _desireBlade.parent = bladeContainer;
+        _desireBlade.gameObject.SetActive(true);
+        _desireBlade.position = bladeHandle.position;
+        _desireBlade.rotation = bladeHandle.rotation;
 
         GameObject initialBladeGO = new("InititalBladePosition");
-        initialBlade = initialBladeGO.transform;
-        initialBlade.position = bladeHandle.position;
-        initialBlade.rotation = bladeHandle.rotation;
-        initialBlade.parent = bladeContainer;
+        _initialBlade = initialBladeGO.transform;
+        _initialBlade.position = bladeHandle.position;
+        _initialBlade.rotation = bladeHandle.rotation;
+        _initialBlade.parent = bladeContainer;
 
-        SetDesires(initialBlade.position, initialBlade.up, initialBlade.forward);
+        SetDesires(_initialBlade.position, _initialBlade.up, _initialBlade.forward);
         NullifyProgress();
-        moveProgress = 1;
+        _moveProgress = 1;
     }
 
     private void FixedUpdate()
     {
-        if (moveProgress < 1)
-            moveProgress += actionSpeed * Time.fixedDeltaTime;
+        if (_moveProgress < 1)
+            _moveProgress += actionSpeed * Time.fixedDeltaTime;
 
-        if (attackRecharge < minimalTimeBetweenAttacks)
-            attackRecharge += Time.fixedDeltaTime;
+        if (_attackRecharge < minimalTimeBetweenAttacks)
+            _attackRecharge += Time.fixedDeltaTime;
 
-        if (!swinging)
+        if (!_swinging)
             Control_MoveSword();
         else
             Control_SwingSword();
@@ -111,51 +113,52 @@ public class SwordControl : MonoBehaviour
     // Атака оружием по какой-то точке из текущей позиции.
     public void Swing(Vector3 toPoint)
     {
-        if (swinging)
+        if (_swinging)
             return;
 
-        swinging = true;        
+        _swinging = true;        
         Vector3 moveTo = toPoint + (toPoint - bladeHandle.position).normalized * swing_EndDistanceMultiplier;
 
-        Vector3 pointDir = (moveTo - vital.bounds.center).normalized;
+        Vector3 pointDir = (moveTo - bladeHolder.position).normalized;
 
         // Притягиваем ближе к vital
         float distance = (toPoint - vital.ClosestPointOnBounds(toPoint)).magnitude;
-        bladeHandle.position = bladeHandle.position + (bladeHandle.position - vital.bounds.center).normalized * distance;
+        bladeHandle.position = bladeHandle.position + (bladeHandle.position - bladeHolder.position).normalized * distance;
         moveTo = vital.ClosestPointOnBounds(moveTo) + (moveTo - vital.ClosestPointOnBounds(moveTo)).normalized * distance;
-        SetDesires(moveTo, pointDir, (moveTo - toPoint).normalized);
-        NullifyProgress();
 
-        OnSlashStart?.Invoke(this, new ActionData { blade = blade, desire = desireBlade, moveStart = moveFrom});
+        SetDesires(moveTo, pointDir, (moveTo - toPoint).normalized);
+        //NullifyProgress();
+
+        OnSlashStart?.Invoke(this, new ActionData { blade = blade, desire = _desireBlade, moveStart = _moveFrom});
     }
 
     // Установка меча по всем возможным параметрам
     public void Block(Vector3 start, Vector3 end, Vector3 SlashingDir)
     {
-        if (swinging)
+        if (_swinging)
             return;
 
-        SetDesires(start, (end - start).normalized, SlashingDir);
+        ApplyNewDesire(start, (end - start).normalized, SlashingDir);
     }
 
     private void Control_MoveSword()
     {
-        float heightFrom = moveFrom.position.y;
-        float heightTo = desireBlade.position.y;
+        float heightFrom = _moveFrom.position.y;
+        float heightTo = _desireBlade.position.y;
 
-        Vector3 from = new Vector3(moveFrom.position.x, 0, moveFrom.position.z);
-        Vector3 to = new Vector3(desireBlade.position.x, 0, desireBlade.position.z);
+        Vector3 from = new Vector3(_moveFrom.position.x, 0, _moveFrom.position.z);
+        Vector3 to = new Vector3(_desireBlade.position.x, 0, _desireBlade.position.z);
 
-        bladeHandle.position = Vector3.Slerp(from, to, moveProgress) + new Vector3(0, Mathf.Lerp(heightFrom, heightTo, moveProgress), 0);
+        bladeHandle.position = Vector3.Slerp(from, to, _moveProgress) + new Vector3(0, Mathf.Lerp(heightFrom, heightTo, _moveProgress), 0);
 
         #region rotationControl;
         GameObject go = new();
         Transform probe = go.transform;
-        probe.position = moveFrom.position;
-        probe.rotation = desireBlade.rotation;
+        probe.position = _moveFrom.position;
+        probe.rotation = _desireBlade.rotation;
         probe.parent = null;
 
-        bladeHandle.rotation = Quaternion.Lerp(moveFrom.rotation, probe.rotation, moveProgress);
+        bladeHandle.rotation = Quaternion.Lerp(_moveFrom.rotation, probe.rotation, _moveProgress);
 
         Destroy(go);
         #endregion
@@ -163,25 +166,41 @@ public class SwordControl : MonoBehaviour
 
     private void Control_SwingSword()
     {
-        float heightFrom = moveFrom.position.y;
-        float heightTo = desireBlade.position.y;
+        float relativeHeightFrom = _moveFrom.position.y - transform.position.y;
+        float relativeHeightTo = _desireBlade.position.y - transform.position.y;
 
-        Vector3 from = new Vector3(moveFrom.position.x, 0, moveFrom.position.z);
-        Vector3 to = new Vector3(desireBlade.position.x, 0, desireBlade.position.z);
+        Vector3 relativeFrom = _moveFrom.position - transform.position;
+        relativeFrom.y = 0;
+        Vector3 relativeTo = _desireBlade.position - transform.position;
+        relativeTo.y = 0;
 
-        bladeHandle.position = Vector3.Slerp(from, to, moveProgress) + new Vector3(0, Mathf.Lerp(heightFrom, heightTo, moveProgress), 0);
-
-        bladeHandle.LookAt(bladeHandle.position + (bladeHandle.position - vital.bounds.center).normalized);
+        bladeHandle.LookAt(bladeHandle.position + (bladeHandle.position - bladeHolder.position).normalized);
         bladeHandle.RotateAround(bladeHandle.position, bladeHandle.right, 90);
 
-        if (moveProgress >= 1)
+        if (_moveProgress <= 0.5f)
         {
-            OnSlashEnd?.Invoke(this, new ActionData {moveStart = moveFrom, desire = desireBlade, blade = blade });
-            swinging = false;
+            bladeHandle.position = transform.position
+                + Vector3.Slerp(relativeFrom, transform.forward * toBladeHandle_MaxDistance, _moveProgress * 2)
+                + new Vector3(0, Mathf.Lerp(relativeHeightFrom, relativeHeightTo, _moveProgress), 0);
         }
         else 
         {
-            OnSlash?.Invoke(this, new ActionData { moveStart = moveFrom, desire = desireBlade, blade = blade });
+            bladeHandle.position = transform.position
+             + Vector3.Slerp(transform.forward * toBladeHandle_MaxDistance, relativeTo, (_moveProgress - 0.5f)*2)
+             + new Vector3(0, Mathf.Lerp(relativeHeightFrom, relativeHeightTo, _moveProgress), 0);
+        }
+
+        Utilities.DrawSphere(bladeHandle.position, duration: 0.5f);
+
+        if (_moveProgress >= 1)
+        {
+            OnSlashEnd?.Invoke(this, new ActionData {moveStart = _moveFrom, desire = _desireBlade, blade = blade });
+            NullifyProgress();
+            _swinging = false;
+        }
+        else 
+        {
+            OnSlash?.Invoke(this, new ActionData { moveStart = _moveFrom, desire = _desireBlade, blade = blade });
         }
     }
 
@@ -199,26 +218,26 @@ public class SwordControl : MonoBehaviour
 
     private void Control_FixDesire()
     {
-        Vector3 closestPos = vital.ClosestPointOnBounds(desireBlade.position);
-        if (Vector3.Distance(desireBlade.position, closestPos) > toBladeHandle_MaxDistance)
-            desireBlade.position = closestPos + (desireBlade.position - closestPos).normalized * toBladeHandle_MaxDistance;
-        if (Vector3.Distance(desireBlade.position, closestPos) < toBladeHandle_MinDistance)
-            desireBlade.position = closestPos + (desireBlade.position - closestPos).normalized * toBladeHandle_MinDistance;
+        Vector3 closestPos = vital.ClosestPointOnBounds(_desireBlade.position);
+        if (Vector3.Distance(_desireBlade.position, closestPos) > toBladeHandle_MaxDistance)
+            _desireBlade.position = closestPos + (_desireBlade.position - closestPos).normalized * toBladeHandle_MaxDistance;
+        if (Vector3.Distance(_desireBlade.position, closestPos) < toBladeHandle_MinDistance)
+            _desireBlade.position = closestPos + (_desireBlade.position - closestPos).normalized * toBladeHandle_MinDistance;
     }
 
     public void ReturnToInitial() 
     {
-        if (swinging)
+        if (_swinging)
             return;
 
-        SetDesires(initialBlade.position, initialBlade.up, initialBlade.forward);
+        SetDesires(_initialBlade.position, _initialBlade.up, _initialBlade.forward);
         Control_MoveSword();
         NullifyProgress();
     }
 
     public void ApplyNewDesire(Vector3 pos, Vector3 up, Vector3 forward) 
     {
-        if (swinging)
+        if (_swinging)
             return;
 
         SetDesires(pos, up, forward);
@@ -228,8 +247,8 @@ public class SwordControl : MonoBehaviour
 
     private void SetDesires(Vector3 pos, Vector3 up, Vector3 forward)
     {
-        desireBlade.position = pos;
-        desireBlade.LookAt(pos + forward, up);
+        _desireBlade.position = pos;
+        _desireBlade.LookAt(pos + forward, up);
 
         if (isSwordFixing)
             Control_FixDesire();
@@ -237,13 +256,25 @@ public class SwordControl : MonoBehaviour
 
     private void NullifyProgress()
     {
-        if (moveFrom != null)
-            Destroy(moveFrom.gameObject);
+        if (_moveFrom != null)
+            Destroy(_moveFrom.gameObject);
         GameObject moveFromGO = new("BladeIsMovingFromThatTransform");
-        moveFrom = moveFromGO.transform;
-        moveFrom.position = bladeHandle.position;
-        moveFrom.rotation = bladeHandle.rotation;
-        moveFrom.parent = bladeContainer;
-        moveProgress = 0;
+        _moveFrom = moveFromGO.transform;
+        _moveFrom.position = bladeHandle.position;
+        _moveFrom.rotation = bladeHandle.rotation;
+        _moveFrom.parent = bladeContainer;
+        _moveProgress = 0;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (_desireBlade != null)
+        {
+            Gizmos.color = Color.black;
+            Gizmos.DrawLine(_desireBlade.position, _moveFrom.position);
+            Gizmos.color = Color.gray;
+            Gizmos.DrawRay(_desireBlade.position, _desireBlade.up);
+            Gizmos.DrawRay(_moveFrom.position, _moveFrom.up);
+        }
     }
 }

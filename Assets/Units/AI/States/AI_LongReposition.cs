@@ -4,6 +4,8 @@ using UnityEngine.AI;
 public class AI_LongReposition : UtilityAI_BaseState
 // ИИ двигается в какую-то точку с помощью NavMesh, при это не делая более ничего
 {
+    private NavMeshPath path;
+
     public AI_LongReposition(TargetingUtilityAI currentContext, UtilityAI_Factory factory) : base(currentContext, factory)
     {
 
@@ -17,11 +19,11 @@ public class AI_LongReposition : UtilityAI_BaseState
             return true;
         }
 
-        if (_ctx.NMAgent.pathStatus != NavMeshPathStatus.PathComplete)
+        /*if (path.status == NavMeshPathStatus.PathInvalid)
         {
             SwitchStates(_factory.Deciding());
             return true;
-        }
+        }*/
 
         if (_ctx.CurrentActivity.actWith is SimplestShooting)
         {
@@ -45,16 +47,23 @@ public class AI_LongReposition : UtilityAI_BaseState
 
     public override void EnterState()
     {
-        _ctx.GetComponent<Rigidbody>().isKinematic = true;
+        Rigidbody body = _ctx.GetComponent<Rigidbody>();
 
-        _ctx.NMAgent.enabled = true;
+        if (_ctx.NMAgent)
+        {
+            body.isKinematic = true;
+            _ctx.NMAgent.enabled = true;
+        }
         Repath();
     }
 
     public override void ExitState()
     {
-        _ctx.NMAgent.enabled = false;
-        _ctx.GetComponent<Rigidbody>().isKinematic = false;
+        if (_ctx.NMAgent)
+        {
+            _ctx.NMAgent.enabled = false;
+            _ctx.GetComponent<Rigidbody>().isKinematic = false;
+        }
     }
 
     public override void FixedUpdateState()
@@ -80,8 +89,37 @@ public class AI_LongReposition : UtilityAI_BaseState
 
     private void Repath()
     {
-        _ctx.NMAgent.path.ClearCorners();
-        _ctx.NMAgent.SetDestination(_ctx.CurrentActivity.target.position);
+        Vector3 target = _ctx.CurrentActivity.target.position;
+
+        if (_ctx.CurrentActivity.actWith is SimplestShooting)
+        {
+            target = ((SimplestShooting)_ctx.CurrentActivity.actWith).NavMeshClosestAviableToShoot(_ctx.CurrentActivity.target);
+        }
+
+        path = new NavMeshPath();
+        NavMesh.CalculatePath(_ctx.navMeshCalcFrom.position, target, NavMesh.AllAreas, path);
+
+        //Нет пути? Попробуем тогда по-другому:
+        if (path.status == NavMeshPathStatus.PathInvalid)
+        {
+            // Цель может быть высоко в небе
+            if (Physics.Raycast(target, Vector3.down, out var hit, 100))
+                NavMesh.CalculatePath(_ctx.navMeshCalcFrom.position, hit.point, NavMesh.AllAreas, path);            
+        }
+
+
+        if (_ctx.NMAgent)
+        {
+            _ctx.NMAgent.SetPath(path);
+        }
+        else if (_ctx.MovingAgent)
+        {
+            //TODO : Что-то тут не так. Это не должно вызываться постоянно...
+            if (path.status != NavMeshPathStatus.PathInvalid && path.corners.Length > 1)
+                _ctx.MovingAgent.MoveIteration(path.corners[1]);
+            else             
+                _ctx.MovingAgent.MoveIteration(NavMeshCalculations.Instance.GetCell(_ctx.transform.position).Center());            
+        }
     }
 
     public override string ToString()

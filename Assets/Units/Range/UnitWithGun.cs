@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,30 +9,17 @@ public class UnitWithGun : TargetingUtilityAI
     {
         base.AttackUpdate(target);
 
-        weapon.transform.LookAt(target.position);
+        if (target.TryGetComponent(out Rigidbody body))
+            weapon.transform.LookAt(weapon.GetPointToShoot(body));
+        else
+            weapon.transform.LookAt(target.position);
 
-        weapon.Shoot();
+        weapon.Shoot(target.position);
     }
 
-    protected override void DistributeActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
+    protected override Tool ToolCheck(Transform target)
     {
-        _possibleActions.Clear();
-        _currentActivity = _noAction;
-
-        var activities = e.interactables;
-        foreach (KeyValuePair<GameObject, int> activity in activities)
-        {
-            GameObject target = activity.Key;
-            int weight = activity.Value;
-
-            if (!target.activeSelf)
-                continue;
-
-            if (target.TryGetComponent<Interactable_UtilityAI>(out _))
-            {
-                AddNewPossibleAction(target.transform, weight, target.transform.name, weapon, _factory.Attack());
-            }
-        }
+        return weapon;
     }
 
     public override Transform GetRightHandTarget()

@@ -14,7 +14,8 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     public float baseReachDistance = 1; // Или же длина конечности, что держит оружие
     public float maxSpeed = 3.5f;
     public float retreatMultiplier = 0.2f;
-    public float distanceMultiplier = 1;
+    public AnimationCurve retreatInfluence;
+    public float distanceWeightMultiplier = 1;
     [SerializeField]
     protected MeleeTool hands; // То, что используется в качестве базового оружия ближнего боя и не может быть выброшено.
     [SerializeField]
@@ -32,6 +33,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     protected List<AIAction> _possibleActions = new();
 
     NavMeshAgent _nmAgent;
+    MovingAgent _movingAgent;
     Rigidbody _body;
     protected AIAction _noAction;
     protected UtilityAI_Factory _factory;
@@ -41,6 +43,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     public NavMeshAgent NMAgent { get => _nmAgent; set => _nmAgent = value; }
     public AIAction CurrentActivity { get => _currentActivity; }
     public Rigidbody Body { get => _body; set => _body = value; }
+    public MovingAgent MovingAgent { get => _movingAgent; set => _movingAgent = value; }
 
     [Serializable]
     public class AIAction
@@ -106,6 +109,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     protected virtual void Awake()
     {
         _nmAgent = GetComponent<NavMeshAgent>();
+        _movingAgent = GetComponent<MovingAgent>();
         _body = GetComponent<Rigidbody>();
         _factory = new UtilityAI_Factory(this);
         _currentState = _factory.Deciding();
@@ -126,8 +130,11 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 
     protected virtual void Start()
     {
-        NMAgent.speed = maxSpeed;
+        if (NMAgent)
+            NMAgent.speed = maxSpeed;
         _noAction = new AIAction();
+        if (navMeshCalcFrom == null)
+            navMeshCalcFrom = transform;
         NullifyActivity();
     }
 
@@ -170,8 +177,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     {
         for (int i = 0; i < _possibleActions.Count; i++)
         {
-            _possibleActions[i].distanceAddition = Mathf.RoundToInt(Vector3.Distance(transform.position, _possibleActions[i].target.position) * distanceMultiplier);
-
+            _possibleActions[i].distanceAddition = Mathf.RoundToInt(Vector3.Distance(transform.position, _possibleActions[i].target.position) * distanceWeightMultiplier);
 
             _possibleActions[i].TotalWeight = _possibleActions[i].baseWeight - _possibleActions[i].distanceAddition;
             //Utilities.DrawLineWithDistance(transform.position, action.target.position,Color.white , duration : 3);
@@ -181,12 +187,6 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     public void AddNewPossibleAction(Transform target, int weight, string name, Tool actWith, UtilityAI_BaseState treatment)
     {
         AIAction action = new AIAction(target, name, weight, actWith, treatment);
-
-        Faction.FType other = target.GetComponent<Faction>().type;
-
-        if (other == GetComponent<Faction>().type
-            || other == Faction.FType.neutral)
-            return;
 
         if (_possibleActions.Contains(action))
         {
@@ -211,7 +211,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
         _possibleActions.Sort((i1, i2) => i2.TotalWeight.CompareTo(i1.TotalWeight));
 
         NavMeshPath path = new();
-        if (Utilities.VisualisedRaycast(transform.position, Vector3.down,  out RaycastHit hit, toGroundDist + vital.bounds.size.y / 2))
+        if (Utilities.VisualisedRaycast(transform.position, Vector3.down, out RaycastHit hit, toGroundDist + vital.bounds.size.y / 2))
             // Проверяем достижимость NavMesh'а до цели.
             while (!NavMesh.CalculatePath(hit.point, _possibleActions[bestActivityIndex].target.position, -1, path))
             {
@@ -228,7 +228,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
         return _currentActivity.whatDoWhenClose;
     }
 
-    public bool NavMeshMeleeReachable() 
+    public bool NavMeshMeleeReachable()
     {
         // Проверяем, что мы далеко:
         Vector3 countFrom = navMeshCalcFrom ? navMeshCalcFrom.position : transform.position;
@@ -250,17 +250,6 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
         return Vector3.Distance(calculateFrom, closestToMe) < _currentActivity.actWith.additionalMeleeReach + baseReachDistance;
     }
 
-    public bool IsReachable(float actDistance)
-    {
-        Vector3 closestToMe;
-        if (_currentActivity.target.TryGetComponent<Collider>(out var c))
-            closestToMe = c.ClosestPointOnBounds(distanceFrom.position);
-        else
-            closestToMe = _currentActivity.target.position;
-
-        return Vector3.Distance(distanceFrom.position, closestToMe) < actDistance;
-    }
-
     private void NullifyActivity()
     {
         _currentActivity = _noAction; // Нужно, чтобы StateMachine перебросилась в состояние Decide и не ловила nullReference
@@ -271,8 +260,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
         return _currentActivity == _noAction;
     }
 
-    #region virtual
-    protected virtual void DistributeActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
+    protected void DistributeActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
     {
         _currentActivity = _noAction;
         _possibleActions.Clear();
@@ -283,13 +271,40 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
             GameObject target = activity.Key;
             int weight = activity.Value;
 
-            // Прямо сейчас ИИ будут бить атаковать всё живое и разрушаемое
-            if (target.TryGetComponent<Interactable_UtilityAI>(out _))
-            {
-                //TODO : У потомков только используемое оружие меняется. Есть смысл переделать override и как-то передавать сюда это оружие.
-                AddNewPossibleAction(target.transform, weight, target.transform.name, hands, _factory.Attack());
-            }
+            // Прямо сейчас ИИ будут атаковать всё живое и разрушаемое
+            if (!target.TryGetComponent<Interactable_UtilityAI>(out _))
+                continue;
+
+            if (!IsPassing(target.transform))
+                continue;
+
+            Tool toolUsed = ToolCheck(target.transform);
+
+            AddNewPossibleAction(target.transform, weight, target.transform.name, toolUsed, _factory.Attack());
+
         }
+    }
+
+    #region virtual
+    protected virtual bool IsPassing(Transform target)
+    {
+        bool res = true;
+
+        Faction other = target.GetComponent<Faction>();
+
+        if (!other.IsWillingToAttack(GetComponent<Faction>().type) || target == transform)
+            res = false;
+
+        if (other.TryGetComponent(out AliveBeing b))
+            if (b.mainBody == transform)
+                res = false;
+
+        return res;
+    }
+
+    protected virtual Tool ToolCheck(Transform target)
+    {
+        return hands;
     }
 
     // Обычный Update, но вызываемый в состоянии, когда юнит атакует.
@@ -318,7 +333,9 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 
     public bool IsInJump()
     {
-        return NMAgent.isOnOffMeshLink;
+        // ИИ Никогда не бывают в прыжке,
+        //TODO : Что, вообще-то, надо бы исправить.
+        return false;
     }
 
     public virtual Transform GetRightHandTarget()

@@ -487,7 +487,8 @@ MonoBehaviour:
   weight: 20
   health: 500
   vital: {fileID: 2903458590934068680}
-  parent: {fileID: 4068352971530244047}
+  mainBody: {fileID: 0}
+  root: {fileID: 6324898294683296452}
 --- !u!114 &2704306592475410653
 MonoBehaviour:
   m_ObjectHideFlags: 0

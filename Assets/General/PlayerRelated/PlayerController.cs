@@ -1,65 +1,33 @@
+using System.Security.Cryptography;
 using UnityEngine;
 
+[RequireComponent(typeof(Movement))]
 public class PlayerController : MonoBehaviour, IAnimationProvider
 {
     //TODO : Перенести в State Machine для более удобного контроля
-    [Header("constraints")]
-    [Header("On ground")]
-    public float walkSpeed = 1;
-    public float runSpeed = 3;
-    public float sprintSpeed = 5;
-    public float distToGround = 0.3f;
-    public float dragOnGround = 1;
-    public float toGroundForce = 5;
-    [Header("Air")]
-    public float dragOffGround = 0.2f;
-    public float airMultiplier = 0.5f;
-    [Header("Jump")]
-    public float jumpForce = 10;
-    public float jumpCooldown = 2;
-    public bool inJump = false;
-    [Header("Slope")]
-    public float slopeAngle = 65;
-    [SerializeField]
-    private RaycastHit _slopeHit;
-    [Header("setup")]
-    public LayerMask ground;
-    public Collider vital;
+    Movement movement;
+
+    public Transform usedMainHand;
     public Transform handTarget;
     [Header("Weaponry")]
     [Header("MeleeWeapon")]
     public SwordControl swordControl;
     public float mouseDeltaForSwing = 80;
-    public float forwardWeaponDistance = 1;
-    public float swingDistance = 2;
-    public AnimationCurve casting;
+    public float reachLength = 1;
     public float castToWeaponSpaceK = 100;
 
     [Header("lookonly")]
     [SerializeField]
-    Vector3 _movement;
-    [SerializeField]
-    float _moveSpeed;
-    [SerializeField]
-    bool _isGrounded = true;
-    [SerializeField]
-    bool _jumpReady = true;
-    [SerializeField]
     Vector3 prevMouse;
 
-    private Vector2 _inputMovement;
-    private Rigidbody _rb;
-
-    private void Start()
+    private void Awake()
     {
-        _rb = GetComponent<Rigidbody>();
+        movement = GetComponent<Movement>();
     }
 
     private void Update()
     {
         UpdateInput();
-
-        FixMovement();
 
         if(TryGetComponent<SwordControl>(out var c)) 
         {
@@ -68,35 +36,19 @@ public class PlayerController : MonoBehaviour, IAnimationProvider
         }
     }
 
-    private void FixedUpdate()
-    {    
-        _isGrounded = Physics.BoxCast(vital.bounds.center, new Vector3 (vital.bounds.size.x/2, 0.1f, vital.bounds.size.z/2),
-            transform.up * -1, out _,transform.rotation, vital.bounds.size.y / 2 + distToGround, ground);
-
-        if (inJump && _isGrounded && _rb.velocity.y < 0)
-            inJump = false;
-
-        ApplyMovement();
-
-        _rb.drag = _isGrounded ? dragOnGround : dragOffGround;
-        _rb.useGravity = !OnSlope();
-    }
-
     private void UpdateInput()
     {
-        _inputMovement.x = Input.GetAxisRaw("Vertical");
-        _inputMovement.y = Input.GetAxisRaw("Horizontal");        
+        Vector2 input;
+        input.x = Input.GetAxisRaw("Vertical");
+        input.y = Input.GetAxisRaw("Horizontal");
 
-        if (_isGrounded && Input.GetKey(KeyCode.LeftShift))
-            _moveSpeed = sprintSpeed;
-        else if (_isGrounded)
-            _moveSpeed = runSpeed;
+        Movement.SpeedType type = Movement.SpeedType.walk;
+        if (movement.IsGrounded && Input.GetKey(KeyCode.LeftShift))
+            type = Movement.SpeedType.sprint;
+        else if (movement.IsGrounded)
+            type = Movement.SpeedType.run;
 
-        if (Input.GetKeyDown(KeyCode.Space) && _isGrounded && _jumpReady)
-        {
-            Jump();
-            Invoke(nameof(ResetJump), jumpCooldown);
-        }
+        movement.PassInput(input, type, Input.GetKeyDown(KeyCode.Space) && movement.IsGrounded && movement.JumpReady);
 
         if (swordControl)
         {
@@ -104,123 +56,65 @@ public class PlayerController : MonoBehaviour, IAnimationProvider
             if (Input.GetMouseButton(0) && Vector3.Distance(Input.mousePosition, prevMouse) < mouseDeltaForSwing)
             {
                 swordControl.ApplyNewDesire(CastMouseToSwordSpace(),transform.up, transform.forward);
+
+                prevMouse = Input.mousePosition;
             }
             // Взмах оружием
             else if (Input.GetMouseButton(0) && Vector3.Distance(Input.mousePosition, prevMouse) > mouseDeltaForSwing) 
             {
-                swordControl.Swing(transform.position + transform.forward * swingDistance);
+                Vector3 screenDeltaDir = (Input.mousePosition - prevMouse).normalized;
+
+                Vector3 swingPos = usedMainHand.position + transform.rotation * (reachLength * screenDeltaDir);
+
+                swordControl.Swing(swingPos);
+
+                prevMouse = Input.mousePosition;
             }
             else if (Input.GetMouseButton(1)) 
             {
-                swordControl.Block(CastMouseToSwordSpace(), transform.position + transform.forward * forwardWeaponDistance, transform.forward);
+                //TODO : При зажатии ещё и ЛКМ -- делать смещение блока с центра.
+
+                swordControl.Block(CastMouseToSwordSpace(), transform.position + transform.forward * reachLength, transform.forward);
+
+                prevMouse = Input.mousePosition;
             }
             else 
             {
                 swordControl.ReturnToInitial();
                 prevMouse = new Vector3(Screen.width/2,Screen.height/2);
             }
-
-
-            if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
-                prevMouse = Input.mousePosition;
         }
     }
 
     private Vector3 CastMouseToSwordSpace() 
     {
-        Vector3 centralize = (Input.mousePosition - new Vector3(Screen.width/2, Screen.height/2))/ castToWeaponSpaceK;
-        Vector3 flatCast = transform.position + transform.forward * forwardWeaponDistance + transform.rotation * centralize;
+        return CastMouseToSwordSpace(Input.mousePosition);
+    }
 
-        float progress = (Input.mousePosition.x - Screen.width/2) / (Screen.width/2);
-        progress = Mathf.Clamp(progress, -1, 1);
+    private Vector3 CastMouseToSwordSpace(Vector3 screenPos)
+    {
+        Vector3 centralize = (screenPos - new Vector3(Screen.width / 2, Screen.height / 2)) / castToWeaponSpaceK;
+        Vector3 flatCast = transform.position + transform.forward * reachLength + transform.rotation * centralize;
 
-        Vector3 res = flatCast + casting.Evaluate(Mathf.Abs(progress))* (vital.bounds.center - swordControl.bladeHandle.position).normalized;
+        Vector3 res = usedMainHand.position + reachLength * (flatCast - usedMainHand.position).normalized;
 
         return res;
     }
 
-    private void ApplyMovement()
-    {
-        _movement = transform.forward * _inputMovement.x + transform.right * _inputMovement.y;
-
-        if(OnSlope()) 
-        {
-            _rb.AddForce(SlopeMoveDir() * _moveSpeed, ForceMode.Acceleration);
-
-            if(_rb.velocity.y > 0)
-                _rb.AddForce(Vector3.down * toGroundForce, ForceMode.Acceleration);
-
-            return;
-        }
-
-        if(_isGrounded)
-            _rb.AddForce(_movement.normalized * _moveSpeed, ForceMode.Acceleration);
-        else
-            _rb.AddForce(_movement.normalized * _moveSpeed * airMultiplier, ForceMode.Acceleration);
-    }
-
-    private void FixMovement()
-    {
-        if(OnSlope() && _rb.velocity.magnitude > _moveSpeed) 
-        {
-            _rb.velocity = _rb.velocity.normalized * _moveSpeed;
-            return;
-        }
-
-        Vector3 flatVelocity = new Vector3(_rb.velocity.x, 0, _rb.velocity.z);
-
-        if (flatVelocity.magnitude > _moveSpeed)
-        {
-            _rb.velocity = flatVelocity.normalized * _moveSpeed + _rb.velocity.y * Vector3.up;
-        }
-    }
-
-    private void Jump()
-    {
-        _jumpReady = false;
-
-        _rb.velocity = new Vector3(_rb.velocity.x, 0, _rb.velocity.z);
-        _rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
-
-        inJump = true;
-    }
-
-    private void ResetJump()
-    {
-        _jumpReady = true;
-    }
-
-    private bool OnSlope()
-    {
-        if (Physics.Raycast(vital.bounds.center, transform.up * -1, out var hit, vital.bounds.size.y / 2 + distToGround, ground))
-        {
-            _slopeHit = hit;
-            float angle = Vector3.Angle(Vector3.up, hit.normal);
-            return angle < slopeAngle && angle != 0;
-        }
-
-        return false;
-    }
-
-    private Vector3 SlopeMoveDir() 
-    {
-        return Vector3.ProjectOnPlane(_movement, _slopeHit.normal).normalized;
-    }
-
     public Vector3 GetLookTarget()
     {
-        Physics.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Camera.main.transform.forward, out var res, 100, ground);
+        Physics.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Camera.main.transform.forward, out var res, 100, LayerMask.NameToLayer("Default"));
         return res.point;
     }
 
     public bool IsGrounded()
     {
-        return _isGrounded;
+        return movement.IsGrounded;
     }
 
     public bool IsInJump()
     { 
-        return inJump;
+        return movement.InJump;
     }
 
     public Transform GetRightHandTarget()

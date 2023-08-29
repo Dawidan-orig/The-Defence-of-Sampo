@@ -1,8 +1,10 @@
-    using System;
+using System;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.TerrainTools;
 using UnityEngine;
 
-public class Legsharmoniser : MonoBehaviour
+public class LegsHarmoniser : MonoBehaviour
 {
     public List<SpiderLegControl> legs = new();
     public Behaviour current = Behaviour.random;
@@ -13,6 +15,7 @@ public class Legsharmoniser : MonoBehaviour
     public float moveSpeed = 2;
     public float legsLength = 18;
     public AnimationCurve legMovement;
+    public Transform mainBody;
 
     [SerializeField]
     public List<List<SpiderLegControl>> groups = new();
@@ -25,17 +28,9 @@ public class Legsharmoniser : MonoBehaviour
         zigzag, // Все ноги разделяются на две группы по шахматнаму принципу
     }
 
-    private void Start()
+    private void Awake()
     {
-        foreach (SpiderLegControl leg in legs)
-        {
-            leg.limb.SetHost(transform);
-            leg.distanceToNew = distanceToNew;
-            leg.maxDistToNew = maxDistToNew;
-            leg.moveSpeed = moveSpeed;
-            leg.legMovement = legMovement;
-            leg.legLength = legsLength;
-        }
+        AssignValues();
     }
 
     void Update()
@@ -112,6 +107,20 @@ public class Legsharmoniser : MonoBehaviour
                 groups.Add(new List<SpiderLegControl>());
                 groups[index++].Add(leg);
             }
+        }
+    }
+
+    public void AssignValues() 
+    {
+        foreach (SpiderLegControl leg in legs)
+        {
+            leg.limb.SetHost(transform.parent);
+            leg.distanceToNew = distanceToNew;
+            leg.maxDistToNew = maxDistToNew;
+            leg.moveSpeed = moveSpeed;
+            leg.legMovement = legMovement;
+            leg.legLength = legsLength;
+            leg.limb.GetComponent<AliveBeing>().mainBody = mainBody;
         }
     }
 }
