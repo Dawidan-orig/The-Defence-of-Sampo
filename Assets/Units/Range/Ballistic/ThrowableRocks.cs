@@ -1,10 +1,20 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ThrowableRocks : SimplestShooting
 {
+    public int ONE_SIDE_SEPARAIONS = 0;
+
     protected void Awake()
     {
         // У баллистического оружия дальность зависит от силы запуска
+        float velocityAxis = Mathf.Sin(45 * Mathf.Deg2Rad) * gunPower; // 45 - угол, при котором полёт будет дальше всего
+        float flyTime = (velocityAxis / 9.8f) * 2; // Вверх и потом вниз
+        range = velocityAxis * flyTime;
+    }
+
+    private void OnValidate()
+    {
         float velocityAxis = Mathf.Sin(45 * Mathf.Deg2Rad) * gunPower; // 45 - угол, при котором полёт будет дальше всего
         float flyTime = (velocityAxis / 9.8f) * 2; // Вверх и потом вниз
         range = velocityAxis * flyTime;
@@ -20,10 +30,9 @@ public class ThrowableRocks : SimplestShooting
         bullet.transform.rotation = shootPoint.rotation;
 
         Vector3 flatEquvivalent = FlatEquialent(target.Value);
+        float actualPower = Power(flatEquvivalent.magnitude);
 
-        // Решение задачи из Awake в обратную сторону. (От range до gunPower)
-        float actualPower = Mathf.Sqrt(9.8f * range * Mathf.InverseLerp(0, range, flatEquvivalent.magnitude) / 2) / Mathf.Sin(45 * Mathf.Deg2Rad);
-
+        transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, transform.eulerAngles.z);
         bullet.GetComponent<Rigidbody>().AddForce(
             (shootPoint.forward + shootPoint.up).normalized * actualPower,
             forceMode);
@@ -46,64 +55,66 @@ public class ThrowableRocks : SimplestShooting
 
     public override bool AvilableToShoot(Transform to, out RaycastHit hit)
     {
-        Vector3 flatEquvivalent = FlatEquialent(to.position);
-        float actualPower = Mathf.Sqrt(9.8f * range * Mathf.InverseLerp(0, range, flatEquvivalent.magnitude) / 2) / Mathf.Sin(45 * Mathf.Deg2Rad);
-        float velocityAxis = Mathf.Sin(45 * Mathf.Deg2Rad) * actualPower;
-        float flyTime = (velocityAxis / 9.8f) * 2;        
-        float actualRange = velocityAxis * flyTime;
-
-        Vector3 relativeToUp = flatEquvivalent.normalized * actualRange / 2
-            + Vector3.up * flyTime / 4 * velocityAxis;
-        Vector3 upperPoint = transform.position + relativeToUp;
-        Vector3 checkFrom = transform.position;
-
-        RaycastHit first;
-
-        PenetratingRaycast(checkFrom, upperPoint, out first);
-
-        checkFrom = upperPoint;
-        Vector3 endPoint = checkFrom + new Vector3(relativeToUp.x, -relativeToUp.y, relativeToUp.z);
-
-        RaycastHit second;
-
-        PenetratingRaycast(checkFrom, endPoint, out second);
-
-        if (first.transform)
-            hit = first;
-        else
-            hit = second;
-
-        return hit.transform == to;
+        return AvilableToShoot(to.position, transform.position, out hit, to);
     }
-
     public override bool AvilableToShoot(Vector3 to, Vector3 from, out RaycastHit hit, Transform possibleTarget = null)
     {
         Vector3 flatEquvivalent = FlatEquialent(to, from);
-        float actualPower = Mathf.Sqrt(9.8f * range * Mathf.InverseLerp(0, range, flatEquvivalent.magnitude) / 2) / Mathf.Sin(45 * Mathf.Deg2Rad);
+        float actualPower = Power(flatEquvivalent.magnitude);
+
+        if(actualPower > gunPower) 
+        {
+            hit = new RaycastHit();
+            return false;
+        }
+
         float velocityAxis = Mathf.Sin(45 * Mathf.Deg2Rad) * actualPower;
         float flyTime = (velocityAxis / 9.8f) * 2;
-        float actualRange = velocityAxis * flyTime;
+        float actualRange = velocityAxis * flyTime; //TODO : Перевести на другую формулу из интернета, которая учитывает ещё и спуск.
 
         Vector3 relativeToUp = flatEquvivalent.normalized * actualRange / 2
             + Vector3.up * flyTime / 4 * velocityAxis;
-        Vector3 upperPoint = from + relativeToUp;
+
+        //TODO : Почистить этот кошмар из условий.
+        float toUpHorizontal = (flatEquvivalent.normalized * actualRange / 2).magnitude;
+        float step = toUpHorizontal / (ONE_SIDE_SEPARAIONS + 1);
         Vector3 checkFrom = from;
+        Vector3 checkTo;
+        hit = new RaycastHit();
+        for (int i = 1; i < ONE_SIDE_SEPARAIONS + 1; i++)
+        {
+            checkTo = from + flatEquvivalent.normalized * i * step + Vector3.up * Height(i * step, actualPower);
+            PenetratingRaycast(checkFrom, checkTo, out hit);
 
-        RaycastHit first;
+            if (hit.transform != null)
+                break;
 
-        PenetratingRaycast(checkFrom, upperPoint, out first);
+            checkFrom = checkTo;
+        }
 
-        checkFrom = upperPoint;
-        Vector3 endPoint = checkFrom + new Vector3(relativeToUp.x, -relativeToUp.y, relativeToUp.z);
+        if (hit.transform == null)
+        {
+            PenetratingRaycast(checkFrom, from + relativeToUp, out hit);
+            checkFrom = from + relativeToUp;
 
-        RaycastHit second;
+            if (hit.transform == null)
+                for (int i = 1; i < ONE_SIDE_SEPARAIONS + 1; i++)
+                {
+                    checkTo = from + flatEquvivalent.normalized * i * step
+                        + flatEquvivalent.normalized * toUpHorizontal
+                        + Vector3.up * Height(i * step + toUpHorizontal, actualPower);
 
-        PenetratingRaycast(checkFrom, endPoint, out second);
+                    PenetratingRaycast(checkFrom, checkTo, out hit);
 
-        if (first.transform)
-            hit = first;
-        else
-            hit = second;
+                    if (hit.transform != null)
+                        break;
+
+                    checkFrom = checkTo;                    
+                }
+
+            if (hit.transform == null)
+                PenetratingRaycast(checkFrom, from + flatEquvivalent, out hit);
+        }
 
         bool res = Utilities.ValueInArea(hit.point, to, 0.1f) || (hit.transform == possibleTarget && possibleTarget != null);
 
@@ -113,10 +124,10 @@ public class ThrowableRocks : SimplestShooting
         return res;
     }
 
-    public override Vector3 GetPointToShoot(Rigidbody target)
+    public override Vector3 PredictMovement(Rigidbody target)
     {
         Vector3 flatEquvivalent = FlatEquialent(target.position, transform.position);
-        float actualPower = Mathf.Sqrt(9.8f * range * Mathf.InverseLerp(0, range, flatEquvivalent.magnitude) / 2) / Mathf.Sin(45 * Mathf.Deg2Rad);
+        float actualPower = Power(flatEquvivalent.magnitude);
         float velocityAxis = Mathf.Sin(45 * Mathf.Deg2Rad) * actualPower;
         float flyTime = (velocityAxis / 9.8f) * 2;
 
@@ -129,9 +140,71 @@ public class ThrowableRocks : SimplestShooting
     {
         return FlatEquialent(target, transform.position);
     }
+
     private Vector3 FlatEquialent(Vector3 target, Vector3 from)
     {
-        // Пока что будет работать только для целей на той же высоте.
-        return Vector3.ProjectOnPlane(target - from, Vector3.up);
+        Vector3 directVector = Vector3.ProjectOnPlane(target - from, Vector3.up);
+        float height = target.y - from.y;
+        float length = directVector.magnitude;
+        float cosinus = Mathf.Cos(45 * Mathf.Deg2Rad);
+        float tangent = Mathf.Tan(45 * Mathf.Deg2Rad);
+
+        /*if (height > directVector.magnitude)
+        {
+            Debug.Log("Stop!");
+            return Vector3.zero;
+        }*/
+        //TODO : Переделать всё с нуля. Пока что я пришёл к этому уравнению:
+        // v  = sqrt(- g/2 * S^2 / (cos^2 45))/((l- S))
+        // надо извлечь отсюда v - это нужная скорость.
+        // Дальше - 9.8f * flyTime * flyTime / 2 + velocityUsed * flyTime = 0; -> height = 0 (Стартовая позиция, и конечная. Нужна нам - конечная)
+        // То-есть -9.8f * flyTime /2 + velocityUsed = 0
+
+        //Потом надо решить квадратное уравнение со временем относительно полученной скорости. Взять это уравнение из Height():
+        //float flyTime = distToFind / velocityUsed;
+        // distToFind = flyTime * velocityUsed;
+        // - 9.8f * flyTime * flyTime / 2 + velocityUsed * flyTime - height = 0;
+
+        float velocityUsed = Mathf.Sqrt(
+            (-9.8f * length * length)/
+            (2 * cosinus * cosinus * (height - length * tangent))
+            );
+
+       // float resTime = 2 * velocityUsed / 9.8f;
+        
+        float a = -9.8f/2;
+        float b = velocityUsed;
+        float c = -height;
+        float diskr = b * b - 4 * a * c;
+        float time1 = (-b + Mathf.Sqrt(diskr))/(2*a);
+        float time2 = (-b - Mathf.Sqrt(diskr)) / (2 * a);        
+
+        Vector3 res1 = directVector.normalized * time1 * velocityUsed;
+        Vector3 res2 = directVector.normalized * time2 * velocityUsed;
+
+        Vector3 differ = res1 - from;
+
+        Debug.DrawLine(from + directVector, from + res1, Color.black);
+        Debug.DrawLine(from + directVector, from + res2, Color.cyan);
+
+        return directVector + res1;
+    }   
+
+    private float Power(float dist)
+    {
+        //return Mathf.Sqrt(9.8f * range * Mathf.InverseLerp(0, range, dist) / 2) / Mathf.Sin(45 * Mathf.Deg2Rad);
+        return dist / (Mathf.Sqrt(2 * dist / 9.8f) * Mathf.Sin(45 * Mathf.Deg2Rad));
+    }
+    private float Height(float dist, float power)
+    {
+        float velocityAxis = Mathf.Sin(45 * Mathf.Deg2Rad) * power;
+        float flyTime = dist / velocityAxis;
+
+        return (velocityAxis * flyTime - 9.8f * flyTime * flyTime / 2);
+    }
+
+    private float HorizontalVelocity()
+    {
+        return Mathf.Sin(45 * Mathf.Deg2Rad) * gunPower;
     }
 }

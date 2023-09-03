@@ -198,6 +198,10 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 13400000, guid: cbc7c5df12aa1cc4db84c2734d616f04, type: 2}
+    - target: {fileID: 2397089146008967547, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967548, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
       propertyPath: m_Name
       value: Ballistic Shooting Unit
@@ -212,15 +216,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967549, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.1
+      value: 181
       objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967549, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.6
+      value: 0.96
       objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967549, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 101
+      value: 170.4
       objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967549, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -254,6 +258,26 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: a2fc51767c9de254ba2ec39e695ac921, type: 2}
+    - target: {fileID: 2397089146641432729, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.458
+      objectReference: {fileID: 0}
+    - target: {fileID: 2397089146641432729, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.873
+      objectReference: {fileID: 0}
+    - target: {fileID: 2397089146641432729, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2420862382218053515, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
+      propertyPath: range
+      value: 40.816326
+      objectReference: {fileID: 0}
+    - target: {fileID: 2420862382218053515, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
+      propertyPath: gunPower
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 2420862382218053515, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
       propertyPath: timeBetweenBullets
       value: 0.5
@@ -330,7 +354,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 360708901}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.03, y: 12.46, z: -18.08}
+  m_LocalPosition: {x: 1.7, y: 12.46, z: 45.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -652,7 +676,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 539551341}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 14.4, z: 0}
+  m_LocalPosition: {x: 0, y: -0, z: 0}
   m_LocalScale: {x: 10, y: 30, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -795,9 +819,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 567526341}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -134.3, y: 19.3, z: 64.01999}
-  m_LocalScale: {x: 5, y: 5, z: 5}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 186.99, y: 2.55, z: 134.97}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -970,7 +994,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1526482222200477036, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1951099390640171389, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: m_Materials.Array.data[1]
@@ -1197,6 +1221,7 @@ MonoBehaviour:
   _moveSpeed: 0
   _isGrounded: 1
   _jumpReady: 1
+  _inputMovement: {x: 0, y: 0}
 --- !u!4 &1048651097 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7455112557779443598, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
@@ -1517,6 +1542,7 @@ MonoBehaviour:
   _moveSpeed: 0
   _isGrounded: 1
   _jumpReady: 1
+  _inputMovement: {x: 0, y: 0}
 --- !u!4 &2137166261 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 450661284916936547, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
@@ -1634,6 +1660,10 @@ PrefabInstance:
       propertyPath: m_Speed
       value: 3.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2397089146008967545, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
+      propertyPath: type
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967546, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
       propertyPath: m_Material
       value: 
@@ -1648,7 +1678,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967548, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967549, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
       propertyPath: m_RootOrder
@@ -1656,7 +1686,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967549, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -22.78
+      value: 192.8
       objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967549, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1664,7 +1694,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967549, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 7.27
+      value: 136.9
       objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967549, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1722,7 +1752,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2875792448630465248, guid: ac256d9e416a53d49ab826947c8cc177, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2875792448630465249, guid: ac256d9e416a53d49ab826947c8cc177, type: 3}
       propertyPath: m_RootOrder
@@ -2131,3 +2161,4 @@ MonoBehaviour:
   _moveSpeed: 0
   _isGrounded: 1
   _jumpReady: 1
+  _inputMovement: {x: 0, y: 0}

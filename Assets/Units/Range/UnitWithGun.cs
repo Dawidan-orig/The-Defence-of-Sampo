@@ -10,7 +10,7 @@ public class UnitWithGun : TargetingUtilityAI
         base.AttackUpdate(target);
 
         if (target.TryGetComponent(out Rigidbody body))
-            weapon.transform.LookAt(weapon.GetPointToShoot(body));
+            weapon.transform.LookAt(weapon.PredictMovement(body));
         else
             weapon.transform.LookAt(target.position);
 

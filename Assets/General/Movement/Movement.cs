@@ -35,7 +35,7 @@ public class Movement : MonoBehaviour
     protected bool _isGrounded = true;
     [SerializeField]
     bool _jumpReady = true;
-
+    [SerializeField]
     protected Vector2 _inputMovement;
     protected Rigidbody _rb;
 
@@ -77,9 +77,7 @@ public class Movement : MonoBehaviour
 
         ApplyMovement();
 
-        FixMovement();
-
-        _inputMovement = Vector2.zero;
+        FixMovement();        
     }
 
     public void PassInput(Vector2 inputMovement, SpeedType type, bool jump)
@@ -90,6 +88,8 @@ public class Movement : MonoBehaviour
             _moveSpeed = sprintSpeed;
         else if (type == SpeedType.run)
             _moveSpeed = runSpeed;
+        else
+            _moveSpeed = walkSpeed;
 
         if (jump)
             Jump();

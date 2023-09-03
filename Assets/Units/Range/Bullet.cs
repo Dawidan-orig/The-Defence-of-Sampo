@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -26,14 +24,14 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
+        Utilities.DrawSphere(transform.position, duration: 5);
+
         if (remainingTime > 0)
-        
-         remainingTime -= Time.deltaTime;
-        
+            remainingTime -= Time.deltaTime;
         else
             Destroy(gameObject);
 
-        if(Vector3.Distance(startPoint, transform.position) > possibleDistance)
+        if (Vector3.Distance(startPoint, transform.position) > possibleDistance)
             Destroy(gameObject);
     }
 }

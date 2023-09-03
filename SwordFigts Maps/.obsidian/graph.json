@@ -5,10 +5,10 @@
   "showAttachments": false,
   "hideUnresolved": false,
   "showOrphans": true,
-  "collapse-color-groups": true,
+  "collapse-color-groups": false,
   "colorGroups": [
     {
-      "query": "tag:Глобальное",
+      "query": "path:Утилитарное",
       "color": {
         "a": 1,
         "rgb": 28732
@@ -67,6 +67,6 @@
   "repelStrength": 10.9147609147609,
   "linkStrength": 1,
   "linkDistance": 30,
-  "scale": 1.0784195722552592,
+  "scale": 0.5334255328586867,
   "close": false
 }

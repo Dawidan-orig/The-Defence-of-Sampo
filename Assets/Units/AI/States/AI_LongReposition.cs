@@ -114,7 +114,7 @@ public class AI_LongReposition : UtilityAI_BaseState
         }
         else if (_ctx.MovingAgent)
         {
-            //TODO : Что-то тут не так. Это не должно вызываться постоянно...
+            //TODO : Что-то тут не так. Repath не должен вызываться постоянно...
             if (path.status != NavMeshPathStatus.PathInvalid && path.corners.Length > 1)
                 _ctx.MovingAgent.MoveIteration(path.corners[1]);
             else             

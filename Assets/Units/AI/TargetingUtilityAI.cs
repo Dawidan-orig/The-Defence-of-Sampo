@@ -210,6 +210,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 
         _possibleActions.Sort((i1, i2) => i2.TotalWeight.CompareTo(i1.TotalWeight));
 
+        /*
         NavMeshPath path = new();
         if (Utilities.VisualisedRaycast(transform.position, Vector3.down, out RaycastHit hit, toGroundDist + vital.bounds.size.y / 2))
             // Проверяем достижимость NavMesh'а до цели.
@@ -221,7 +222,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
                     return null;
             }
         else
-            return null;
+            return null;*/
 
         _currentActivity = _possibleActions[bestActivityIndex];
 

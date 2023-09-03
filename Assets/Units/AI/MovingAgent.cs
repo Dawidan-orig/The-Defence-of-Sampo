@@ -38,21 +38,10 @@ public class MovingAgent : MonoBehaviour
     }
 
     public void MoveIteration(Vector3 newPos) 
-    {   
+    {       
         Vector3 dir = (newPos - transform.position).normalized;
         dir.y = 0;
-        desireLookDir = dir;
-        dir = Quaternion.Inverse(transform.rotation) * dir;
-        Vector2 input = new Vector2(dir.z, dir.x);
-
-        Debug.DrawLine(transform.position, newPos);
-
-        if(Vector3.Distance(newPos, transform.position) < walkToTargetDist)         
-            movement.PassInput(input, Movement.SpeedType.walk, false);        
-        else if(Vector3.Distance(newPos, transform.position) < runToTargetDist)        
-            movement.PassInput(input, Movement.SpeedType.run, false);                          
-        else
-            movement.PassInput(input, Movement.SpeedType.sprint, false);        
+        MoveIteration(newPos, dir);       
     }
 
     public void MoveIteration(Vector3 newPos, Vector3? lookPos = null)

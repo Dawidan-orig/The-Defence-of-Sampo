@@ -129,7 +129,7 @@ public class SimplestShooting : Tool
         return res;
     }
 
-    public virtual Vector3 GetPointToShoot(Rigidbody target)
+    public virtual Vector3 PredictMovement(Rigidbody target)
     {
         Vector3 speedToTarget = Vector3.ProjectOnPlane(shootPoint.forward * gunPower, target.velocity);
         float timeToTarget = Vector3.Distance(transform.position, target.position) / speedToTarget.magnitude;
@@ -143,6 +143,8 @@ public class SimplestShooting : Tool
     {
         if(color == null)
             color = Color.white;
+
+        //TODO : Перевести в рекурсию
 
         Utilities.VisualisedRaycast(from,
                 (to - from).normalized,
