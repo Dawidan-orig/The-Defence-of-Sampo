@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class MeleeFighter : TargetingUtilityAI
 {
+    //ƒобавить сюда использование кулаков
     public MeleeTool weapon;
 
     [SerializeField]
@@ -20,15 +21,10 @@ public class MeleeFighter : TargetingUtilityAI
     }
     public override void AttackUpdate(Transform target)
     {
-
+        
     }
 
-    public void ReadyToSwing() 
-    {
-        _swingReady = true;
-    }
-
-    protected override Tool ToolCheck(Transform target)
+    protected override Tool ToolChosingCheck(Transform target)
     {
         return weapon;
     }
@@ -46,6 +42,11 @@ public class MeleeFighter : TargetingUtilityAI
         _swingReady = false;
 
         Invoke(nameof(ReadyToSwing), weapon.cooldownBetweenAttacks);
+    }
+
+    public void ReadyToSwing()
+    {
+        _swingReady = true;
     }
 
     public virtual void Block(Vector3 start, Vector3 end, Vector3 SlashingDir) { }

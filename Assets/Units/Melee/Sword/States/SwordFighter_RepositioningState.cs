@@ -41,13 +41,9 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
     {
         if (_ctx.AlmostDesire()) 
         {
-            if (_ctx.AttackReposition && _ctx.CurrentActivity.target)
+            if (_ctx.CurrentActivity.target)
             {
-                //TODO : Когда нет цели, тут происходит nullReference
-                _ctx.Swing(_ctx.CurrentActivity.target.position);
-                _ctx.NullifyProgress();
-                SwitchStates(_factory.Swinging());
-                _ctx.AttackReposition = false;
+                HandleCombo();
                 return;
             }
 
@@ -65,7 +61,7 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
     private void IncomingForRepos(object sender, SwordFighter_StateMachine.IncomingReposEventArgs e)
     {
         _ctx.Block(e.bladeDown, e.bladeUp, e.bladeDir);
-        MoveSword();
+        //MoveSword();
         _ctx.NullifyProgress();
     }
 

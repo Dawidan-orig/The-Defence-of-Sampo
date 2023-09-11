@@ -7,6 +7,7 @@ public class SwordFighter_StateMachine : MeleeFighter
 {
     [Header("constraints")]
     public float actionSpeed = 1; // Скорость движения меча в руке
+    public float swingSpeed = 1; // Скорость взмаха мечом, для большего контроль
     public float block_minDistance = 0.3f; // Минимальное расстояние для блока, используемое для боев с противником, а не отбивания.
     public float swing_EndDistanceMultiplier = 1.5f; // Насколько далеко должен двинуться меч после отбивания.
     public float swing_startDistance = 1.5f; // Насколько далеко должен двинуться меч до удара.
@@ -16,6 +17,7 @@ public class SwordFighter_StateMachine : MeleeFighter
     public float blockVelocity = 5;
     public float close_enough = 0.1f; // Расстояние до цели, при котором можно менять состояние.
     public float angle_enough = 10; // Достаточный угол, чтобы считать что handle близок к desire
+    public AnimationCurve attackProbability; // Указывает значения от 0 до 1 означающие вероятность выбора удара слева направо поверху.
 
     [Header("timers")]
     public float toInitialAwait = 2; // Сколько времени ожидать до установки меча в обычную позицию?
@@ -44,12 +46,9 @@ public class SwordFighter_StateMachine : MeleeFighter
     [SerializeField]
     AttackCatcher _catcher;
     [SerializeField]
-    bool _attackReposition = false; //TODO : Удалить, заменить на систему комбо.
-    [SerializeField]
-    Stack<ActionJoint> _combo = new Stack<ActionJoint>(); //TODO : Добавить в этот класс функцию, возвращающую новое состояние, а так же убирающее уже сделанное действие.
-    // Эта штука позволит создавать комбо разной длины.
+    Stack<ActionJoint> _currentCombo = new Stack<ActionJoint>();
 
-    enum ActionType
+    public enum ActionType
     {
         Swing,
         Reposition
@@ -57,15 +56,17 @@ public class SwordFighter_StateMachine : MeleeFighter
 
     public struct ActionJoint
     {
-        public Transform currentDesire;
-        public Transform nextDesire;
-        ActionType nextActionType;
+        public Vector3 relativeDesireFrom;
+        public Quaternion rotationFrom;
+        public Vector3 nextRelativeDesire;
+        public Quaternion nextRotation;
+        public ActionType currentActionType;
     }
 
     SwordFighter_BaseState _currentSwordState;
     SwordFighter_StateFactory _fighter_states;
 
-    //Getters and setters
+    #region Getters and setters
     public SwordFighter_BaseState CurrentSwordState { get { return _currentSwordState; } set { _currentSwordState = value; } }
     public Transform BladeHandle { get { return _bladeHandle; } }
     public Transform DesireBlade { get { return _desireBlade; } }
@@ -76,7 +77,9 @@ public class SwordFighter_StateMachine : MeleeFighter
     public float CurrentToInitialAwait { get => _currentToInitialAwait; set => _currentToInitialAwait = value; }
     public Collider Vital { get => _vital; set => _vital = value; }
     public AttackCatcher AttackCatcher { get => _catcher; set => _catcher = value; }
-    public bool AttackReposition { get => _attackReposition; set => _attackReposition = value; } //TODO : Заменить на обработку комбинаций ударов!
+    public Stack<ActionJoint> CurrentCombo { get => _currentCombo; set => _currentCombo = value; }
+
+    #endregion
 
     public EventHandler<IncomingReposEventArgs> OnRepositionIncoming;
     public EventHandler<IncomingSwingEventArgs> OnSwingIncoming;
@@ -98,7 +101,7 @@ public class SwordFighter_StateMachine : MeleeFighter
     [SerializeField]
     private bool isSwordFixing = true;
     [SerializeField]
-    private string currentState;
+    private string currentState; // Нужен для вывода текущего состояния в Unity
 
     protected override void Awake()
     {
@@ -156,8 +159,12 @@ public class SwordFighter_StateMachine : MeleeFighter
         base.FixedUpdate();
         _currentSwordState.FixedUpdateState();
 
-        if (_moveProgress < 1)
-            _moveProgress += actionSpeed * Time.fixedDeltaTime / Vector3.Distance(_moveFrom.position, _desireBlade.position);
+        if (_moveProgress < 1) {
+            if (_currentSwordState is SwordFighter_RepositioningState)            
+                _moveProgress += actionSpeed * Time.fixedDeltaTime / Vector3.Distance(_moveFrom.position, _desireBlade.position);            
+            else if(_currentSwordState is SwordFighter_SwingingState)
+                _moveProgress += swingSpeed * Time.fixedDeltaTime / Vector3.Distance(_moveFrom.position, _desireBlade.position);
+        }
     }
 
     private void Incoming(object sender, AttackCatcher.AttackEventArgs e)
@@ -305,11 +312,65 @@ public class SwordFighter_StateMachine : MeleeFighter
     {
         base.Block(start, end, SlashingDir);
 
-        if(Vector3.Distance(distanceFrom.position, start) > Vector3.Distance(distanceFrom.position, end))        
+        if (Vector3.Distance(distanceFrom.position, start) > Vector3.Distance(distanceFrom.position, end))
             (end, start) = (start, end);
-        
+
 
         SetDesires(start, (end - start).normalized, SlashingDir);
+    }
+
+    public override void AttackUpdate(Transform target)
+    {
+        // Итак, надо переехать на систему комбо, чтобы нормально сделать задумку.
+        // Перво-наперво, мы должны быть в idle, чтобы атаковать
+        // 2) Инициализируем тут комбо-атаку. Пока что можно сделать процедурно-анимированную
+        // 3) Пускаем это комбо в idle, где оно начинает распределять, что делать
+        // 4) Каждое состояние должно уметь обрабатывать комбо, чтобы менять состояние на новое.
+        // 5) Комбо может быть полностью прервано при получении урона.
+        // 6) Когда swing и комбо отбивается - переходим к следующему шагу комбо
+
+        base.AttackUpdate(target);
+
+        if (!_swingReady || CurrentCombo.Count > 0)
+            return;
+
+        //Тут ещё можем выбирать конкретную комбинацию из библиотеки комбо.
+
+        ActionJoint afterPreparation = new ActionJoint();
+        ActionJoint preparation = new ActionJoint();
+
+        Vector3 toPoint = CurrentActivity.target.position;
+        Plane transformXY = new(transform.forward, transform.position);
+        Vector3 toNewPosDir = (transformXY.ClosestPointOnPlane(BladeHandle.position) - transform.position).normalized;
+
+        Vector3 newPos = Vital.ClosestPointOnBounds(toNewPosDir * swing_startDistance) + toNewPosDir * swing_startDistance;
+
+        GameObject rotatorGO = new GameObject("NotDestroyedInAttackUpdate");
+        Transform rotator = rotatorGO.transform;
+        rotator.parent = transform;
+        rotator.position = newPos;
+        rotator.LookAt(newPos + (newPos - Vital.bounds.center).normalized, newPos + (toPoint - BladeHandle.position).normalized);
+        rotator.RotateAround(rotator.position, rotator.right, 90); //Акцент в первую очередь на up
+
+        preparation.rotationFrom = _bladeHandle.rotation;
+        preparation.relativeDesireFrom = _bladeHandle.position - transform.position;
+
+        preparation.nextRelativeDesire = rotator.position - transform.position;
+        preparation.nextRotation = rotator.rotation;
+        preparation.currentActionType = ActionType.Reposition;
+
+        afterPreparation.relativeDesireFrom = rotator.position - transform.position;
+        afterPreparation.rotationFrom = rotator.rotation;
+
+        afterPreparation.nextRelativeDesire = CurrentActivity.target.position - transform.position; //TODO : Поменять на Transform
+        //А поворот игнорируем, поскольку swing
+        afterPreparation.currentActionType = ActionType.Swing;
+
+        //Добавляем начиная с последнего
+        _currentCombo.Push(afterPreparation);
+        _currentCombo.Push(preparation);
+
+        Destroy(rotatorGO);
     }
 
     // Атака оружием по какой-то точке из текущей позиции.
@@ -343,12 +404,12 @@ public class SwordFighter_StateMachine : MeleeFighter
             // Теорема косинусов + Решение квадратного уравнения
             float angle = Vector3.Angle(toCloseDir, -exceededHand);
 
-            Debug.DrawRay(_desireBlade.position, toCloseDir) ;
+            Debug.DrawRay(_desireBlade.position, toCloseDir);
             Debug.DrawRay(_desireBlade.position, -exceededHand);
 
             float b = exceededHand.magnitude * Mathf.Cos(angle);
             float diskr = 4 *
-                (Mathf.Pow(toBladeHandle_MaxDistance,2) -
+                (Mathf.Pow(toBladeHandle_MaxDistance, 2) -
                 Mathf.Pow(exceededHand.magnitude, 2) *
                 Mathf.Pow(Mathf.Sin(angle * Mathf.Deg2Rad), 2));
             float s1 = b + Mathf.Sqrt(diskr);
@@ -362,7 +423,7 @@ public class SwordFighter_StateMachine : MeleeFighter
 
                 _desireBlade.position += toCloseDir * toCloseLen;
             }
-            else 
+            else
             {
                 // Означает, что решения нет. А нет его по той причине, что новая точка будет уже в пределах досягаемости руки,
                 // А значит нет смысла двигать ещё ближе.
@@ -424,7 +485,7 @@ public class SwordFighter_StateMachine : MeleeFighter
         _moveProgress = 0;
     }
 
-    protected override Tool ToolCheck(Transform target)
+    protected override Tool ToolChosingCheck(Transform target)
     {
         return _blade;
     }

@@ -137,7 +137,25 @@ MonoBehaviour:
   retreatMultiplier: 0.2
   retreatInfluence:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: -1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -154,9 +172,10 @@ MonoBehaviour:
     distanceAddition: 0
     actWith: {fileID: 0}
   _possibleActions: []
-  weapon: {fileID: 0}
+  weapon: {fileID: 6555781427904815356}
   _swingReady: 1
   actionSpeed: 4
+  swingSpeed: 1
   block_minDistance: 0.3
   swing_EndDistanceMultiplier: 1.5
   swing_startDistance: 1.5
@@ -166,6 +185,12 @@ MonoBehaviour:
   blockVelocity: 5
   close_enough: 0.1
   angle_enough: 10
+  attackProbability:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   toInitialAwait: 0.5
   _blade: {fileID: 6555781427904815356}
   _bladeContainer: {fileID: 3809664213183082030}
@@ -177,7 +202,6 @@ MonoBehaviour:
   _moveProgress: 0
   _currentToInitialAwait: 0
   _catcher: {fileID: 0}
-  _attackReposition: 0
   isSwordFixing: 1
   currentState: 
 --- !u!54 &795735766536500156
@@ -253,6 +277,7 @@ MonoBehaviour:
   health: 100
   vital: {fileID: 6060500822727802340}
   mainBody: {fileID: 0}
+  root: {fileID: 0}
 --- !u!114 &7562448127315587629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,6 +310,7 @@ MonoBehaviour:
   _moveSpeed: 0
   _isGrounded: 1
   _jumpReady: 1
+  _inputMovement: {x: 0, y: 0}
 --- !u!114 &2580508120703694375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,7 +326,6 @@ MonoBehaviour:
   walkToTargetDist: 5
   runToTargetDist: 100
   angularRotatingSpeed: 360
-  desireLookDir: {x: 0, y: 0, z: 0}
 --- !u!1 &4269479461079977091
 GameObject:
   m_ObjectHideFlags: 0

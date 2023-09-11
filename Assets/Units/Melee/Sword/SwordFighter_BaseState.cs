@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -30,19 +28,48 @@ public abstract class SwordFighter_BaseState
 
     void UpdateStates() { }
 
-
-    protected void SwitchStates(SwordFighter_BaseState newState) {
+    protected void SwitchStates(SwordFighter_BaseState newState)
+    {
         ExitState();
         newState.EnterState();
         _ctx.CurrentSwordState = newState;
     }
 
-    protected void SetSuperState(SwordFighter_BaseState newSuperState)
+    protected void HandleCombo()
     {
-        _currentSuperState = newSuperState; 
+        SwordFighter_StateMachine.ActionJoint action;
+        if (_ctx.CurrentCombo.TryPop(out action))
+        {
+
+            if (action.currentActionType == SwordFighter_StateMachine.ActionType.Reposition)
+            {
+                _ctx.SetDesires(action.nextRelativeDesire + _ctx.transform.position, action.nextRotation * Vector3.up, action.nextRotation * Vector3.forward);
+                SwitchStates(_factory.Repositioning());
+            }
+            else if (action.currentActionType == SwordFighter_StateMachine.ActionType.Swing)
+            {
+                _ctx.Swing(action.nextRelativeDesire + _ctx.transform.position);
+                SwitchStates(_factory.Swinging());
+            }
+            _ctx.NullifyProgress();
+        }
+        else 
+        {
+            _ctx.SetDesires(_ctx.InitialBlade.position, _ctx.InitialBlade.up, _ctx.InitialBlade.forward);
+            
+            _ctx.NullifyProgress();
+            _ctx.CurrentToInitialAwait = _ctx.toInitialAwait;
+
+            SwitchStates(_factory.Repositioning());
+        }        
     }
 
-    protected void SetSubState(SwordFighter_BaseState newSubState) 
+    protected void SetSuperState(SwordFighter_BaseState newSuperState)
+    {
+        _currentSuperState = newSuperState;
+    }
+
+    protected void SetSubState(SwordFighter_BaseState newSubState)
     {
         _currentSubState = newSubState;
         newSubState.SetSuperState(this);

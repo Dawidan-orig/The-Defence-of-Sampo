@@ -75,11 +75,13 @@ public class ThrowableRocks : SimplestShooting
         Vector3 relativeToUp = flatEquvivalent.normalized * actualRange / 2
             + Vector3.up * flyTime / 4 * velocityAxis;
 
+
+        #region arc-check
         //TODO : Почистить этот кошмар из условий.
         float toUpHorizontal = (flatEquvivalent.normalized * actualRange / 2).magnitude;
         float step = toUpHorizontal / (ONE_SIDE_SEPARAIONS + 1);
         Vector3 checkFrom = from;
-        Vector3 checkTo;
+        Vector3 checkTo = Vector3.zero;
         hit = new RaycastHit();
         for (int i = 1; i < ONE_SIDE_SEPARAIONS + 1; i++)
         {
@@ -114,7 +116,22 @@ public class ThrowableRocks : SimplestShooting
 
             if (hit.transform == null)
                 PenetratingRaycast(checkFrom, from + flatEquvivalent, out hit);
+
+            if (hit.transform == null)
+            {
+                Vector3 direct = to - from;
+                direct.y = 0;
+
+                checkFrom = checkTo;
+                checkTo = from + direct + Vector3.up* Height(direct.magnitude, actualPower);
+
+                PenetratingRaycast(checkFrom, checkTo, out hit);
+            }
         }
+
+        #endregion
+
+        
 
         bool res = Utilities.ValueInArea(hit.point, to, 0.1f) || (hit.transform == possibleTarget && possibleTarget != null);
 
@@ -149,22 +166,6 @@ public class ThrowableRocks : SimplestShooting
         float cosinus = Mathf.Cos(45 * Mathf.Deg2Rad);
         float tangent = Mathf.Tan(45 * Mathf.Deg2Rad);
 
-        /*if (height > directVector.magnitude)
-        {
-            Debug.Log("Stop!");
-            return Vector3.zero;
-        }*/
-        //TODO : Переделать всё с нуля. Пока что я пришёл к этому уравнению:
-        // v  = sqrt(- g/2 * S^2 / (cos^2 45))/((l- S))
-        // надо извлечь отсюда v - это нужная скорость.
-        // Дальше - 9.8f * flyTime * flyTime / 2 + velocityUsed * flyTime = 0; -> height = 0 (Стартовая позиция, и конечная. Нужна нам - конечная)
-        // То-есть -9.8f * flyTime /2 + velocityUsed = 0
-
-        //Потом надо решить квадратное уравнение со временем относительно полученной скорости. Взять это уравнение из Height():
-        //float flyTime = distToFind / velocityUsed;
-        // distToFind = flyTime * velocityUsed;
-        // - 9.8f * flyTime * flyTime / 2 + velocityUsed * flyTime - height = 0;
-
         float velocityUsed = Mathf.Sqrt(
             (-9.8f * length * length)/
             (2 * cosinus * cosinus * (height - length * tangent))
@@ -182,10 +183,8 @@ public class ThrowableRocks : SimplestShooting
         Vector3 res1 = directVector.normalized * time1 * velocityUsed;
         Vector3 res2 = directVector.normalized * time2 * velocityUsed;
 
-        Vector3 differ = res1 - from;
-
-        Debug.DrawLine(from + directVector, from + res1, Color.black);
-        Debug.DrawLine(from + directVector, from + res2, Color.cyan);
+        //Debug.DrawLine(from + directVector, from + res1, Color.black);
+        //Debug.DrawLine(from + directVector, from + res2, Color.cyan);
 
         return directVector + res1;
     }   

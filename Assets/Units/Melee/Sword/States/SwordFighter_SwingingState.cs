@@ -41,8 +41,7 @@ public class SwordFighter_SwingingState : SwordFighter_BaseState
     {
         if (_ctx.CloseToDesire())
         {
-            _ctx.NullifyProgress();
-            SwitchStates(_factory.Repositioning());
+            HandleCombo();
         }
     }
 
@@ -56,9 +55,12 @@ public class SwordFighter_SwingingState : SwordFighter_BaseState
         Vector3 relativeTo = _ctx.DesireBlade.position - _ctx.transform.position;
         relativeTo.y = 0;
 
-        _ctx.BladeHandle.position = _ctx.transform.position + Vector3.Slerp(relativeFrom, relativeTo, _ctx.MoveProgress) + new Vector3(0, Mathf.Lerp(relativeHeightFrom, relativeHeightTo, _ctx.MoveProgress), 0);
+        _ctx.BladeHandle.position = _ctx.transform.position
+            + Vector3.Slerp(relativeFrom, relativeTo, _ctx.MoveProgress)
+            + new Vector3(0, Mathf.Lerp(relativeHeightFrom, relativeHeightTo, _ctx.MoveProgress), 0);
 
-        _ctx.BladeHandle.LookAt(_ctx.BladeHandle.position + (_ctx.BladeHandle.position - _ctx.Vital.bounds.center).normalized, (_ctx.DesireBlade.position - _ctx.BladeHandle.position).normalized);
+        _ctx.BladeHandle.LookAt(_ctx.BladeHandle.position + (_ctx.BladeHandle.position - _ctx.Vital.bounds.center).normalized,
+            (_ctx.DesireBlade.position - _ctx.BladeHandle.position).normalized);
         _ctx.BladeHandle.RotateAround(_ctx.BladeHandle.position, _ctx.BladeHandle.right, 90);
 
         Utilities.DrawSphere(_ctx.BladeHandle.position, duration: 0.5f);
@@ -69,11 +71,7 @@ public class SwordFighter_SwingingState : SwordFighter_BaseState
         if ((!collision.gameObject.TryGetComponent<Rigidbody>(out _)) ||
             collision.gameObject.TryGetComponent<Blade>(out _))
         {
-            _ctx.SetDesires(_ctx.InitialBlade.position, _ctx.InitialBlade.up, _ctx.InitialBlade.forward);
-            _ctx.NullifyProgress();
-            _ctx.CurrentToInitialAwait = _ctx.toInitialAwait;
-
-            SwitchStates(_factory.Repositioning());
+            HandleCombo();            
             return;
         }
 

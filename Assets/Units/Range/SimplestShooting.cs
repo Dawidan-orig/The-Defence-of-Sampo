@@ -69,7 +69,12 @@ public class SimplestShooting : Tool
     {
         Vector3 res = Vector3.zero;
         Utilities.VisualisedRaycast(transform.position, Vector3.down, out var heightCheck, range);
+        // Высота оружия до земли.
+        // TODO : Поменять на вычисление: Относительно низа коллайдера до y-положения оружия
         float height = heightCheck.collider ? (heightCheck.point - transform.position).magnitude : 0;
+        Vector3 delta = transform.position - host.position;
+        delta.x = 0; delta.z = 0;
+        height = delta.magnitude + host.GetComponent<AliveBeing>().vital.bounds.size.y/2;   
 
         NavMeshCalculations.Cell start = NavMeshCalculations.Instance.GetCell(target.position);
 
@@ -78,8 +83,6 @@ public class SimplestShooting : Tool
 
         float bestDistanceToTarget = 0;
         float bestDistanceFromGun = 100000;
-
-        int totalChecked = 0;
 
         while (toCheck.Count > 0)
         {
@@ -92,8 +95,6 @@ public class SimplestShooting : Tool
             if (Vector3.Distance(shootFrom, target.position) < range &&
                 AvilableToShoot(target.position, shootFrom, out RaycastHit hit, target))
             {
-                totalChecked++;
-
                 float distanceFromGun = Vector3.Distance(shootFrom, transform.position);
                 float distanceToTarget = Vector3.Distance(shootFrom, target.position);
 
@@ -103,27 +104,17 @@ public class SimplestShooting : Tool
                     bestDistanceFromGun = distanceFromGun;
                     bestDistanceToTarget = distanceToTarget;
                     res = shootFrom;
-                }
 
-                //TODO : Убрать это
-                current.Draw(0);
-                Utilities.CreateTextInWorld(totalChecked.ToString(), position : current.Center(), color : Color.red);
-
-                List<NavMeshCalculations.Cell> toAdd = current.Neighbors;
-                toCheck.AddRange(toAdd);
-                toCheck.RemoveAll(item => alreadyChecked.Contains(item));
+                    List<NavMeshCalculations.Cell> toAdd = current.Neighbors;
+                    toCheck.AddRange(toAdd);
+                    toCheck.RemoveAll(item => alreadyChecked.Contains(item));
+                }                
 
                 if(NavMeshCalculations.CellCount() < toCheck.Count) 
                 {
                     throw new StackOverflowException("Количество объектов для проверки больше, чем их общее количество");
                 }
             }
-        }
-
-        if (res == Vector3.zero)
-        {
-            Debug.LogWarning("Лучший полигон не был найден", transform);
-            return host.position;
         }
 
         return res;

@@ -41,7 +41,7 @@ public class MovingAgent : MonoBehaviour
     {       
         Vector3 dir = (newPos - transform.position).normalized;
         dir.y = 0;
-        MoveIteration(newPos, dir);       
+        MoveIteration(newPos, newPos+ dir);       
     }
 
     public void MoveIteration(Vector3 newPos, Vector3? lookPos = null)

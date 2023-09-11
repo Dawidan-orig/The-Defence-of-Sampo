@@ -17,7 +17,7 @@ public class UnitWithGun : TargetingUtilityAI
         weapon.Shoot(target.position);
     }
 
-    protected override Tool ToolCheck(Transform target)
+    protected override Tool ToolChosingCheck(Transform target)
     {
         return weapon;
     }

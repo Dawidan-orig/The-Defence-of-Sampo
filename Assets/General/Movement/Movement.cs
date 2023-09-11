@@ -77,7 +77,8 @@ public class Movement : MonoBehaviour
 
         ApplyMovement();
 
-        FixMovement();        
+        if(IsGrounded)
+            FixMovement();        
     }
 
     public void PassInput(Vector2 inputMovement, SpeedType type, bool jump)

@@ -106,7 +106,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3518550695108105091, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
       propertyPath: cooldownBetweenAttacks
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3518550695108105116, guid: 581cd126f07e54349ac3a784ce4db78b, type: 3}
       propertyPath: m_Name

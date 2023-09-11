@@ -243,8 +243,10 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     {
         Vector3 closestToMe;
         Vector3 calculateFrom = distanceFrom ? distanceFrom.position : transform.position;
-        if (_currentActivity.target.TryGetComponent<AliveBeing>(out var c))
-            closestToMe = c.vital.ClosestPointOnBounds(calculateFrom);
+        if (_currentActivity.target.TryGetComponent<AliveBeing>(out var ab))
+            closestToMe = ab.vital.ClosestPointOnBounds(calculateFrom);
+        else if (_currentActivity.target.TryGetComponent<Collider>(out var c))
+            closestToMe = c.ClosestPointOnBounds(calculateFrom);
         else
             closestToMe = _currentActivity.target.position;
 
@@ -279,7 +281,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
             if (!IsPassing(target.transform))
                 continue;
 
-            Tool toolUsed = ToolCheck(target.transform);
+            Tool toolUsed = ToolChosingCheck(target.transform);
 
             AddNewPossibleAction(target.transform, weight, target.transform.name, toolUsed, _factory.Attack());
 
@@ -303,7 +305,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
         return res;
     }
 
-    protected virtual Tool ToolCheck(Transform target)
+    protected virtual Tool ToolChosingCheck(Transform target)
     {
         return hands;
     }
