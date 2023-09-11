@@ -346,21 +346,22 @@ public class SwordFighter_StateMachine : MeleeFighter
         Vector3 newPos = Vital.ClosestPointOnBounds(toNewPosDir * swing_startDistance) + toNewPosDir * swing_startDistance;
 
         GameObject rotatorGO = new GameObject("NotDestroyedInAttackUpdate");
-        Transform rotator = rotatorGO.transform;
-        rotator.parent = transform;
-        rotator.position = newPos;
-        rotator.LookAt(newPos + (newPos - Vital.bounds.center).normalized, newPos + (toPoint - BladeHandle.position).normalized);
-        rotator.RotateAround(rotator.position, rotator.right, 90); //Акцент в первую очередь на up
+        Transform preaparePoint = rotatorGO.transform;
+        preaparePoint.parent = transform;
+        preaparePoint.position = newPos;
+        preaparePoint.LookAt(preaparePoint.position + (preaparePoint.position - Vital.bounds.center).normalized,
+            (CurrentActivity.target.position - preaparePoint.position).normalized);
+        BladeHandle.RotateAround(preaparePoint.position, preaparePoint.right, 90);
 
         preparation.rotationFrom = _bladeHandle.rotation;
         preparation.relativeDesireFrom = _bladeHandle.position - transform.position;
 
-        preparation.nextRelativeDesire = rotator.position - transform.position;
-        preparation.nextRotation = rotator.rotation;
+        preparation.nextRelativeDesire = preaparePoint.position - transform.position;
+        preparation.nextRotation = preaparePoint.rotation;
         preparation.currentActionType = ActionType.Reposition;
 
-        afterPreparation.relativeDesireFrom = rotator.position - transform.position;
-        afterPreparation.rotationFrom = rotator.rotation;
+        afterPreparation.relativeDesireFrom = preaparePoint.position - transform.position;
+        afterPreparation.rotationFrom = preaparePoint.rotation;
 
         afterPreparation.nextRelativeDesire = CurrentActivity.target.position - transform.position; //TODO : Поменять на Transform
         //А поворот игнорируем, поскольку swing
