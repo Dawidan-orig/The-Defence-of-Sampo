@@ -7,6 +7,7 @@ public class Movement : MonoBehaviour
     public float walkSpeed = 5;
     public float runSpeed = 10;
     public float sprintSpeed = 20;
+    public float VelociyAngle_ChangeSpeedEuler = 30;
     public float distToGround = 0.3f;
     public float dragOnGround = 1;
     public float toGroundForce = 5;
@@ -64,7 +65,7 @@ public class Movement : MonoBehaviour
         else
             _rb.drag = 0;
 
-        _rb.useGravity = !OnSlope();        
+        _rb.useGravity = !OnSlope();
     }
 
     protected virtual void FixedUpdate()
@@ -77,8 +78,8 @@ public class Movement : MonoBehaviour
 
         ApplyMovement();
 
-        if(IsGrounded)
-            FixMovement();        
+        if (IsGrounded)
+            FixMovement();
     }
 
     public void PassInput(Vector2 inputMovement, SpeedType type, bool jump)
@@ -91,6 +92,8 @@ public class Movement : MonoBehaviour
             _moveSpeed = runSpeed;
         else
             _moveSpeed = walkSpeed;
+
+
 
         if (jump)
             Jump();
@@ -110,13 +113,29 @@ public class Movement : MonoBehaviour
             if (_rb.velocity.y > 0)
                 _rb.AddForce(Vector3.down * toGroundForce, ForceMode.Acceleration);
 
+            ControlVelocityAngle(SlopeMoveDir());
+
             return;
         }
 
         if (_isGrounded)
+        {
             _rb.AddForce(_movement.normalized * _moveSpeed, ForceMode.Acceleration);
+
+            ControlVelocityAngle(_movement.normalized);
+        }
         else
-            _rb.AddForce(_movement.normalized * _moveSpeed * airMultiplier, ForceMode.Acceleration);        
+            _rb.AddForce(_movement.normalized * _moveSpeed * airMultiplier, ForceMode.Acceleration);
+    }
+
+    protected void ControlVelocityAngle(Vector3 desireDir) 
+    {
+        if (_inputMovement != Vector2.zero)
+        {
+            Vector3 rotation = Vector3.RotateTowards(_rb.velocity.normalized, desireDir,
+                VelociyAngle_ChangeSpeedEuler * Mathf.Deg2Rad * Time.deltaTime, _moveSpeed);
+            _rb.velocity = rotation.normalized * _rb.velocity.magnitude;
+        }
     }
 
     protected void FixMovement()
