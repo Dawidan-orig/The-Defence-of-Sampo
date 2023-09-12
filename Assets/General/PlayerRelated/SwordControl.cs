@@ -66,6 +66,7 @@ public class SwordControl : MonoBehaviour
     private void Awake()
     {
         blade.SetHost(transform);
+        blade.OnBladeCollision += BladeCollision;
     }
 
     void Start()
@@ -108,6 +109,15 @@ public class SwordControl : MonoBehaviour
 
         if (isSwordFixing)
             Control_FixSword();
+    }
+
+    public void BladeCollision(object sender, Collision c) 
+    {
+        if (_swinging)
+        {
+            _swinging = false;
+            ReturnToInitial();
+        }
     }
 
     // јтака оружием по какой-то точке из текущей позиции.

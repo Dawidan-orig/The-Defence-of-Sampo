@@ -63,6 +63,7 @@ public class SwordFighter_SwingingState : SwordFighter_BaseState
             (_ctx.DesireBlade.position - _ctx.BladeHandle.position).normalized);
         _ctx.BladeHandle.RotateAround(_ctx.BladeHandle.position, _ctx.BladeHandle.right, 90);
 
+        //TODO : Убрать
         Utilities.DrawSphere(_ctx.BladeHandle.position, duration: 0.5f);
     }
 

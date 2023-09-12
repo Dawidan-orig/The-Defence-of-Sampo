@@ -13,7 +13,7 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
     {
         _ctx.OnRepositionIncoming += IncomingForRepos;
         _ctx.OnSwingIncoming += IncomingForSwing;
-        MoveSword();
+        //MoveSword();
     }
 
     public override void ExitState()
@@ -41,7 +41,7 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
     {
         if (_ctx.AlmostDesire()) 
         {
-            if (_ctx.CurrentActivity.target)
+            if (_ctx.CurrentActivity.target && _ctx.CurrentCombo.Count > 0)
             {
                 HandleCombo();
                 return;

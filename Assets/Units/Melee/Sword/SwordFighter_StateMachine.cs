@@ -321,14 +321,6 @@ public class SwordFighter_StateMachine : MeleeFighter
 
     public override void AttackUpdate(Transform target)
     {
-        // Итак, надо переехать на систему комбо, чтобы нормально сделать задумку.
-        // Перво-наперво, мы должны быть в idle, чтобы атаковать
-        // 2) Инициализируем тут комбо-атаку. Пока что можно сделать процедурно-анимированную
-        // 3) Пускаем это комбо в idle, где оно начинает распределять, что делать
-        // 4) Каждое состояние должно уметь обрабатывать комбо, чтобы менять состояние на новое.
-        // 5) Комбо может быть полностью прервано при получении урона.
-        // 6) Когда swing и комбо отбивается - переходим к следующему шагу комбо
-
         base.AttackUpdate(target);
 
         if (!_swingReady || CurrentCombo.Count > 0)
@@ -339,39 +331,54 @@ public class SwordFighter_StateMachine : MeleeFighter
         ActionJoint afterPreparation = new ActionJoint();
         ActionJoint preparation = new ActionJoint();
 
-        Vector3 toPoint = CurrentActivity.target.position;
+        /*
         Plane transformXY = new(transform.forward, transform.position);
         Vector3 toNewPosDir = (transformXY.ClosestPointOnPlane(BladeHandle.position) - transform.position).normalized;
+        Vector3 newPos = distanceFrom.position + toNewPosDir * swing_startDistance;
+        */
 
-        Vector3 newPos = Vital.ClosestPointOnBounds(toNewPosDir * swing_startDistance) + toNewPosDir * swing_startDistance;
+        // Выбираем какую-то точку для удар
+        const int LIMIT = 50;
+        float posX=0;
+        bool res = false;
+        int iteration = 0;
+        while(!res) //TODO : Оптимизировать одной формулой
+        {
+            posX = UnityEngine.Random.Range(0, 1);
+            float prob = UnityEngine.Random.Range(0, 1);
+            res = attackProbability.Evaluate(posX) > prob;
 
-        GameObject rotatorGO = new GameObject("NotDestroyedInAttackUpdate");
-        Transform preaparePoint = rotatorGO.transform;
+            if (iteration++ > LIMIT)
+                break;
+        }
+
+        Vector3 newPos = distanceFrom.position + new Vector3(posX-0.5f,Mathf.Abs(posX-0.5f)).normalized * swing_startDistance;
+
+        GameObject gameObj = new GameObject("NotDestroyedInAttackUpdate");
+        Transform preaparePoint = gameObj.transform;
         preaparePoint.parent = transform;
         preaparePoint.position = newPos;
         preaparePoint.LookAt(preaparePoint.position + (preaparePoint.position - Vital.bounds.center).normalized,
             (CurrentActivity.target.position - preaparePoint.position).normalized);
-        BladeHandle.RotateAround(preaparePoint.position, preaparePoint.right, 90);
+        preaparePoint.RotateAround(preaparePoint.position, preaparePoint.right, 90);
 
         preparation.rotationFrom = _bladeHandle.rotation;
         preparation.relativeDesireFrom = _bladeHandle.position - transform.position;
-
         preparation.nextRelativeDesire = preaparePoint.position - transform.position;
         preparation.nextRotation = preaparePoint.rotation;
         preparation.currentActionType = ActionType.Reposition;
 
         afterPreparation.relativeDesireFrom = preaparePoint.position - transform.position;
         afterPreparation.rotationFrom = preaparePoint.rotation;
-
         afterPreparation.nextRelativeDesire = CurrentActivity.target.position - transform.position; //TODO : Поменять на Transform
-        //А поворот игнорируем, поскольку swing
+        //Поворот игнорируем, поскольку swing
         afterPreparation.currentActionType = ActionType.Swing;
 
         //Добавляем начиная с последнего
         _currentCombo.Push(afterPreparation);
         _currentCombo.Push(preparation);
 
-        Destroy(rotatorGO);
+        Destroy(gameObj);
     }
 
     // Атака оружием по какой-то точке из текущей позиции.
