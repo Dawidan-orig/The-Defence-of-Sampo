@@ -358,12 +358,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 360708901}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.7, y: 12.46, z: 45.3}
+  m_LocalPosition: {x: -9.85, y: 7.49, z: 25.703}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 471637699}
   - {fileID: 7388240217149817831}
+  - {fileID: 471637699}
   m_Father: {fileID: 818318803}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -445,7 +445,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1526482222200477036, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2176349494815556622, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: m_Layer
@@ -691,12 +691,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 471637696}
   m_LocalRotation: {x: 0.17364815, y: -0, z: -0, w: 0.9848078}
-  m_LocalPosition: {x: 0, y: 2.23, z: -0.45}
+  m_LocalPosition: {x: 0, y: 1.250001, z: -2.0400047}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 360708902}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 20, y: 90, z: 0}
 --- !u!114 &471637700
 MonoBehaviour:
@@ -1076,6 +1076,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 2580508120703694375, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
+      propertyPath: walkToTargetDist
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 4445149819978253146, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -1165,8 +1169,24 @@ PrefabInstance:
       value: 999999
       objectReference: {fileID: 0}
     - target: {fileID: 7562448127315587629, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
+      propertyPath: runSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562448127315587629, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: walkSpeed
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562448127315587629, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
+      propertyPath: activeDrag
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562448127315587629, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
+      propertyPath: dragOnGround
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562448127315587629, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
+      propertyPath: toGroundForce
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7936872158763713527, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: rb
@@ -1288,8 +1308,14 @@ MonoBehaviour:
   walkSpeed: 5
   runSpeed: 10
   sprintSpeed: 20
+  maximumReachableSpeed: 30
+  ragdollSpeed: 35
+  velociyAngleChangeSpeedEuler: 90
   distToGround: 0.3
-  dragOnGround: 1
+  activeDrag: 5
+  passiveDragOnGround: 1
+  snapHeight: 0.5
+  snapSpeed: 10
   toGroundForce: 5
   dragOffGround: 0.2
   airMultiplier: 0.5
@@ -1306,6 +1332,8 @@ MonoBehaviour:
   _isGrounded: 1
   _jumpReady: 1
   _inputMovement: {x: 0, y: 0}
+  _framesSinceLastGrounded: 0
+  _contactNormal: {x: 0, y: 0, z: 0}
 --- !u!4 &1048651097 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7455112557779443598, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
@@ -1620,8 +1648,14 @@ MonoBehaviour:
   walkSpeed: 3
   runSpeed: 5
   sprintSpeed: 10
+  maximumReachableSpeed: 30
+  ragdollSpeed: 35
+  velociyAngleChangeSpeedEuler: 90
   distToGround: 0.3
-  dragOnGround: 1
+  activeDrag: 5
+  passiveDragOnGround: 1
+  snapHeight: 0.5
+  snapSpeed: 10
   toGroundForce: 5
   dragOffGround: 0.2
   airMultiplier: 0.5
@@ -1638,6 +1672,8 @@ MonoBehaviour:
   _isGrounded: 1
   _jumpReady: 1
   _inputMovement: {x: 0, y: 0}
+  _framesSinceLastGrounded: 0
+  _contactNormal: {x: 0, y: 0, z: 0}
 --- !u!4 &2137166261 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 450661284916936547, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
@@ -2054,7 +2090,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8495609853315885544}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.98, z: 1.59}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2062,7 +2098,7 @@ Transform:
   - {fileID: 1048651097}
   - {fileID: 133538399}
   m_Father: {fileID: 360708902}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &7764867863310880568
 Rigidbody:
@@ -2239,8 +2275,14 @@ MonoBehaviour:
   walkSpeed: 5
   runSpeed: 10
   sprintSpeed: 20
+  maximumReachableSpeed: 30
+  ragdollSpeed: 35
+  velociyAngleChangeSpeedEuler: 90
   distToGround: 0.3
-  dragOnGround: 1
+  activeDrag: 5
+  passiveDragOnGround: 1
+  snapHeight: 3
+  snapSpeed: 20
   toGroundForce: 5
   dragOffGround: 0.2
   airMultiplier: 0.5
@@ -2257,3 +2299,5 @@ MonoBehaviour:
   _isGrounded: 1
   _jumpReady: 1
   _inputMovement: {x: 0, y: 0}
+  _framesSinceLastGrounded: 0
+  _contactNormal: {x: 0, y: 0, z: 0}
