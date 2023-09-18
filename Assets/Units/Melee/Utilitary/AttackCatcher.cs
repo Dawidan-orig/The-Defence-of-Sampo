@@ -10,6 +10,7 @@ public class AttackCatcher : MonoBehaviour
     [Range(0, 30)]
     public int predictions = 10;
     public bool debug_Draw = true;
+    public bool sword_as_stuff = false;
     [Min(0.75f)]
     public float ignoredDistance = 10; // Домножается на CriticalDistance. Чем выше - тем больше предсказаний будет учтено.
     public float ignoredSpeed = 5; // Определеяет минимальную скорость, начиная с которой объект надо отбить. TODO : Заменить на импульс f=mv
@@ -42,7 +43,7 @@ public class AttackCatcher : MonoBehaviour
 
             if(thing.TryGetComponent(out Faction f)) 
             {
-                if (f.type == GetComponent<Faction>().type)
+                if (!f.IsWillingToAttack(GetComponent<Faction>().type))
                     continue;
             }
 
@@ -55,7 +56,7 @@ public class AttackCatcher : MonoBehaviour
                 continue;
 
             if (thing.TryGetComponent(out Blade blade))
-                if (blade.host != null)
+                if (blade.host != null || !sword_as_stuff)
                 {
                     SwordIncoming(blade);
                     continue;
@@ -115,8 +116,8 @@ public class AttackCatcher : MonoBehaviour
         {
             Debug.DrawLine(closest.posUp, closest.posDown, Color.yellow);
             Debug.DrawRay(closest.posUp, closest.direction * 0.1f, Color.green);
-            Debug.DrawLine(vital.bounds.center, closest.posDown, Color.yellow/1.3f);
-            Debug.DrawLine(vital.bounds.center, closest.posUp, Color.yellow / 1.3f);
+            Debug.DrawLine(vital.bounds.center, closest.posDown, Color.yellow * 0.3f);
+            Debug.DrawLine(vital.bounds.center, closest.posUp, Color.yellow * 0.3f);
         }
 
         OnIncomingAttack?.Invoke(this,

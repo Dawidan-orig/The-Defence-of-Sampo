@@ -43,16 +43,19 @@ public abstract class SwordFighter_BaseState
             if (action.currentActionType == SwordFighter_StateMachine.ActionType.Reposition)
             {
                 _ctx.SetDesires(action.nextRelativeDesire + _ctx.transform.position, action.nextRotation * Vector3.up, action.nextRotation * Vector3.forward);
-                if(!(_ctx.CurrentSwordState is SwordFighter_RepositioningState))
+                _ctx.NullifyProgress();
+                if (!(_ctx.CurrentSwordState is SwordFighter_RepositioningState))
                     SwitchStates(_factory.Repositioning());
+
+                Debug.DrawLine(_ctx.BladeHandle.position, _ctx.DesireBlade.position, Color.white, 3);
             }
             else if (action.currentActionType == SwordFighter_StateMachine.ActionType.Swing)
             {
                 _ctx.Swing(action.nextRelativeDesire + _ctx.transform.position);
+                _ctx.NullifyProgress();
                 if (!(_ctx.CurrentSwordState is SwordFighter_SwingingState))
                     SwitchStates(_factory.Swinging());
-            }
-            _ctx.NullifyProgress();
+            }            
         }
         else 
         {

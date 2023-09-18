@@ -16,7 +16,9 @@ public class DirectHandle : MonoBehaviour
         desirePoint = transform.position;
 
         bladeTarget.velocity = (desirePoint - bladeHandle.position) / Time.fixedDeltaTime;
+        //bladeTarget.transform.rotation = transform.rotation;
 
+        
         bladeTarget.maxAngularVelocity = maxAngularVelocity;
         Quaternion detailRot = transform.rotation * Quaternion.Inverse(bladeTarget.transform.rotation);
         Vector3 euler = new(Mathf.DeltaAngle(0, detailRot.eulerAngles.x),

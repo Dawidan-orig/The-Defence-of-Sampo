@@ -12,9 +12,9 @@ public class SwordFighter_StateMachine : MeleeFighter
     public float swing_EndDistanceMultiplier = 1.5f; // Насколько далеко должен двинуться меч после отбивания.
     public float swing_startDistance = 1.5f; // Насколько далеко должен двинуться меч до удара.
     public float criticalImpulse = 400; // Лучше увернуться, чем отбить объект с импульсом больше этого!
+    public float blockCriticalVelocity = 5; // Всё, что имеет скорость выше этого значения - блокируется
     public float toBladeHandle_MaxDistance = 2; // Максимальное расстояние от vital до рукояти меча. По сути, длина руки.
-    public float toBladeHandle_MinDistance = 0.1f; // Минимальное расстояние от vital.
-    public float blockVelocity = 5;
+    public float toBladeHandle_MinDistance = 0.1f; // Минимальное расстояние от vital.    
     public float close_enough = 0.1f; // Расстояние до цели, при котором можно менять состояние.
     public float angle_enough = 10; // Достаточный угол, чтобы считать что handle близок к desire
     public AnimationCurve attackProbability; // Указывает значения от 0 до 1 означающие вероятность выбора удара слева направо поверху.
@@ -148,6 +148,9 @@ public class SwordFighter_StateMachine : MeleeFighter
 
     protected override void Update()
     {
+        if (!_AIActive)
+            return;
+
         base.Update();
         _currentSwordState.UpdateState();
 
@@ -156,6 +159,9 @@ public class SwordFighter_StateMachine : MeleeFighter
 
     protected override void FixedUpdate()
     {
+        if (!_AIActive)
+            return;
+
         base.FixedUpdate();
         _currentSwordState.FixedUpdateState();
 
@@ -172,9 +178,9 @@ public class SwordFighter_StateMachine : MeleeFighter
         Rigidbody currentIncoming = e.body;
         CurrentToInitialAwait = 0;
 
-        if (e.free && e.body.velocity.magnitude < blockVelocity)
+        if (e.free && e.body.velocity.magnitude < blockCriticalVelocity)
         {
-            if (e.impulse < criticalImpulse)
+            if (e.impulse > criticalImpulse)
             {
                 //IDEA: Вариант сделать замах: С помощью Curve.
 
@@ -190,7 +196,7 @@ public class SwordFighter_StateMachine : MeleeFighter
                 }
             }
         }
-        else if (e.free && e.body.velocity.magnitude >= blockVelocity)
+        else if (e.free && e.body.velocity.magnitude >= blockCriticalVelocity)
         {
             Vector3 blockPoint = Vector3.Lerp(e.start, e.end, 0.5f);
 
@@ -232,10 +238,12 @@ public class SwordFighter_StateMachine : MeleeFighter
             // Что вот буквально ещё шаг - и уже будет столкновение.
 
             OnRepositionIncoming?.Invoke(this, new IncomingReposEventArgs { bladeDown = bladeDown, bladeUp = bladeUp, bladeDir = toEnemyBlade_Dir });
+            //OnSwingIncoming?.Invoke(this, new IncomingSwingEventArgs {toPoint = bladeUp });
         }
         else
         {
             Vector3 blockPoint = Vector3.Lerp(e.start, e.end, 0.5f);
+            Debug.DrawLine(e.start, e.end, Color.white);
 
             GameObject bladePrediction = new("NotDeletedPrediction");
             bladePrediction.transform.position = blockPoint;
@@ -257,16 +265,17 @@ public class SwordFighter_StateMachine : MeleeFighter
             Vector3 toEnemyBlade_Dir = (bladePrediction.transform.position - Vital.bounds.center).normalized;
             bladePrediction.transform.Rotate(toEnemyBlade_Dir, 90); // Ставим перпендикулярно
 
+
             // Притягиваем меч максимально близко к себе.
+            /*
             if (e.body.GetComponent<Tool>().host != null)
             {
                 bladePrediction.transform.position = distanceFrom.position
                     + (bladePrediction.transform.position - distanceFrom.position).normalized * block_minDistance;
-            }
+            }*/
 
             Vector3 bladeDown = start.transform.position;
             Vector3 bladeUp = end.transform.position;
-
             Destroy(bladePrediction);
 
             int ignored = Blade.gameObject.layer; // Для игнора лезвий при проверке.
@@ -302,9 +311,11 @@ public class SwordFighter_StateMachine : MeleeFighter
             //IDEA : Усложнение, которое сделает лучше.
             // Сейчас очень много предсказаний аннулируются из-за коллизий. Есть альтернативное решение: Подбирать при коллизии ближайшие точки от меча до коллайдера такие,
             // Что вот буквально ещё шаг - и уже будет столкновение.
+            Vector3 centerOffset = (Blade.downerPoint.position - Blade.downerPoint.position).normalized *
+                (-Vector3.Distance(BladeHandle.position, Blade.downerPoint.position)); // Смещение для ровной установки рукояти
 
-            OnRepositionIncoming?.Invoke(this, new IncomingReposEventArgs { bladeDown = bladeDown, bladeUp = bladeUp, bladeDir = toEnemyBlade_Dir });
-        }
+            OnRepositionIncoming?.Invoke(this, new IncomingReposEventArgs { bladeDown = centerOffset+ bladeDown, bladeUp = centerOffset+ bladeUp, bladeDir = toEnemyBlade_Dir });
+        }   
     }
 
     // Установка меча по всем возможным параметрам
@@ -314,7 +325,6 @@ public class SwordFighter_StateMachine : MeleeFighter
 
         if (Vector3.Distance(distanceFrom.position, start) > Vector3.Distance(distanceFrom.position, end))
             (end, start) = (start, end);
-
 
         SetDesires(start, (end - start).normalized, SlashingDir);
     }
@@ -384,6 +394,9 @@ public class SwordFighter_StateMachine : MeleeFighter
     // Атака оружием по какой-то точке из текущей позиции.
     public override void Swing(Vector3 toPoint)
     {
+        if (!_swingReady)
+            return;
+
         base.Swing(toPoint);
 
         Vector3 moveTo = toPoint + (toPoint - BladeHandle.position).normalized * swing_EndDistanceMultiplier;

@@ -36,15 +36,12 @@ public class MeleeFighter : TargetingUtilityAI
 
     public virtual void Swing(Vector3 toPoint) 
     {
-        if (!_swingReady)
-            return;
-
         _swingReady = false;
 
-        Invoke(nameof(ReadyToSwing), weapon.cooldownBetweenAttacks);
+        Invoke(nameof(BecomeReadyToSwing), weapon.cooldownBetweenAttacks);
     }
 
-    public void ReadyToSwing()
+    public void BecomeReadyToSwing()
     {
         _swingReady = true;
     }

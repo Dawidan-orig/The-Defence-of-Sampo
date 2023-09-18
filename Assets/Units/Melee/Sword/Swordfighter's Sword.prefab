@@ -80,7 +80,7 @@ MonoBehaviour:
   bladeHandle: {fileID: 7455112557078766969}
   bladeTarget: {fileID: 7455112556665308003}
   maxAngularVelocity: 20
-  angularPower: 0.95
+  angularPower: 0.3
 --- !u!1001 &6314475933894463713
 PrefabInstance:
   m_ObjectHideFlags: 0

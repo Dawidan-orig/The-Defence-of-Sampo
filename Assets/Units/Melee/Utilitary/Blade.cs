@@ -61,7 +61,7 @@ public class Blade : MeleeTool
             if (host)
                 faction.type = host.GetComponent<Faction>().type;
             else
-                faction.type = Faction.FType.neutral;
+                faction.type = Faction.FType.aggressive;
         }
     }
 
@@ -83,7 +83,7 @@ public class Blade : MeleeTool
 
         res.Add(start);
         // Первое предсказание - всегда точное.
-        CollisionControl(start);
+        CollisionPredictionControl(start);
 
         for (int i = 0; i < prediction; i++)
         {
@@ -139,7 +139,7 @@ public class Blade : MeleeTool
         return res;
     }
 
-    public void CollisionControl(border border)
+    public void CollisionPredictionControl(border border)
     {
         // Эта функцию спрятана в Predict для оптимизации. Так проверка на коллизию происходит только когда меч направлен на цель.
         // Задача этой функции - столкнуть меч с другим мечом.
@@ -181,6 +181,11 @@ public class Blade : MeleeTool
         {
             Utilities.DrawSphere(collision.GetContact(0).point, color: Color.red, duration: 3);
             alive.Damage(body.velocity.magnitude * body.mass * damageMultiplier, IDamagable.DamageType.sharp);
+            GetComponent<Collider>().isTrigger = true;
+            Invoke(nameof(ResetCollision), noDamageTime);
+        }
+        else if(collision.collider.transform.TryGetComponent<Blade>(out _)) 
+        {
             GetComponent<Collider>().isTrigger = true;
             Invoke(nameof(ResetCollision), noDamageTime);
         }

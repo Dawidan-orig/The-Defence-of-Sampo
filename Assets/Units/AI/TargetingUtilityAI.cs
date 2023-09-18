@@ -8,7 +8,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 // ИИ, ставящий приоритеты выполнения действий
 // Использует StateMachine в качестве исполнителя
 {
-    public bool AIActive = true;
+    public bool _AIActive = true;
 
     [Header("Setup")]
     public float baseReachDistance = 1; // Или же длина конечности, что держит оружие
@@ -117,7 +117,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 
     protected virtual void OnEnable()
     {
-        AIActive = true;
+        _AIActive = true;
         UtilityAI_Manager.Instance.changeHappened += DistributeActivityFromManager;
     }
 
@@ -125,7 +125,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     {
         UtilityAI_Manager.Instance.changeHappened -= DistributeActivityFromManager;
         NullifyActivity();
-        AIActive = false;
+        _AIActive = false;
     }
 
     protected virtual void Start()
@@ -140,7 +140,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 
     protected virtual void Update()
     {
-        if (!AIActive)
+        if (!_AIActive)
         {
             return;
         }
@@ -150,7 +150,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 
     protected virtual void FixedUpdate()
     {
-        if (!AIActive)
+        if (!_AIActive)
         {
             return;
         }
