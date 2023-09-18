@@ -13,8 +13,8 @@ public class CameraPositioner : MonoBehaviour
 
     private void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
 
         _offset = transform.position - player.position;
     }
@@ -34,7 +34,7 @@ public class CameraPositioner : MonoBehaviour
                     if(c.blade.transform == hit.transform)
                         Physics.Raycast(hit.point, transform.forward, out hit, 300);
 
-                _lockPosition = hit.point; // Просто большое число вдали
+                _lockPosition = hit.point;
             }
             else
                 _lockPosition = transform.position + transform.forward * 300; // Просто большое число
@@ -70,8 +70,8 @@ public class CameraPositioner : MonoBehaviour
         }
         else
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            //Cursor.lockState = CursorLockMode.Locked;
+            //Cursor.visible = false;
 
             float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensitivity.x;
             float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensitivity.y;
