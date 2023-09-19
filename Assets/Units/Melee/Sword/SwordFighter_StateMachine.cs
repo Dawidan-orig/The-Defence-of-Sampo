@@ -178,6 +178,7 @@ public class SwordFighter_StateMachine : MeleeFighter
         Rigidbody currentIncoming = e.body;
         CurrentToInitialAwait = 0;
 
+        // Скорость низкая и объект можно отразить как угодно - взмах
         if (e.free && e.body.velocity.magnitude < blockCriticalVelocity)
         {
             if (e.impulse > criticalImpulse)
@@ -196,6 +197,7 @@ public class SwordFighter_StateMachine : MeleeFighter
                 }
             }
         }
+        // То же самое, но тут блокируем - взмах долгий слижком
         else if (e.free && e.body.velocity.magnitude >= blockCriticalVelocity)
         {
             Vector3 blockPoint = Vector3.Lerp(e.start, e.end, 0.5f);
@@ -240,6 +242,7 @@ public class SwordFighter_StateMachine : MeleeFighter
             OnRepositionIncoming?.Invoke(this, new IncomingReposEventArgs { bladeDown = bladeDown, bladeUp = bladeUp, bladeDir = toEnemyBlade_Dir });
             //OnSwingIncoming?.Invoke(this, new IncomingSwingEventArgs {toPoint = bladeUp });
         }
+        // Тут надо отразить точным блоком
         else
         {
             Vector3 blockPoint = Vector3.Lerp(e.start, e.end, 0.5f);

@@ -173,7 +173,7 @@ public class AttackCatcher : MonoBehaviour
 
         if (collision.transform.TryGetComponent(out Blade blade))
         {
-            if (blade == GetComponent<SwordFighter_StateMachine>().Blade)
+            if (TryGetComponent(out SwordFighter_StateMachine s) && blade == s?.Blade)
             {
                 //Debug.Log($"Selfslash at speed {blade.body.velocity.magnitude}", collision.transform);
                 Debug.DrawLine(blade.downerPoint.position, blade.upperPoint.position, new Color(0.8f, 0.2f, 0), 3);

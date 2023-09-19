@@ -1,6 +1,9 @@
 using System;
+using UnityEditor;
 using UnityEngine;
+using static SwordFighter_StateMachine;
 
+[RequireComponent(typeof(AttackCatcher))]
 public class SwordControl : MonoBehaviour
 {
     [Header("constraints")]
@@ -8,13 +11,17 @@ public class SwordControl : MonoBehaviour
     public float block_minDistance = 1; // Минимальное расстояние для блока, используемое для боев с противником, а не отбивания.
     public float swing_EndDistanceMultiplier = 2; // Насколько далеко должен двинуться меч после отбивания.
     public float swing_startDistance = 2; // Насколько далеко должен двинуться меч до удара.
-    public float criticalImpulse = 200; // Лучше увернуться, чем отбить объект с импульсом больше этого!
     public float toBladeHandle_MaxDistance = 0.6f; // Максимальное расстояние от vital до рукояти меча. По сути, длина руки.
     public float toBladeHandle_MinDistance = 0.1f; // Минимальное расстояние от vital.
     public float close_enough = 0.1f; // Расстояние до цели, при котором можно менять состояние.
+    public float automaticBlockAngleEuler = 15f;
+
+    [Header("Toggles")]
+    [SerializeField]
+    private bool _automaticBlock = true;
 
     [Header("timers")]
-    public float minimalTimeBetweenAttacks = 2;
+    public float minimalTimeBetweenAttacks = 2; //TODO : Не работает, проверить.
 
     [Header("init-s")]
     public Blade blade;
@@ -39,11 +46,13 @@ public class SwordControl : MonoBehaviour
     [SerializeField]
     float _attackRecharge = 0;
     [SerializeField]
+    private bool _autoBlock = false;
+    [SerializeField]
     private bool _swinging = false;
     [SerializeField]
     private Vector3 _swingEnd;
 
-    public class ActionData : EventArgs 
+    public class ActionData : EventArgs
     {
         public Transform moveStart;
         public Transform desire;
@@ -62,6 +71,21 @@ public class SwordControl : MonoBehaviour
     [Header("Debug")]
     [SerializeField]
     private bool isSwordFixing = true;
+
+    public bool AutomaticBlock
+    {
+        get => _automaticBlock;
+        set
+        {
+            _automaticBlock = value;
+            GetComponent<AttackCatcher>().enabled = _automaticBlock;
+        }
+    }
+    private void OnValidate()
+    {
+        GetComponent<AttackCatcher>().enabled = _automaticBlock;
+    }
+
 
     private void Awake()
     {
@@ -89,6 +113,8 @@ public class SwordControl : MonoBehaviour
         _initialBlade.rotation = bladeHandle.rotation;
         _initialBlade.parent = bladeContainer;
 
+        GetComponent<AttackCatcher>().OnIncomingAttack += Incoming;
+
         SetDesires(_initialBlade.position, _initialBlade.up, _initialBlade.forward);
         NullifyProgress();
         _moveProgress = 1;
@@ -109,9 +135,11 @@ public class SwordControl : MonoBehaviour
 
         if (isSwordFixing)
             Control_FixSword();
+
+        _autoBlock = false;
     }
 
-    public void BladeCollision(object sender, Collision c) 
+    public void BladeCollision(object sender, Collision c)
     {
         if (_swinging)
         {
@@ -126,7 +154,7 @@ public class SwordControl : MonoBehaviour
         if (_swinging)
             return;
 
-        _swinging = true;        
+        _swinging = true;
         Vector3 moveTo = toPoint + (toPoint - bladeHandle.position).normalized * swing_EndDistanceMultiplier;
 
         Vector3 pointDir = (moveTo - bladeHolder.position).normalized;
@@ -139,7 +167,56 @@ public class SwordControl : MonoBehaviour
         SetDesires(moveTo, pointDir, (moveTo - toPoint).normalized);
         //NullifyProgress();
 
-        OnSlashStart?.Invoke(this, new ActionData { blade = blade, desire = _desireBlade, moveStart = _moveFrom});
+        OnSlashStart?.Invoke(this, new ActionData { blade = blade, desire = _desireBlade, moveStart = _moveFrom });
+    }
+
+    private void Incoming(object sender, AttackCatcher.AttackEventArgs e) 
+    {
+        if (_swinging)
+            return;
+
+        Vector3 blockPoint = Vector3.Lerp(e.start, e.end, 0.5f);
+        Vector3 bladeCenter = Vector3.Lerp(blade.downerPoint.position, blade.upperPoint.position, 0.5f);
+        Vector3 bladeDir = (blade.upperPoint.position - blade.downerPoint.position).normalized;
+        float resultAngle = Vector3.Angle((blockPoint - bladeCenter).normalized,
+            bladeDir);
+
+        //Debug.DrawLine(blockPoint, bladeCenter);
+        //Utilities.CreateTextInWorld(resultAngle.ToString(), position: bladeCenter);
+
+        //EditorApplication.isPaused = true;
+
+        if (resultAngle > automaticBlockAngleEuler)
+            return;
+
+        _autoBlock = true;        
+
+        GameObject bladePrediction = new("NotDeletedPrediction");
+        bladePrediction.transform.position = blockPoint;
+
+        GameObject start = new();
+        start.transform.position = e.start;
+        start.transform.parent = bladePrediction.transform;
+
+        GameObject end = new();
+        end.transform.position = e.end;
+        end.transform.parent = bladePrediction.transform;
+
+        Vector3 toEnemyBlade_Dir = (bladePrediction.transform.position - vital.bounds.center).normalized;
+        bladePrediction.transform.Rotate(toEnemyBlade_Dir, 90); // Ставим перпендикулярно
+
+        Vector3 bladeDown = start.transform.position;
+        Vector3 bladeUp = end.transform.position;
+        Destroy(bladePrediction);
+
+        BoxCollider bladeCollider = blade.GetComponent<BoxCollider>();
+        Vector3 bladeHalfWidthLength = new Vector3((bladeCollider.size.x * bladeCollider.transform.lossyScale.x) / 2,
+            0.1f, (bladeCollider.size.z * bladeCollider.transform.lossyScale.z) / 2);
+
+        Vector3 centerOffset = (blade.downerPoint.position - blade.downerPoint.position).normalized *
+            (-Vector3.Distance(bladeHandle.position, blade.downerPoint.position)); // Смещение для ровной установки рукояти
+
+        ApplyNewDesire(centerOffset + bladeDown, (bladeUp - bladeDown).normalized, toEnemyBlade_Dir);
     }
 
     // Установка меча по всем возможным параметрам
@@ -148,6 +225,7 @@ public class SwordControl : MonoBehaviour
         if (_swinging)
             return;
 
+        if(!_autoBlock)
         ApplyNewDesire(start, (end - start).normalized, SlashingDir);
     }
 
@@ -193,10 +271,10 @@ public class SwordControl : MonoBehaviour
                 + Vector3.Slerp(relativeFrom, transform.forward * toBladeHandle_MaxDistance, _moveProgress * 2)
                 + new Vector3(0, Mathf.Lerp(relativeHeightFrom, relativeHeightTo, _moveProgress), 0);
         }
-        else 
+        else
         {
             bladeHandle.position = transform.position
-             + Vector3.Slerp(transform.forward * toBladeHandle_MaxDistance, relativeTo, (_moveProgress - 0.5f)*2)
+             + Vector3.Slerp(transform.forward * toBladeHandle_MaxDistance, relativeTo, (_moveProgress - 0.5f) * 2)
              + new Vector3(0, Mathf.Lerp(relativeHeightFrom, relativeHeightTo, _moveProgress), 0);
         }
 
@@ -204,11 +282,11 @@ public class SwordControl : MonoBehaviour
 
         if (_moveProgress >= 1)
         {
-            OnSlashEnd?.Invoke(this, new ActionData {moveStart = _moveFrom, desire = _desireBlade, blade = blade });
+            OnSlashEnd?.Invoke(this, new ActionData { moveStart = _moveFrom, desire = _desireBlade, blade = blade });
             NullifyProgress();
             _swinging = false;
         }
-        else 
+        else
         {
             OnSlash?.Invoke(this, new ActionData { moveStart = _moveFrom, desire = _desireBlade, blade = blade });
         }
@@ -235,7 +313,7 @@ public class SwordControl : MonoBehaviour
             _desireBlade.position = closestPos + (_desireBlade.position - closestPos).normalized * toBladeHandle_MinDistance;
     }
 
-    public void ReturnToInitial() 
+    public void ReturnToInitial()
     {
         if (_swinging)
             return;
@@ -245,7 +323,7 @@ public class SwordControl : MonoBehaviour
         NullifyProgress();
     }
 
-    public void ApplyNewDesire(Vector3 pos, Vector3 up, Vector3 forward) 
+    public void ApplyNewDesire(Vector3 pos, Vector3 up, Vector3 forward)
     {
         if (_swinging)
             return;
