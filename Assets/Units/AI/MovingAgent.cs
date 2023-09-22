@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Movement))]
@@ -10,6 +7,12 @@ public class MovingAgent : MonoBehaviour
     public float runToTargetDist = 30; // Дистанция, меньше которой агент будет бежать.
 
     public float angularRotatingSpeed = 360;
+
+    public float wallHeight = 1;
+    public float edgeDistance = 2;
+    public float edgeDepth = 1;
+
+    public LayerMask terrainMask;
 
     private Vector3 desireLookDir;
 
@@ -66,5 +69,38 @@ public class MovingAgent : MonoBehaviour
             movement.PassInput(input, Movement.SpeedType.run, false);
         else
             movement.PassInput(input, Movement.SpeedType.sprint, false);
+    }
+
+    public bool IsNearObstacle(Vector3 desiredMovement,out Vector3 obstacleNormal) 
+    {
+        Vector3 bottom = transform.position + Vector3.down* transform.GetComponent<AliveBeing>().vital.bounds.size.y / 2;
+
+        Vector3 edgeFlatPoint = bottom + desiredMovement.normalized * edgeDistance;
+        Vector3 wallHeightPoint = edgeFlatPoint + Vector3.up * wallHeight;
+        Vector3 edgeDepthPoint = edgeFlatPoint + Vector3.down * edgeDepth;
+
+        bool wallHit = Utilities.VisualisedRaycast(bottom,
+            (wallHeightPoint - bottom).normalized,
+            out RaycastHit wall,
+            (wallHeightPoint - bottom).magnitude,
+            terrainMask);
+
+        bool stepFloorHit = Utilities.VisualisedRaycast(wallHeightPoint,
+            (edgeDepthPoint - wallHeightPoint).normalized,
+            out _,
+            (edgeDepthPoint - wallHeightPoint).magnitude,
+            terrainMask);
+        
+
+        Utilities.VisualisedRaycast(edgeDepthPoint,
+            (bottom - edgeDepthPoint + Vector3.down * edgeDepth).normalized,
+            out RaycastHit edge,
+            (bottom - edgeDepthPoint + Vector3.down * edgeDepth).magnitude,
+            terrainMask);
+
+            obstacleNormal = (wall.normal == null ? edge.normal : wall.normal);
+        
+
+        return wallHit || !stepFloorHit;
     }
 }

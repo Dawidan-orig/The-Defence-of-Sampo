@@ -17,8 +17,8 @@ public class AI_Attack : UtilityAI_BaseState
 
         Tool weapon = _ctx.CurrentActivity.actWith;
 
-        if(_ctx.MovingAgent)
-        _ctx.MovingAgent.MoveIteration(_ctx.transform.position);
+        if (_ctx.MovingAgent)
+            _ctx.MovingAgent.MoveIteration(_ctx.transform.position);
 
         //TODO : Чтобы не плодить все эти разделения на стреляющего, ближнего боя и прочих - лучше сделать реакцию прямо в _ctx.
         // Это нужно в основном для существ, у которых оружие не классифицируемое.
@@ -31,13 +31,24 @@ public class AI_Attack : UtilityAI_BaseState
             }
 
             // Отходим назад
-            if(_ctx.MovingAgent) 
+            if (_ctx.MovingAgent)
             {
                 //TODO : Переместить это в LocalReposition
                 float progress = 1 - (Vector3.Distance(_ctx.CurrentActivity.target.position, _ctx.transform.position) / (((SimplestShooting)weapon).range));
-                _ctx.MovingAgent.MoveIteration(
-                    _ctx.transform.position + _ctx.retreatInfluence.Evaluate(progress)
-                    * (_ctx.CurrentActivity.target.position - _ctx.transform.position),
+
+                Vector3 newPos = _ctx.transform.position + _ctx.retreatInfluence.Evaluate(progress)
+                    * (_ctx.CurrentActivity.target.position - _ctx.transform.position);
+
+                if (_ctx.MovingAgent.IsNearObstacle(newPos - _ctx.transform.position, out Vector3 normal))
+                {
+                    Vector3 dir = Vector3.ProjectOnPlane((_ctx.CurrentActivity.target.position - _ctx.transform.position).normalized, normal);
+                    dir.Normalize();                    
+
+                    newPos = _ctx.transform.position + _ctx.retreatInfluence.Evaluate(progress) *
+                        (_ctx.CurrentActivity.target.position - _ctx.transform.position).magnitude * dir;
+                }                
+
+                _ctx.MovingAgent.MoveIteration(newPos,
                     _ctx.CurrentActivity.target.position);
             }
 
@@ -51,15 +62,13 @@ public class AI_Attack : UtilityAI_BaseState
         }
 
         // Отходим назад
+        //TODO : Переместить это в LocalReposition
         if (_ctx.MovingAgent)
         {
-            //TODO : Переместить это в LocalReposition
             float progress = 1 - (Vector3.Distance(_ctx.CurrentActivity.target.position, _ctx.transform.position)
                 / (_ctx.CurrentActivity.actWith.additionalMeleeReach + _ctx.baseReachDistance));
-            _ctx.MovingAgent.MoveIteration(
-                _ctx.transform.position + _ctx.retreatInfluence.Evaluate(progress)
-                * (_ctx.CurrentActivity.target.position - _ctx.transform.position),
-                _ctx.CurrentActivity.target.position);
+
+            RetreatReposition(progress);
         }
 
         return false;
@@ -97,5 +106,24 @@ public class AI_Attack : UtilityAI_BaseState
     public override string ToString()
     {
         return "Attacking";
+    }
+
+    private void RetreatReposition(float retreatCurveTime)
+    {
+        Vector3 newPos = _ctx.transform.position + _ctx.retreatInfluence.Evaluate(retreatCurveTime)
+                * (_ctx.CurrentActivity.target.position - _ctx.transform.position);
+
+        if (_ctx.MovingAgent.IsNearObstacle(newPos - _ctx.transform.position, out Vector3 normal))
+        {
+            Vector3 dir = Vector3.ProjectOnPlane((_ctx.CurrentActivity.target.position - _ctx.transform.position).normalized, normal);
+            dir.Normalize();
+
+            Debug.DrawRay(_ctx.transform.position, dir, Color.black);
+
+            newPos = _ctx.transform.position + dir
+                * (_ctx.CurrentActivity.target.position - _ctx.transform.position).magnitude;
+        }
+
+        _ctx.MovingAgent.MoveIteration(newPos, _ctx.CurrentActivity.target.position);
     }
 }

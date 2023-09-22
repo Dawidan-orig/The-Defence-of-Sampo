@@ -53,6 +53,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   cooldownBetweenAttacks: 1
+  damageMultiplier: 1
   rightHandHandle: {fileID: 0}
 --- !u!1 &4885823581115398602
 GameObject:
@@ -63,9 +64,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2141527101241126520}
-  - component: {fileID: 5969556619381456836}
+  - component: {fileID: 4731292548699198392}
+  - component: {fileID: 352829285030914659}
+  - component: {fileID: 5211715117605142799}
   - component: {fileID: 5969556619381456839}
-  - component: {fileID: 5969556619381456858}
+  - component: {fileID: 5969556619381456836}
   - component: {fileID: 1509216759383330268}
   - component: {fileID: 439248952973260489}
   m_Layer: 6
@@ -92,7 +95,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5969556619381456836
+--- !u!114 &4731292548699198392
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,11 +104,72 @@ MonoBehaviour:
   m_GameObject: {fileID: 4885823581115398602}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9fa13b9e96b49ba409c82c996b147f2e, type: 3}
+  m_Script: {fileID: 11500000, guid: c67325d249865a74a82c5f77c8873268, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weight: 1
-  health: 100
+  effects: []
+--- !u!114 &352829285030914659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4885823581115398602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4652a86ce5fa5f9458f2079275f270bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkToTargetDist: 5
+  runToTargetDist: 30
+  angularRotatingSpeed: 360
+  wallHeight: 1
+  edgeDistance: 2
+  edgeDepth: 1
+  terrainMask:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!114 &5211715117605142799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4885823581115398602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d19ad544bb6e4b418c19c1e4e1f26e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkSpeed: 5
+  runSpeed: 10
+  sprintSpeed: 20
+  maximumReachableSpeed: 25
+  ragdollSpeed: 35
+  velociyAngleChangeSpeedEuler: 90
+  distToGround: 0.3
+  activeDrag: 20
+  passiveDragOnGround: 1
+  snapHeight: 3
+  snapSpeed: 21
+  toGroundForce: 5
+  dragOffGround: 0.2
+  airMultiplier: 0.5
+  jumpForce: 10
+  jumpCooldown: 2
+  _inJump: 0
+  slopeAngle: 65
+  ground:
+    serializedVersion: 2
+    m_Bits: 1
+  vital: {fileID: 439248952973260489}
+  _movement: {x: 0, y: 0, z: 0}
+  _moveSpeed: 0
+  _isGrounded: 1
+  _jumpReady: 1
+  _inputMovement: {x: 0, y: 0}
+  _framesSinceLastGrounded: 0
+  _contactNormal: {x: 0, y: 0, z: 0}
 --- !u!114 &5969556619381456839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,28 +183,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
---- !u!195 &5969556619381456858
-NavMeshAgent:
+--- !u!114 &5969556619381456836
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4885823581115398602}
   m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.3
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0.99
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fa13b9e96b49ba409c82c996b147f2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ai_weight: 1
+  health: 100
+  vital: {fileID: 439248952973260489}
+  mainBody: {fileID: 0}
+  root: {fileID: 0}
 --- !u!54 &1509216759383330268
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -246,7 +246,6 @@ public class SwordFighter_StateMachine : MeleeFighter
         else
         {
             Vector3 blockPoint = Vector3.Lerp(e.start, e.end, 0.5f);
-            Debug.DrawLine(e.start, e.end, Color.white);
 
             GameObject bladePrediction = new("NotDeletedPrediction");
             bladePrediction.transform.position = blockPoint;

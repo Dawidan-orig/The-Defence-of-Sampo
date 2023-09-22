@@ -72,6 +72,7 @@ GameObject:
   - component: {fileID: 6974210331038364377}
   - component: {fileID: 7562448127315587629}
   - component: {fileID: 2580508120703694375}
+  - component: {fileID: 1961015284316083203}
   m_Layer: 6
   m_Name: Friend Sword Fighter
   m_TagString: Untagged
@@ -287,7 +288,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fa13b9e96b49ba409c82c996b147f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weight: 4
+  ai_weight: 1
   health: 100
   vital: {fileID: 6060500822727802340}
   mainBody: {fileID: 0}
@@ -348,6 +349,25 @@ MonoBehaviour:
   walkToTargetDist: 5
   runToTargetDist: 100
   angularRotatingSpeed: 360
+  wallHeight: 0.3
+  edgeDistance: 0.3
+  edgeDepth: 0.4
+  terrainMask:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!114 &1961015284316083203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526482222200477036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c67325d249865a74a82c5f77c8873268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effects: []
 --- !u!1 &4269479461079977091
 GameObject:
   m_ObjectHideFlags: 0
