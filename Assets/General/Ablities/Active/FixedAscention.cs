@@ -40,7 +40,7 @@ public class FixedAscention : Ability
                 continue;
 
             if (c.TryGetComponent<Faction>(out _))
-                if (!c.transform.GetComponent<Faction>().IsWillingToAttack(user.GetComponent<Faction>().type))
+                if (!c.transform.GetComponent<Faction>().IsWillingToAttack(user.GetComponent<Faction>().f_type))
                     continue;
 
             if (c.TryGetComponent<BuffSystem>(out var other))

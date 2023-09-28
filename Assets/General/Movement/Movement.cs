@@ -19,6 +19,7 @@ public class Movement : MonoBehaviour
     [Header("Air")]
     public float dragOffGround = 0.2f;
     public float airMultiplier = 0.5f;
+    public bool externalGracityControl = false;
     [Header("Jump")]
     public float jumpForce = 10;
     public float jumpCooldown = 2;
@@ -78,7 +79,8 @@ public class Movement : MonoBehaviour
         else
             _rb.drag = 0;
 
-        _rb.useGravity = !OnSlope();
+        if(!externalGracityControl)
+            _rb.useGravity = !OnSlope();
     }
 
     protected virtual void FixedUpdate()

@@ -118,7 +118,7 @@ public class AI_LongReposition : UtilityAI_BaseState
             if (path.status != NavMeshPathStatus.PathInvalid && path.corners.Length > 1)
                 _ctx.MovingAgent.MoveIteration(path.corners[1]);
             else             
-                _ctx.MovingAgent.MoveIteration(NavMeshCalculations.Instance.GetCell(_ctx.transform.position).Center());            
+                _ctx.MovingAgent.MoveIteration(NavMeshCalculations.Instance.GetCell(_ctx.navMeshCalcFrom.position).Center());            
         }
     }
 

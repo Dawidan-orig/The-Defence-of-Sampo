@@ -59,9 +59,9 @@ public class Blade : MeleeTool
         if (faction)
         {
             if (host)
-                faction.type = host.GetComponent<Faction>().type;
+                faction.f_type = host.GetComponent<Faction>().f_type;
             else
-                faction.type = Faction.FType.aggressive;
+                faction.f_type = Faction.FType.aggressive;
         }
     }
 

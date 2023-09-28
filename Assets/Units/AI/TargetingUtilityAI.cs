@@ -113,6 +113,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
         _body = GetComponent<Rigidbody>();
         _factory = new UtilityAI_Factory(this);
         _currentState = _factory.Deciding();
+        navMeshCalcFrom = navMeshCalcFrom == null ? transform : navMeshCalcFrom;
     }
 
     protected virtual void OnEnable()
@@ -295,7 +296,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 
         Faction other = target.GetComponent<Faction>();
 
-        if (!other.IsWillingToAttack(GetComponent<Faction>().type) || target == transform)
+        if (!other.IsWillingToAttack(GetComponent<Faction>().f_type) || target == transform)
             res = false;
 
         if (other.TryGetComponent(out AliveBeing b))

@@ -74,7 +74,7 @@ public class ProceedingSlash : Ability
             Quaternion.FromToRotation(Vector3.right,
             Vector3.ProjectOnPlane((e.desire.position - e.moveStart.position).normalized, user.forward)));
 
-        slash.GetComponent<Faction>().type = user.GetComponent<Faction>().type;
+        slash.GetComponent<Faction>().f_type = user.GetComponent<Faction>().f_type;
 
         Rigidbody body = slash.GetComponent<Rigidbody>();
 
