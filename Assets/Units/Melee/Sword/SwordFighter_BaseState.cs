@@ -43,21 +43,21 @@ public abstract class SwordFighter_BaseState
             if (action.currentActionType == SwordFighter_StateMachine.ActionType.Reposition)
             {
                 _ctx.SetDesires(action.nextRelativeDesire + _ctx.transform.position, action.nextRotation * Vector3.up, action.nextRotation * Vector3.forward);
-                if(!(_ctx.CurrentSwordState is SwordFighter_RepositioningState))
+                _ctx.NullifyProgress();
+                if (!(_ctx.CurrentSwordState is SwordFighter_RepositioningState))
                     SwitchStates(_factory.Repositioning());
             }
             else if (action.currentActionType == SwordFighter_StateMachine.ActionType.Swing)
             {
                 _ctx.Swing(action.nextRelativeDesire + _ctx.transform.position);
+                _ctx.NullifyProgress();
                 if (!(_ctx.CurrentSwordState is SwordFighter_SwingingState))
                     SwitchStates(_factory.Swinging());
-            }
-            _ctx.NullifyProgress();
+            }            
         }
         else 
         {
-            _ctx.SetDesires(_ctx.InitialBlade.position, _ctx.InitialBlade.up, _ctx.InitialBlade.forward);            
-            _ctx.NullifyProgress();
+            _ctx.SetDesires(_ctx.InitialBlade.position, _ctx.InitialBlade.up, _ctx.InitialBlade.forward);           
             _ctx.CurrentToInitialAwait = _ctx.toInitialAwait;
             SwitchStates(_factory.Repositioning());
         }        

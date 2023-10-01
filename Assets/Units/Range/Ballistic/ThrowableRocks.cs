@@ -40,7 +40,7 @@ public class ThrowableRocks : SimplestShooting
         Faction BFac;
         if (!bullet.TryGetComponent(out BFac))
             BFac = bullet.AddComponent<Faction>();
-        BFac.type = host.GetComponent<Faction>().type;
+        BFac.f_type = host.GetComponent<Faction>().f_type;
 
         Physics.IgnoreCollision(GetComponent<Collider>(), bullet.GetComponent<Collider>());
         Physics.IgnoreCollision(host.GetComponent<Collider>(), bullet.GetComponent<Collider>());

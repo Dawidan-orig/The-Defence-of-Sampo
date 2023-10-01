@@ -78,7 +78,6 @@ MonoBehaviour:
   upperPoint: {fileID: 3518550696813727528}
   downerPoint: {fileID: 3518550696206137202}
   handle: {fileID: 3518550695537259928}
-  noDamageTime: 0.5
   body: {fileID: 0}
   DEBUG_AngularVelocityEuler: {x: 0, y: 0, z: 0}
   faction: {fileID: 0}
@@ -86,6 +85,7 @@ MonoBehaviour:
   alwaysDraw: 0
   predictionColor: {r: 1, g: 0.5981132, b: 0.5981132, a: 0.4117647}
   iterations: 10
+  noDamageTime: 0.5
 --- !u!114 &4524884976226258829
 MonoBehaviour:
   m_ObjectHideFlags: 0

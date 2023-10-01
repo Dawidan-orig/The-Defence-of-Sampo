@@ -33,7 +33,7 @@ public class Blow : Ability
                 continue;
 
             if (c.TryGetComponent<Faction>(out _))
-                if (!c.transform.GetComponent<Faction>().IsWillingToAttack(user.GetComponent<Faction>().type))
+                if (!c.transform.GetComponent<Faction>().IsWillingToAttack(user.GetComponent<Faction>().f_type))
                     continue;
 
             if (c.TryGetComponent<Rigidbody>(out var otherBody))

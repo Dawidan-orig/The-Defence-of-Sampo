@@ -43,9 +43,11 @@ GameObject:
   - component: {fileID: 2397089146008967543}
   - component: {fileID: 2397089146008967542}
   - component: {fileID: 2397089146008967545}
-  - component: {fileID: 2397089146008967544}
   - component: {fileID: 2397089146008967547}
   - component: {fileID: 2397089146008967546}
+  - component: {fileID: 9148282446471945464}
+  - component: {fileID: 1024381372517145169}
+  - component: {fileID: 8305905749232884267}
   m_Layer: 6
   m_Name: Ballistic Shooting Unit
   m_TagString: Untagged
@@ -83,7 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf6bfd97c22875e4a80dab4979102aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AIActive: 1
+  _AIActive: 1
   baseReachDistance: 1
   maxSpeed: 3.5
   retreatMultiplier: 0.2
@@ -119,10 +121,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fa13b9e96b49ba409c82c996b147f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weight: 1
+  ai_weight: 1
   health: 100
   vital: {fileID: 2397089146008967546}
   mainBody: {fileID: 0}
+  root: {fileID: 0}
 --- !u!114 &2397089146008967545
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,28 +139,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 1
---- !u!195 &2397089146008967544
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2397089146008967548}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.3
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0.99
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
 --- !u!54 &2397089146008967547
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -188,6 +169,81 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &9148282446471945464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397089146008967548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c67325d249865a74a82c5f77c8873268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effects: []
+--- !u!114 &1024381372517145169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397089146008967548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d19ad544bb6e4b418c19c1e4e1f26e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkSpeed: 3
+  runSpeed: 5
+  sprintSpeed: 10
+  maximumReachableSpeed: 30
+  ragdollSpeed: 35
+  velociyAngleChangeSpeedEuler: 90
+  distToGround: 0.3
+  activeDrag: 5
+  passiveDragOnGround: 1
+  snapHeight: 0.5
+  snapSpeed: 10
+  toGroundForce: 5
+  dragOffGround: 0.2
+  airMultiplier: 0.5
+  jumpForce: 10
+  jumpCooldown: 2
+  _inJump: 0
+  slopeAngle: 65
+  ground:
+    serializedVersion: 2
+    m_Bits: 1
+  vital: {fileID: 2397089146008967546}
+  _movement: {x: 0, y: 0, z: 0}
+  _moveSpeed: 0
+  _isGrounded: 1
+  _jumpReady: 1
+  _inputMovement: {x: 0, y: 0}
+  _framesSinceLastGrounded: 0
+  _contactNormal: {x: 0, y: 0, z: 0}
+--- !u!114 &8305905749232884267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397089146008967548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4652a86ce5fa5f9458f2079275f270bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkToTargetDist: 50
+  runToTargetDist: 100
+  angularRotatingSpeed: 360
+  wallHeight: 0
+  edgeDistance: 0.3
+  edgeDepth: 0.4
+  terrainMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &2397089146338771506
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,10 +420,11 @@ MonoBehaviour:
     m_Bits: 1
   shootPoint: {fileID: 2397089145486354680}
   bulletPrefab: {fileID: 925606411081233001, guid: 45f5d79c7a2dbdc42843512f3253fdaf, type: 3}
-  range: 10
+  range: 40.816326
   timeBetweenBullets: 1
   gunPower: 20
   forceMode: 2
+  ONE_SIDE_SEPARAIONS: 0
 --- !u!1001 &2538407679295669753
 PrefabInstance:
   m_ObjectHideFlags: 0

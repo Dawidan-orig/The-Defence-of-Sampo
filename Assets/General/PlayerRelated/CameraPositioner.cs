@@ -1,8 +1,10 @@
+using TMPro;
 using UnityEngine;
 
 public class CameraPositioner : MonoBehaviour
 {
-    public Transform player;
+    public PlayerController player;
+    public Transform target;
     public Vector2 sensitivity;
     public Vector2 xAngleLimit = new Vector2(-75, 75);
 
@@ -16,12 +18,12 @@ public class CameraPositioner : MonoBehaviour
         //Cursor.lockState = CursorLockMode.Locked;
         //Cursor.visible = false;
 
-        _offset = transform.position - player.position;
+        _offset = transform.position - target.position;
     }
 
     private void LateUpdate()
     {
-        transform.position = player.position + player.rotation * _offset;
+        transform.position = target.position + target.rotation * _offset;
 
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
@@ -49,7 +51,7 @@ public class CameraPositioner : MonoBehaviour
             if (_lockTarget)
                 _lockPosition = _lockTarget.position;
 
-            Debug.DrawLine(player.position, _lockPosition);
+            Debug.DrawLine(target.position, _lockPosition);
 
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
@@ -83,7 +85,7 @@ public class CameraPositioner : MonoBehaviour
         }
         
         transform.rotation = Quaternion.Euler(_rotation.x, _rotation.y, 0);
-        player.rotation = Quaternion.Euler(0, _rotation.y, 0);
+        player.transform.rotation = Quaternion.Euler(0, _rotation.y, 0);
 
         Vector3 eulers = transform.rotation.eulerAngles;
 

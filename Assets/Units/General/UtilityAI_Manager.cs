@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class UtilityAI_Manager : MonoBehaviour
@@ -9,14 +7,6 @@ public class UtilityAI_Manager : MonoBehaviour
     // Singleton
 {
     private static UtilityAI_Manager _instance;
-
-    [Header("Setup")]
-    // Оба нужны для динамического изменения уровня сложности, а так же реакции на игрока и само Сампо.
-    // Например, на высоком уровне сложности юниты, способные эффективно разрушать строения будут больше целиться в Сампо, а не в другие здания.
-    [SerializeField]
-    private GameObject _player;
-    [SerializeField]
-    private GameObject _sampo;
 
     private Dictionary<GameObject, int> _interactables = new Dictionary<GameObject, int>();
 
@@ -36,6 +26,11 @@ public class UtilityAI_Manager : MonoBehaviour
             }
             return _instance;
         } 
+    }
+
+    private void OnApplicationQuit()
+    {
+        Destroy(_instance);
     }
 
     public class UAIData : EventArgs

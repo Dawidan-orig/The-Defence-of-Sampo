@@ -56,7 +56,7 @@ public class AI_Decide : UtilityAI_BaseState
 
     public override void UpdateState()
     {
-        if (!_ctx.AIActive)
+        if (!_ctx._AIActive)
             return;
 
         Debug.DrawRay(_ctx.transform.position, Vector3.up * 2, Color.black);

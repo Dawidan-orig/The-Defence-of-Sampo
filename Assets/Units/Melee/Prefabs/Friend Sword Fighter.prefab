@@ -67,12 +67,12 @@ GameObject:
   - component: {fileID: 4596132861829641046}
   - component: {fileID: 5048345013734752868}
   - component: {fileID: 795735766536500156}
-  - component: {fileID: 2262772776922178651}
   - component: {fileID: 6060500822727802340}
   - component: {fileID: 6974210331038364376}
   - component: {fileID: 6974210331038364377}
   - component: {fileID: 7562448127315587629}
   - component: {fileID: 2580508120703694375}
+  - component: {fileID: 1961015284316083203}
   m_Layer: 6
   m_Name: Friend Sword Fighter
   m_TagString: Untagged
@@ -96,6 +96,7 @@ Transform:
   - {fileID: 3809664213183082030}
   - {fileID: 3736554905812039642}
   - {fileID: 962266051328720126}
+  - {fileID: 7687577604311162868}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -113,10 +114,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   predictions: 10
   debug_Draw: 0
+  sword_as_stuff: 0
   ignoredDistance: 2
   ignoredSpeed: 1
   ignored: []
-  checker: {fileID: 2262772776922178651}
+  checker: {fileID: 1778603663242361104}
   vital: {fileID: 6060500822727802340}
   controlled: []
 --- !u!114 &5048345013734752868
@@ -131,7 +133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40a72d121ab7166418f3982579712e38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AIActive: 1
+  _AIActive: 1
   baseReachDistance: 1
   maxSpeed: 3.5
   retreatMultiplier: 0.2
@@ -180,9 +182,9 @@ MonoBehaviour:
   swing_EndDistanceMultiplier: 1.5
   swing_startDistance: 1.5
   criticalImpulse: 400
+  blockCriticalVelocity: 5
   toBladeHandle_MaxDistance: 1
   toBladeHandle_MinDistance: 0.1
-  blockVelocity: 5
   close_enough: 0.1
   angle_enough: 10
   attackProbability:
@@ -247,20 +249,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!136 &2262772776922178651
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1526482222200477036}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 4
-  m_Height: 10
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!136 &6060500822727802340
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -300,7 +288,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fa13b9e96b49ba409c82c996b147f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weight: 4
+  ai_weight: 1
   health: 100
   vital: {fileID: 6060500822727802340}
   mainBody: {fileID: 0}
@@ -320,8 +308,14 @@ MonoBehaviour:
   walkSpeed: 5
   runSpeed: 10
   sprintSpeed: 20
+  maximumReachableSpeed: 25
+  ragdollSpeed: 35
+  velociyAngleChangeSpeedEuler: 90
   distToGround: 0.3
-  dragOnGround: 1
+  activeDrag: 20
+  passiveDragOnGround: 1
+  snapHeight: 3
+  snapSpeed: 21
   toGroundForce: 5
   dragOffGround: 0.2
   airMultiplier: 0.5
@@ -338,6 +332,8 @@ MonoBehaviour:
   _isGrounded: 1
   _jumpReady: 1
   _inputMovement: {x: 0, y: 0}
+  _framesSinceLastGrounded: 0
+  _contactNormal: {x: 0, y: 0, z: 0}
 --- !u!114 &2580508120703694375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,6 +349,25 @@ MonoBehaviour:
   walkToTargetDist: 5
   runToTargetDist: 100
   angularRotatingSpeed: 360
+  wallHeight: 0.3
+  edgeDistance: 0.3
+  edgeDepth: 0.4
+  terrainMask:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!114 &1961015284316083203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526482222200477036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c67325d249865a74a82c5f77c8873268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effects: []
 --- !u!1 &4269479461079977091
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,6 +399,52 @@ Transform:
   m_Father: {fileID: 450661284916936547}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7549740456348621183
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7687577604311162868}
+  - component: {fileID: 1778603663242361104}
+  m_Layer: 6
+  m_Name: SixthSense
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7687577604311162868
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7549740456348621183}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 450661284916936547}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &1778603663242361104
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7549740456348621183}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 4
+  m_Height: 10
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &4435818199808320414
 PrefabInstance:
   m_ObjectHideFlags: 0

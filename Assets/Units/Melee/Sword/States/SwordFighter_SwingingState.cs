@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -39,7 +37,7 @@ public class SwordFighter_SwingingState : SwordFighter_BaseState
 
     public override void CheckSwitchStates()
     {
-        if (_ctx.CloseToDesire())
+        if (_ctx.CloseToDesire() && _ctx.CurrentActivity.target)
         {
             HandleCombo();
         }
@@ -77,11 +75,6 @@ public class SwordFighter_SwingingState : SwordFighter_BaseState
         }
 
         //TODO : Raycast для хорошей коллизии; Пули не отбиваются - слишком маленькие. Но с Continious Detection сбиваются нормально.
-
-        // TODO : При отбивании меча блоком ->
-        // IDEA: Отключать коллизию корутином на некоторое время после столкновения. (Можно это делать в случае комбо)
-        // IDEA: Это отбивание происходит не мгновенно, первые несколько кадров после отбивания летящий меч колбасит, как следствие и реакцию - тоже.
-        // Вариант: Сделать время "Контузии" после столкновения, при котором не происходит никакой реакции (Incoming игнорируется)
     }
 
     private void BladeTriggerEnter(object sender, Collider other)

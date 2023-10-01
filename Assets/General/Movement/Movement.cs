@@ -19,6 +19,7 @@ public class Movement : MonoBehaviour
     [Header("Air")]
     public float dragOffGround = 0.2f;
     public float airMultiplier = 0.5f;
+    public bool externalGracityControl = false;
     [Header("Jump")]
     public float jumpForce = 10;
     public float jumpCooldown = 2;
@@ -64,6 +65,10 @@ public class Movement : MonoBehaviour
     protected virtual void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        if(TryGetComponent(out AliveBeing being)) 
+        {
+            vital = being.vital;
+        }
     }
 
 
@@ -74,7 +79,8 @@ public class Movement : MonoBehaviour
         else
             _rb.drag = 0;
 
-        _rb.useGravity = !OnSlope();
+        if(!externalGracityControl)
+            _rb.useGravity = !OnSlope();
     }
 
     protected virtual void FixedUpdate()
@@ -143,7 +149,8 @@ public class Movement : MonoBehaviour
             ControlVelocityAngle(_movement.normalized);
         }
         else
-            _rb.AddForce(_movement.normalized * _moveSpeed * airMultiplier, ForceMode.Acceleration);
+            _rb.AddForce(_movement.normalized * _moveSpeed * airMultiplier, ForceMode.Acceleration);        
+
     }
 
     protected void ControlVelocityAngle(Vector3 desireDir) 
@@ -158,7 +165,7 @@ public class Movement : MonoBehaviour
 
     protected void FixMovement()
     {
-        if (OnSlope() && _rb.velocity.magnitude > _moveSpeed)
+        if (OnSlope() && _rb.velocity.magnitude > _moveSpeed || _inputMovement == Vector2.zero)
         {
             _rb.velocity = _rb.velocity.normalized * (_rb.velocity.magnitude - activeDrag * Time.fixedDeltaTime);
 
@@ -168,7 +175,7 @@ public class Movement : MonoBehaviour
         }
 
         Vector3 flatVelocity = new Vector3(_rb.velocity.x, 0, _rb.velocity.z);
-        if (flatVelocity.magnitude > _moveSpeed)
+        if (flatVelocity.magnitude > _moveSpeed || _inputMovement == Vector2.zero)
         {
             _rb.velocity = flatVelocity.normalized * (flatVelocity.magnitude - activeDrag * Time.fixedDeltaTime) + _rb.velocity.y * Vector3.up;
             if (_rb.velocity.magnitude > maximumReachableSpeed)

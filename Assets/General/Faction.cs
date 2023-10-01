@@ -17,12 +17,12 @@ public class Faction : MonoBehaviour
     // Лучший вариант: локальное изменение меняет поведение только текущего AI. Так сначала бывшие союзники не поймут изменения.
     // Сделать это простым get-set; Поле седлать private
 
-    public FType type = FType.neutral;
+    public FType f_type = FType.neutral;
 
     public bool IsWillingToAttack(FType type) 
     {
-        bool comparedFactions = this.type != type; // На будущее, если вдруг захочу какие-нибудь альянсы.
+        bool comparedFactions = this.f_type != type; // На будущее, если вдруг захочу какие-нибудь альянсы.
 
-        return (comparedFactions || this.type == FType.aggressive) && this.type != FType.neutral;
+        return (comparedFactions || this.f_type == FType.aggressive) && this.f_type != FType.neutral;
     }
 }

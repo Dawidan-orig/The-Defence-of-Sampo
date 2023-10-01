@@ -8,7 +8,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 // ИИ, ставящий приоритеты выполнения действий
 // Использует StateMachine в качестве исполнителя
 {
-    public bool AIActive = true;
+    public bool _AIActive = true;
 
     [Header("Setup")]
     public float baseReachDistance = 1; // Или же длина конечности, что держит оружие
@@ -24,7 +24,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     [Header("Ground")]
     public Collider vital;
     public float toGroundDist = 0.3f;
-    public Transform navMeshCalcFrom; // Указывать не обязательно. Нужно, чтобы NavMesh не бузил.
+    public Transform navMeshCalcFrom; // Точка отсчёта для NavMesh
 
     [Header("lookonly")]
     [SerializeField]
@@ -113,11 +113,12 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
         _body = GetComponent<Rigidbody>();
         _factory = new UtilityAI_Factory(this);
         _currentState = _factory.Deciding();
+        navMeshCalcFrom = navMeshCalcFrom == null ? transform : navMeshCalcFrom;
     }
 
     protected virtual void OnEnable()
     {
-        AIActive = true;
+        _AIActive = true;
         UtilityAI_Manager.Instance.changeHappened += DistributeActivityFromManager;
     }
 
@@ -125,22 +126,22 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     {
         UtilityAI_Manager.Instance.changeHappened -= DistributeActivityFromManager;
         NullifyActivity();
-        AIActive = false;
+        _AIActive = false;
     }
 
     protected virtual void Start()
     {
         if (NMAgent)
             NMAgent.speed = maxSpeed;
-        _noAction = new AIAction();
-        if (navMeshCalcFrom == null)
-            navMeshCalcFrom = transform;
+
+        _noAction = new AIAction();        
+
         NullifyActivity();
     }
 
     protected virtual void Update()
     {
-        if (!AIActive)
+        if (!_AIActive)
         {
             return;
         }
@@ -150,7 +151,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 
     protected virtual void FixedUpdate()
     {
-        if (!AIActive)
+        if (!_AIActive)
         {
             return;
         }
@@ -229,16 +230,6 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
         return _currentActivity.whatDoWhenClose;
     }
 
-    public bool NavMeshMeleeReachable()
-    {
-        // Проверяем, что мы далеко:
-        Vector3 countFrom = navMeshCalcFrom ? navMeshCalcFrom.position : transform.position;
-        NavMeshPath path = new NavMeshPath();
-
-        NavMesh.CalculatePath(countFrom, CurrentActivity.target.position, NavMesh.AllAreas, path);
-        return Utilities.NavMeshPathLength(path) < CurrentActivity.actWith.additionalMeleeReach + baseReachDistance;
-    }
-
     public bool MeleeReachable()
     {
         Vector3 closestToMe;
@@ -295,7 +286,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
 
         Faction other = target.GetComponent<Faction>();
 
-        if (!other.IsWillingToAttack(GetComponent<Faction>().type) || target == transform)
+        if (!other.IsWillingToAttack(GetComponent<Faction>().f_type) || target == transform)
             res = false;
 
         if (other.TryGetComponent(out AliveBeing b))

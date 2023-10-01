@@ -11,11 +11,11 @@ public class Interactable_UtilityAI : MonoBehaviour
     // - Измененного веса под воздействием влияния относительно конкретного UAI
     // - Уменьшения веса, взятого от UtilityAI Manager, если на этот GameObject уже есть те, кто взаимодействует с ним. Например когда одно здание атакует трое - нет смысла добавлять четвёртого.
 {
-    public int weight = 1;
+    public int ai_weight = 1;
 
     protected virtual void OnEnable()
     {
-        UtilityAI_Manager.Instance.AddNewInteractable(gameObject, weight);
+        UtilityAI_Manager.Instance.AddNewInteractable(gameObject, ai_weight);
     }
 
     protected virtual void OnDisable()

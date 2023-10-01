@@ -49,7 +49,7 @@ public class SwordFighter_IdleState : SwordFighter_BaseState
 
     public override void UpdateState()
     {
-        if (_ctx.CurrentCombo.Count > 0)
+        if (_ctx.CurrentCombo.Count > 0 && _ctx.SwingReady)
         {
             HandleCombo();
         }

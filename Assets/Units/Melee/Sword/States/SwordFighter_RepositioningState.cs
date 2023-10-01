@@ -1,6 +1,4 @@
 using System;
-using System.Text;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
@@ -9,22 +7,28 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
     public SwordFighter_RepositioningState(SwordFighter_StateMachine currentContext, SwordFighter_StateFactory factory)
         : base(currentContext, factory) { }
 
+    bool frameMoved = false;
+
     public override void EnterState()
     {
         _ctx.OnRepositionIncoming += IncomingForRepos;
         _ctx.OnSwingIncoming += IncomingForSwing;
-        //MoveSword();
+        MoveSword();
     }
 
     public override void ExitState()
     {
         _ctx.OnRepositionIncoming -= IncomingForRepos;
         _ctx.OnSwingIncoming -= IncomingForSwing;
+        frameMoved = false;
     }
 
     public override void FixedUpdateState()
     {
-        MoveSword();
+        if (!frameMoved)
+            MoveSword();
+
+        frameMoved = false;
     }
 
     public override void InitializeSubState()
@@ -39,15 +43,10 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
 
     public override void CheckSwitchStates()
     {
-        if (_ctx.AlmostDesire()) 
+        if (_ctx.AlmostDesire() && _ctx.CurrentActivity.target)
         {
-            if (_ctx.CurrentActivity.target && _ctx.CurrentCombo.Count > 0)
-            {
-                HandleCombo();
-                return;
-            }
-
-            SwitchStates(_factory.Idle());
+            HandleCombo();
+            return;
         }
     }
 
@@ -61,12 +60,13 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
     private void IncomingForRepos(object sender, SwordFighter_StateMachine.IncomingReposEventArgs e)
     {
         _ctx.Block(e.bladeDown, e.bladeUp, e.bladeDir);
-        //MoveSword();
+        MoveSword();
         _ctx.NullifyProgress();
     }
 
     private void MoveSword()
     {
+        frameMoved = true;
         float heightFrom = _ctx.MoveFrom.position.y;
         float heightTo = _ctx.DesireBlade.position.y;
 
@@ -87,22 +87,22 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
         UnityEngine.Object.Destroy(go);
         #endregion
 
-        /*
-        Vector3 closestPos = vital.ClosestPointOnBounds(bladeHandle.position);
-        const float TWO_DIVIDE_THREE = 2/3;
-        
-        if(moveProgress < TWO_DIVIDE_THREE) // Притягиваем максимально близко
+
+        Vector3 closestPos = _ctx.Vital.ClosestPointOnBounds(_ctx.BladeHandle.position);
+        const float TWO_DIVIDE_THREE = 2 / 3;
+
+        if (_ctx.MoveProgress < TWO_DIVIDE_THREE) // Притягиваем максимально близко
         {
-            desireBlade.position = closestPos + (desireBlade.position - closestPos).normalized * bladeMinDistance;
+            _ctx.DesireBlade.position = closestPos + (_ctx.DesireBlade.position - closestPos).normalized * _ctx.toBladeHandle_MinDistance;
 
             GameObject upDirectioner = new();
-            Vector3 toNearest = closestPos - desireBlade.position;
+            Vector3 toNearest = closestPos - _ctx.DesireBlade.position;
             upDirectioner.transform.up = toNearest;
-            upDirectioner.transform.Rotate(0,0,90);
-            desireBlade.up = upDirectioner.transform.up;
-            Destroy(upDirectioner);
+            upDirectioner.transform.Rotate(0, 0, 90);
+            _ctx.DesireBlade.up = upDirectioner.transform.up;
+            GameObject.Destroy(upDirectioner);
         }
-        */
+
     }
 
     public override string ToString()

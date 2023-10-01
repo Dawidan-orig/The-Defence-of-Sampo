@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
+using static UnityEditor.PlayerSettings;
 
 public class Utilities
 {
@@ -293,15 +294,49 @@ public class Utilities
         return res;
     }
 
-    //linePnt - point the line passes through
-    //lineDir - unit vector in direction of line, either direction works
-    //pnt - the point to find nearest on line for
+    //pointOnLine - Точка, через которую проходит линяя
+    //lineDir - Направление линии
+    //targetPoint - Относительно этой точки ищем ближайшую на линии
     public static Vector3 NearestPointOnLine(Vector3 pointOnLine, Vector3 lineDir, Vector3 targetPoint)
     {
         lineDir.Normalize();//this needs to be a unit vector
         var v = targetPoint - pointOnLine;
         var d = Vector3.Dot(v, lineDir);
         return pointOnLine + lineDir * d;
+    }
+
+    public static void DrawArrow(Vector3 from, Vector3 to, float duration = 0, Color? color = null)
+    {
+        Color usedColor = color == null ? Color.white : color.Value;
+
+        const int SEGMENTS = 10;
+
+        Debug.DrawLine(from, to, usedColor, duration);
+        Vector3 circleCenter = Vector3.Lerp(from, to, 0.9f);
+        float circleRadius = (to - circleCenter).magnitude / 2;
+
+        #region modified Circle Draw
+
+        float angle = 0f;
+        Quaternion rot = Quaternion.LookRotation((to - from).normalized, Vector3.up);
+        Vector3 lastPoint = Vector3.zero;
+        Vector3 thisPoint = Vector3.zero;
+
+        for (int i = 0; i < SEGMENTS + 1; i++)
+        {
+            thisPoint.x = Mathf.Sin(Mathf.Deg2Rad * angle) * circleRadius;
+            thisPoint.y = Mathf.Cos(Mathf.Deg2Rad * angle) * circleRadius;
+            Debug.DrawLine(thisPoint, to, usedColor, duration);
+            if (i > 0)
+            {
+                Debug.DrawLine(rot * lastPoint + circleCenter, rot * thisPoint + circleCenter, usedColor, duration);
+            }
+
+            lastPoint = thisPoint;
+            angle += 360f / SEGMENTS;
+        }
+
+        #endregion
     }
 
     public class GUI
@@ -335,22 +370,6 @@ public class Utilities
             return textMesh;
         }
 
-        public static Canvas FindCanvas(Transform transform) //Legacy. Окна должны искать не Canvas, а менеджер окон.
-        {
-            Canvas canvas = null;
-
-            Transform testCanvas = transform.parent;
-            while (testCanvas.GetComponent<Canvas>() == null)
-            {
-                canvas = testCanvas.GetComponentInParent<Canvas>();
-                if (canvas)
-                    break;
-                testCanvas = testCanvas.parent;
-            }
-
-            return canvas;
-        }
-
         //Returns 'true' if we touched or hovering on Unity UI element.
         public static bool IsPointerOverUIElement()
         {
@@ -358,7 +377,7 @@ public class Utilities
         }
 
         //Returns 'true' if we touched or hovering on Unity UI element.
-        static bool IsPointerOverUIElement(List<RaycastResult> eventSystemRaysastResults)
+        public static bool IsPointerOverUIElement(List<RaycastResult> eventSystemRaysastResults)
         {
             int UILayer = LayerMask.NameToLayer("UI");
 
