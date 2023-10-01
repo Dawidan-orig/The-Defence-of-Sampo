@@ -636,6 +636,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 6974210331038364376, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
+      propertyPath: f_type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6974210331038364377, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: health
       value: 9999999
@@ -759,7 +763,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85ceab772860b45499f15f86302e2dee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 7388240217149817831}
+  player: {fileID: 8495609853315885545}
+  target: {fileID: 2058195114}
   sensitivity: {x: 400, y: 400}
   xAngleLimit: {x: -75, y: 75}
 --- !u!1 &539551341
@@ -783,7 +788,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
   m_StaticEditorFlags: 8
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &539551342
 Transform:
   m_ObjectHideFlags: 0
@@ -967,7 +972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  f_type: 2
+  f_type: 3
 --- !u!136 &567526345
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1110,7 +1115,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1526482222200477036, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1951099390640171389, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: m_Materials.Array.data[1]
@@ -1652,6 +1657,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6173810557656778451, guid: 11903a83b4574ea4984c63809e7ad63e, type: 3}
   m_PrefabInstance: {fileID: 6173810555830464037}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2058195113
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2058195114}
+  m_Layer: 6
+  m_Name: CameraTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2058195114
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2058195113}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.393, z: 0.661}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7388240217149817831}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &2137166261 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 450661284916936547, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
@@ -1815,7 +1851,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967548, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2397089146008967549, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
       propertyPath: m_RootOrder
@@ -2183,6 +2219,7 @@ Transform:
   - {fileID: 1048651097}
   - {fileID: 133538399}
   - {fileID: 384642486}
+  - {fileID: 2058195114}
   m_Father: {fileID: 360708902}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2275,7 +2312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  f_type: 2
+  f_type: 0
 --- !u!114 &8495609853315885548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2326,34 +2363,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slashPrefab: {fileID: 4246658485530221624, guid: 3a5045e121fba624a9f93a7846309191, type: 3}
   abilities: []
-  slash:
-    user: {fileID: 0}
-    _enabled: 0
-    _activated: 0
-    slashPrefab: {fileID: 0}
-    _slicesLeft: 0
-    _currentRecharge: 0
-    _body: {fileID: 0}
-  blow:
-    user: {fileID: 0}
-    _enabled: 0
-    _activated: 0
-    _currentRecharge: 0
-  windSlide:
-    user: {fileID: 0}
-    _enabled: 0
-    _activated: 0
-    _body: {fileID: 0}
-    _playerController: {fileID: 0}
-    _currentRecharge: 0
-    _surpassedDistance: 0
-    _prevPos: {x: 0, y: 0, z: 0}
-    _direction: {x: 0, y: 0, z: 0}
-  ascention_Ult:
-    user: {fileID: 0}
-    _enabled: 0
-    _activated: 0
-    _currentRecharge: 0
+  mask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!114 &8495609853315885550
 MonoBehaviour:
   m_ObjectHideFlags: 0

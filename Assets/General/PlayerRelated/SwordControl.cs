@@ -268,13 +268,13 @@ public class SwordControl : MonoBehaviour
         if (_moveProgress <= 0.5f)
         {
             bladeHandle.position = transform.position
-                + Vector3.Slerp(relativeFrom, transform.forward * toBladeHandle_MaxDistance, _moveProgress * 2)
+                + Vector3.Slerp(relativeFrom, Camera.main.transform.forward * toBladeHandle_MaxDistance, _moveProgress * 2)
                 + new Vector3(0, Mathf.Lerp(relativeHeightFrom, relativeHeightTo, _moveProgress), 0);
         }
         else
         {
             bladeHandle.position = transform.position
-             + Vector3.Slerp(transform.forward * toBladeHandle_MaxDistance, relativeTo, (_moveProgress - 0.5f) * 2)
+             + Vector3.Slerp(Camera.main.transform.forward * toBladeHandle_MaxDistance, relativeTo, (_moveProgress - 0.5f) * 2)
              + new Vector3(0, Mathf.Lerp(relativeHeightFrom, relativeHeightTo, _moveProgress), 0);
         }
 

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -39,7 +37,7 @@ public class SwordFighter_SwingingState : SwordFighter_BaseState
 
     public override void CheckSwitchStates()
     {
-        if (_ctx.CloseToDesire())
+        if (_ctx.CloseToDesire() && _ctx.CurrentActivity.target)
         {
             HandleCombo();
         }

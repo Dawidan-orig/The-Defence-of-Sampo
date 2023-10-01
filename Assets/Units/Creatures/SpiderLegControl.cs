@@ -39,12 +39,14 @@ public class SpiderLegControl : MonoBehaviour
         MoveToDesire();
         readyToMove = false;
 
+        float usedLegLen = legLength * transform.lossyScale.magnitude;
+
         RaycastHit hitResult;
-        Vector3 legRelativePoint = (transform.rotation * Quaternion.Inverse(initialRot)) * toLegDir * legLength;
+        Vector3 legRelativePoint = (transform.rotation * Quaternion.Inverse(initialRot)) * toLegDir * usedLegLen;
         bool hitPersist = Physics.Raycast(transform.position + legRelativePoint,
-            (Vector3.down * legLength - legRelativePoint).normalized, out hitResult,
-            legLength, walkable);
-        hitPersist = hitPersist || Physics.Raycast(transform.position, legRelativePoint, out hitResult, legLength, walkable);
+            (Vector3.down * usedLegLen - legRelativePoint).normalized, out hitResult,
+            usedLegLen * transform.lossyScale.magnitude, walkable);
+        hitPersist = hitPersist || Physics.Raycast(transform.position, legRelativePoint, out hitResult, usedLegLen, walkable);
 
         if (hitPersist)
         {

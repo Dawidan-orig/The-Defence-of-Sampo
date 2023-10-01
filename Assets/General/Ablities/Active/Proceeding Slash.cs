@@ -5,6 +5,7 @@ using UnityEngine;
 public class ProceedingSlash : Ability
 {
     public GameObject slashPrefab;
+    public LayerMask layers;
     public const float SPEED = 25;
     public const float LIFETIME = 10;
     public const float RECHARGE = 10;
@@ -79,7 +80,7 @@ public class ProceedingSlash : Ability
         Rigidbody body = slash.GetComponent<Rigidbody>();
 
         Vector3 direction = user.forward;
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out var hit, 300, LayerMask.NameToLayer("Default")))
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out var hit, 300, layers))
             direction = (hit.point - user.position).normalized;
 
         body.AddForce(direction * 10, ForceMode.VelocityChange);

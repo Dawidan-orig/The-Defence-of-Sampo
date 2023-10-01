@@ -24,7 +24,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     [Header("Ground")]
     public Collider vital;
     public float toGroundDist = 0.3f;
-    public Transform navMeshCalcFrom; // Указывать не обязательно. Нужно, чтобы NavMesh не бузил.
+    public Transform navMeshCalcFrom; // Точка отсчёта для NavMesh
 
     [Header("lookonly")]
     [SerializeField]
@@ -133,9 +133,9 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
     {
         if (NMAgent)
             NMAgent.speed = maxSpeed;
-        _noAction = new AIAction();
-        if (navMeshCalcFrom == null)
-            navMeshCalcFrom = transform;
+
+        _noAction = new AIAction();        
+
         NullifyActivity();
     }
 
@@ -228,16 +228,6 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider
         _currentActivity = _possibleActions[bestActivityIndex];
 
         return _currentActivity.whatDoWhenClose;
-    }
-
-    public bool NavMeshMeleeReachable()
-    {
-        // Проверяем, что мы далеко:
-        Vector3 countFrom = navMeshCalcFrom ? navMeshCalcFrom.position : transform.position;
-        NavMeshPath path = new NavMeshPath();
-
-        NavMesh.CalculatePath(countFrom, CurrentActivity.target.position, NavMesh.AllAreas, path);
-        return Utilities.NavMeshPathLength(path) < CurrentActivity.actWith.additionalMeleeReach + baseReachDistance;
     }
 
     public bool MeleeReachable()

@@ -122,7 +122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ai_weight: 1
   health: 100
-  vital: {fileID: 0}
+  vital: {fileID: 2397089146008967546}
   mainBody: {fileID: 0}
   root: {fileID: 0}
 --- !u!114 &2397089146008967545
@@ -137,7 +137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 1
+  f_type: 2
 --- !u!54 &2397089146008967547
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -194,6 +194,7 @@ MonoBehaviour:
   toGroundForce: 5
   dragOffGround: 0.2
   airMultiplier: 0.5
+  externalGracityControl: 0
   jumpForce: 10
   jumpCooldown: 2
   _inJump: 0

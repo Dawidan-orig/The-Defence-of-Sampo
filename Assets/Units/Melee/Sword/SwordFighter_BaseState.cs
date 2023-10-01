@@ -46,8 +46,6 @@ public abstract class SwordFighter_BaseState
                 _ctx.NullifyProgress();
                 if (!(_ctx.CurrentSwordState is SwordFighter_RepositioningState))
                     SwitchStates(_factory.Repositioning());
-
-                Debug.DrawLine(_ctx.BladeHandle.position, _ctx.DesireBlade.position, Color.white, 3);
             }
             else if (action.currentActionType == SwordFighter_StateMachine.ActionType.Swing)
             {
@@ -59,8 +57,7 @@ public abstract class SwordFighter_BaseState
         }
         else 
         {
-            _ctx.SetDesires(_ctx.InitialBlade.position, _ctx.InitialBlade.up, _ctx.InitialBlade.forward);            
-            _ctx.NullifyProgress();
+            _ctx.SetDesires(_ctx.InitialBlade.position, _ctx.InitialBlade.up, _ctx.InitialBlade.forward);           
             _ctx.CurrentToInitialAwait = _ctx.toInitialAwait;
             SwitchStates(_factory.Repositioning());
         }        

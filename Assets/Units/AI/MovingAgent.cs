@@ -21,10 +21,7 @@ public class MovingAgent : MonoBehaviour
 
     private void Awake()
     {
-        movement = GetComponent<Movement>();
-        countFrom = transform;
-        if (TryGetComponent(out TargetingUtilityAI ai))
-            countFrom = ai.navMeshCalcFrom;
+        movement = GetComponent<Movement>();        
     }
 
     private void Start()
@@ -34,6 +31,10 @@ public class MovingAgent : MonoBehaviour
 
         desireLookDir = transform.forward;
         desireLookDir.y = 0;
+
+        countFrom = transform;
+        if (TryGetComponent(out TargetingUtilityAI ai) && ai.navMeshCalcFrom)
+            countFrom = ai.navMeshCalcFrom;
     }
 
     private void FixedUpdate()

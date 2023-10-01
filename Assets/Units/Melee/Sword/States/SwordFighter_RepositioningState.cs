@@ -1,6 +1,4 @@
 using System;
-using System.Text;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
@@ -27,8 +25,8 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
 
     public override void FixedUpdateState()
     {
-        if(!frameMoved)
-        MoveSword();
+        if (!frameMoved)
+            MoveSword();
 
         frameMoved = false;
     }
@@ -45,15 +43,10 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
 
     public override void CheckSwitchStates()
     {
-        if (_ctx.AlmostDesire()) 
+        if (_ctx.AlmostDesire() && _ctx.CurrentActivity.target)
         {
-            if (_ctx.CurrentActivity.target && _ctx.CurrentCombo.Count > 0)
-            {
-                HandleCombo();
-                return;
-            }
-
-            //SwitchStates(_factory.Idle());
+            HandleCombo();
+            return;
         }
     }
 
@@ -94,22 +87,22 @@ public class SwordFighter_RepositioningState : SwordFighter_BaseState
         UnityEngine.Object.Destroy(go);
         #endregion
 
-        
+
         Vector3 closestPos = _ctx.Vital.ClosestPointOnBounds(_ctx.BladeHandle.position);
-        const float TWO_DIVIDE_THREE = 2/3;
-        
-        if(_ctx.MoveProgress < TWO_DIVIDE_THREE) // Притягиваем максимально близко
+        const float TWO_DIVIDE_THREE = 2 / 3;
+
+        if (_ctx.MoveProgress < TWO_DIVIDE_THREE) // Притягиваем максимально близко
         {
             _ctx.DesireBlade.position = closestPos + (_ctx.DesireBlade.position - closestPos).normalized * _ctx.toBladeHandle_MinDistance;
 
             GameObject upDirectioner = new();
             Vector3 toNearest = closestPos - _ctx.DesireBlade.position;
             upDirectioner.transform.up = toNearest;
-            upDirectioner.transform.Rotate(0,0,90);
+            upDirectioner.transform.Rotate(0, 0, 90);
             _ctx.DesireBlade.up = upDirectioner.transform.up;
             GameObject.Destroy(upDirectioner);
         }
-        
+
     }
 
     public override string ToString()

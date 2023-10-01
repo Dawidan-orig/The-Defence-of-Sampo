@@ -1,4 +1,4 @@
-using System;
+using System;   
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,6 +38,7 @@ public class LegsHarmoniser : MonoBehaviour
     private void OnValidate()
     {
         ReGroup();
+        AssignValues();
     }
 
     private void Awake()
@@ -145,7 +146,7 @@ public class LegsHarmoniser : MonoBehaviour
     {
         foreach (SpiderLegControl leg in legs)
         {
-            leg.limb.SetHost(transform.parent);
+            leg.limb.SetHost(mainBody);
             leg.distanceToNew = distanceToNew;
             leg.maxDistToNew = maxDistToNew;
             leg.moveSpeed = moveSpeed;
