@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,9 +9,9 @@ public class NavMeshCalculations : MonoBehaviour
     private static NavMeshCalculations _instance;
 
     [Min(0)]
-    public float MINIMUM_AREA = 99999; //TODO : Заменить на 30, пока что - debug-значение
+    public float MINIMUM_AREA = 30;
     [Min(0)]
-    public float MAXMIMUM_AREA = 20;
+    public float MAXMIMUM_AREA = 50;
     [Range(0, 100)]
     public float MAX_VERTS_IN_COMPLEX = 50;
 
@@ -147,47 +148,44 @@ public class NavMeshCalculations : MonoBehaviour
                 int second = -1;
 
                 #region assignes
-                int iteration = 0;
-                foreach ( Vector3 complexFormer in _vectorFormers)
+                for (int iteration = 0; iteration < _vectorFormers.Length; iteration++)
                 {
-                    Vector3 possible = Vector3.zero;                    
-                    bool match = false;
                     foreach (Vector3 triangleFormer in cell.Formers())
                     {
-                        possible = triangleFormer;
-                        if (triangleFormer == complexFormer) //_vectorFormers.Contains(triangleFormer):
+                        if (triangleFormer == _vectorFormers[iteration]) //_vectorFormers.Contains(triangleFormer):
                         {
-                            if (first == -1)
-                                first = iteration;
-                            else
-                                second = iteration;
+                            if (iteration == 0) // Если это самая первая итерация, то возможно, что результат - последняя вершина, а не следующая
+                                break;
 
-                            match = true;
+                            first = iteration; // первая найденная в фигуре
+                            second = (iteration + 1)% _vectorFormers.Length; // Вторая найденная в фигуре
+
+                            // Теперь надо из треугольника извлечь обе эти, и оставшаяся будет res
+                            foreach (Vector3 resCheck in cell.Formers())
+                                if (!(resCheck == _vectorFormers[first] || resCheck == _vectorFormers[second]))
+                                {
+                                    res = resCheck;
+                                    break;
+                                }
+
                             break;
-                        }                        
+                        }
                     }
 
-                    iteration++;
-                    if (!match)
-                        res = possible;
+                    if (first != -1) //Нашли всё, выходим.
+                        break;
                 }
 
                 #endregion
-
-                // Цель ставим между левой и правой вершинами
 
                 #region checks
 
                 if (first == -1 && second == -1)
                 {
-                    // Иногда треугольник уже может быть целиков включён в ComplexCell
-                    // Иногда он даже не является соседом
-                    // В любом случае, тогда рассматривать его бессмыслено, а потому
+                    // Не нашлось. Скорее всего, Это попытка добавить не-соседа.
                     cell.Draw(Color.yellow, 2);
                     Draw(Color.yellow, 2);
                     return;
-
-                    //throw new Exception("Левая вершина ребра не нашлась");
                 }
                 if (res == Vector3.zero)
                 {
@@ -202,6 +200,15 @@ public class NavMeshCalculations : MonoBehaviour
                     Debug.LogError("При поглощении нарисованного треугольника не нашлось внешней вершины (Error Pause, чтобы увидеть)");
                     return;
                 }
+                if(_vectorFormers.Contains(res)) //TODO?? : LINQ-Check, дорого!
+                {
+                    // Добавляемый треугольник полностью соответствует тому, что уже есть в фигуре
+
+                    //int i = 0;
+                    //foreach (Vector3 vector in _vectorFormers)
+                    //    Utilities.CreateFlowText(i++.ToString(), 1, res + Vector3.up *_vectorFormers.Length - Vector3.down * 0.3f, Color.red);
+                    return;
+                }
 
                 #endregion
 
@@ -209,24 +216,14 @@ public class NavMeshCalculations : MonoBehaviour
 
                 int newArrayLen = _vectorFormers.Length + 1;
                 Vector3[] newFormers = new Vector3[newArrayLen];
-                
+
                 int offset = 0;
                 for (int i = 0; i < _vectorFormers.Length; i++)
                 {
-                    if(first == 0 && second == _vectorFormers.Length-1) 
-                    {
-                        Utilities.CreateFlowText($"{first}<->{second}", 1, res + Vector3.up * _vectorFormers.Length, Color.green);
-
-                        newFormers[_vectorFormers.Length] = res;
-                        break;
-                    }
-
                     newFormers[i + offset] = _vectorFormers[i];
                     if (i == first)
                     {
-                        Utilities.CreateFlowText($"{first}<->{second}", 1, res + Vector3.up * _vectorFormers.Length, Color.cyan);
-
-                        newFormers[i + 1] = res;
+                        newFormers[first + 1] = res;
                         offset = 1;
                     }
                 }
@@ -235,9 +232,6 @@ public class NavMeshCalculations : MonoBehaviour
 
                 _vectorFormers = newFormers;
             }
-
-            //TODO : Удалить
-            Draw(_vectorFormers.Length * Vector3.up, _vectorFormers.Length % 2 == 0 ? new Color(0, 0.3f, 0, 0.5f) : new Color(0, 0, 1, 0.5f), 1);
 
             _trianglesFormers.Add(cell);
         }

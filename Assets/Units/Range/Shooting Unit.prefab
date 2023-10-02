@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 2397089146008967546}
   - component: {fileID: 2919344465677225324}
   - component: {fileID: 568334352800466455}
+  - component: {fileID: 6325525520336111847}
   m_Layer: 6
   m_Name: Shooting Unit
   m_TagString: Untagged
@@ -231,6 +232,19 @@ MonoBehaviour:
   terrainMask:
     serializedVersion: 2
     m_Bits: 1
+--- !u!114 &6325525520336111847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397089146008967548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c67325d249865a74a82c5f77c8873268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effects: []
 --- !u!1 &2397089146338771506
 GameObject:
   m_ObjectHideFlags: 0
