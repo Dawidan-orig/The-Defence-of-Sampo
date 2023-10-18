@@ -13,6 +13,9 @@ public class HumanBodyControl : MonoBehaviour
     public Transform rightShoulder;
     public Animator controlled;
 
+    [Header("offsets")]
+    public Vector3 rightHandOffset = new Vector3(-0.05f,0, 0.12f);
+
     [Header("Constraints")]
     public TwoBoneIKConstraint firstIK;
     public TwoBoneIKConstraint recalculationIK;
@@ -94,9 +97,9 @@ public class HumanBodyControl : MonoBehaviour
         }
 
         firstIK.weight = 1;
-        recalculationIK.weight = 1;
+        recalculationIK.weight = 1;        
 
-        Vector3 rHandPos = provider.GetRightHandTarget().position;
+        Vector3 rHandPos = provider.GetRightHandTarget().position - transform.rotation* rightHandOffset;
         Quaternion rHandRot = provider.GetRightHandTarget().rotation;
         rHandRot *= Quaternion.Euler(90f, 90f, 0);
         rHandRot *= Quaternion.Euler(180, 0, 180);

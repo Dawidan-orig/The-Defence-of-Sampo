@@ -101,7 +101,7 @@ public class SwordFighter_StateMachine : MeleeFighter
     [SerializeField]
     private bool isSwordFixing = true;
     [SerializeField]
-    private string currentState; // Нужен для вывода текущего состояния в Unity
+    private string currentState; // Нужен для вывода текущего состояния в Unity inspector
 
     protected override void Awake()
     {
@@ -515,7 +515,7 @@ public class SwordFighter_StateMachine : MeleeFighter
 
     public override Transform GetRightHandTarget()
     {
-        return _bladeHandle;
+        return _blade.rightHandHandle;
     }
 
     protected override void OnDrawGizmosSelected()

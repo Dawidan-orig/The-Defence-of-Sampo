@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 9148282446471945464}
   - component: {fileID: 1024381372517145169}
   - component: {fileID: 8305905749232884267}
+  - component: {fileID: 8668680843658328651}
   m_Layer: 6
   m_Name: Ballistic Shooting Unit
   m_TagString: Untagged
@@ -138,7 +139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 1
+  f_type: 2
 --- !u!54 &2397089146008967547
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -208,6 +209,7 @@ MonoBehaviour:
   toGroundForce: 5
   dragOffGround: 0.2
   airMultiplier: 0.5
+  externalGracityControl: 0
   jumpForce: 10
   jumpCooldown: 2
   _inJump: 0
@@ -244,6 +246,19 @@ MonoBehaviour:
   terrainMask:
     serializedVersion: 2
     m_Bits: 0
+--- !u!114 &8668680843658328651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397089146008967548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c67325d249865a74a82c5f77c8873268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effects: []
 --- !u!1 &2397089146338771506
 GameObject:
   m_ObjectHideFlags: 0
