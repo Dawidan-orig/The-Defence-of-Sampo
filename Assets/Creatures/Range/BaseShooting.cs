@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
+using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 public class BaseShooting : Tool
 {
@@ -67,19 +69,22 @@ public class BaseShooting : Tool
     
     public Vector3 NavMeshClosestAviableToShoot(Transform target)
     {
+        return FindBestPointToShoot_Dijkstra(target);
+    }
+
+    private Vector3 FindBestPointToShoot_Dijkstra(Transform target) 
+    {
         Vector3 res = Vector3.zero;
-        Utilities.VisualisedRaycast(transform.position, Vector3.down, out var heightCheck, range);
-        // Высота оружия до земли.
-        // TODO : Поменять на вычисление: Относительно низа коллайдера до y-положения оружия
-        float height = heightCheck.collider ? (heightCheck.point - transform.position).magnitude : 0;
         Vector3 delta = transform.position - host.position;
         delta.x = 0; delta.z = 0;
-        height = delta.magnitude + host.GetComponent<AliveBeing>().vital.bounds.size.y/2;   
+        float height = delta.magnitude + host.GetComponent<AliveBeing>().vital.bounds.size.y / 2;
 
         NavMeshCalculations.Cell start = NavMeshCalculations.Instance.GetCell(target.position);
 
         List<NavMeshCalculations.Cell> toCheck = new() { start };
         List<NavMeshCalculations.Cell> alreadyChecked = new();
+        //TODO : Добавить в формулу высоту. Чем выше - тем лучше.
+        // Это вводит в систему, а точнее превращает её в AStar-аналог
 
         float bestDistanceToTarget = 0;
         float bestDistanceFromGun = 100000;
@@ -90,10 +95,9 @@ public class BaseShooting : Tool
             alreadyChecked.Add(current);
             toCheck.RemoveAt(0);
 
-            Vector3 shootFrom = current.NavMeshCenter() + Vector3.up * height;
+            Vector3 shootFrom = current.Center() + Vector3.up * height;
 
-            if (Vector3.Distance(shootFrom, target.position) < range &&
-                AvilableToShoot(target.position, shootFrom, out RaycastHit hit, target))
+            if (AvilableToShoot(target.position, shootFrom, out RaycastHit hit, target))
             {
                 float distanceFromGun = Vector3.Distance(shootFrom, transform.position);
                 float distanceToTarget = Vector3.Distance(shootFrom, target.position);
@@ -108,13 +112,21 @@ public class BaseShooting : Tool
                     List<NavMeshCalculations.Cell> toAdd = current.Neighbors;
                     toCheck.AddRange(toAdd);
                     toCheck.RemoveAll(item => alreadyChecked.Contains(item));
-                }                
+                }
 
-                if(NavMeshCalculations.CellCount() < toCheck.Count) 
+                if (NavMeshCalculations.CellCount() < toCheck.Count)
                 {
                     throw new StackOverflowException("Количество объектов для проверки больше, чем их общее количество");
                 }
             }
+        }
+
+        if (res == Vector3.zero)
+        {
+            res = host.transform.position;
+            //TODO : Целевой объект в данный момент недостижим.
+            // Значит его надо Discard'нуть и выбрать новый.
+            Debug.LogWarning("Лучшая клетка не была найдена", host.transform);
         }
 
         return res;

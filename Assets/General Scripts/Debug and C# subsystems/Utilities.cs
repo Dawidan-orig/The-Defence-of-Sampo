@@ -12,7 +12,7 @@ using UnityEngine.EventSystems;
 
 public class Utilities
 {
-    public static GameObject utility = new("Utilitary");
+    //public static GameObject utility = new("Utilitary");
 
     //Краткая запись, дабы сократить сильнее нужен TODO : Ray.
     public static bool VisualisedBoxCast(Vector3 center, Vector3 halfExtends, Vector3 direction, float maxDistance, LayerMask layerMask, bool drawHit, Color? color = null, float duration = 0)
@@ -132,7 +132,7 @@ public class Utilities
         if (parent != null)
             transform.SetParent(parent);
         else
-            transform.SetParent(utility.transform);
+            transform.SetParent(/*utility.transform*/ null);
         transform.position = position;
         TextMesh textMesh = gameObject.GetComponent<TextMesh>();
         textMesh.anchor = textAnchor;

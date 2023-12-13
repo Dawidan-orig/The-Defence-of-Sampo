@@ -87,7 +87,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _AIActive: 1
   baseReachDistance: 1
-  retreatMultiplier: 0.2
   retreatInfluence:
     serializedVersion: 2
     m_Curve:
@@ -140,7 +139,8 @@ MonoBehaviour:
     target: {fileID: 0}
     name: 
     baseWeight: 0
-    distanceAddition: 0
+    distanceSubstraction: 0
+    enemiesAmountSubstraction: 0
     actWith: {fileID: 0}
   _possibleActions: []
   visiblePowerPoints: 0
@@ -457,9 +457,9 @@ MonoBehaviour:
     m_Bits: 1
   shootPoint: {fileID: 2397089145486354680}
   bulletPrefab: {fileID: 4384517561961518265, guid: e6573e7c6bb6c134197802e0e29f2b89, type: 3}
-  range: 10
+  range: 40
   timeBetweenBullets: 0.35
-  gunPower: 5
+  gunPower: 30
   forceMode: 2
 --- !u!1001 &2538407679295669753
 PrefabInstance:

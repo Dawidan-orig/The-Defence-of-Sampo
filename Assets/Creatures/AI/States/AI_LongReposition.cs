@@ -84,7 +84,6 @@ public class AI_LongReposition : UtilityAI_BaseState
 
         if (_ctx.CurrentActivity.target.hasChanged)
         {
-
             Repath();
         }
     }

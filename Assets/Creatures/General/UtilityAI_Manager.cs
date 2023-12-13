@@ -6,6 +6,9 @@ public class UtilityAI_Manager : MonoBehaviour
 // Собирает все объекты на сцене, с которыми можно взаимодействовать, и предоставляет информацию для всех UtilityAI
 // Singleton
 {
+    //TODO : Сделать сюда отсортированные списки (По постоянным значениям),
+    // Там же надо ещё придумать способы по оптимизации загрузки списков во всех юнитов. Сейчас очень тяжело уже.
+
     private static UtilityAI_Manager _instance;
     public static UtilityAI_Manager Instance
     {
@@ -81,7 +84,6 @@ public class UtilityAI_Manager : MonoBehaviour
     {
         if (!_targetedByEnemies.ContainsKey(to))
         {
-            Debug.Log($"Добавлен {to.name} с занятостью {powerAdded}");
             _targetedByEnemies.Add(to, powerAdded);
         }
         else

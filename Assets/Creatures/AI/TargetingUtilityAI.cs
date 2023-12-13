@@ -142,14 +142,15 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDist
     protected virtual void OnDisable()
     {
         UtilityAI_Manager.Instance.changeHappened -= DistributeActivityFromManager;
-        UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.gameObject, -visiblePowerPoints);
+        if(_currentActivity.target)
+            UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.gameObject, -visiblePowerPoints);
         NullifyActivity();
         _AIActive = false;
     }
 
     protected virtual void Start()
     {
-        
+
     }
 
     protected virtual void Update()
@@ -368,4 +369,12 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDist
         return hands.transform;
     }
     #endregion
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.black;
+        NavMeshCalculations.Cell cell = NavMeshCalculations.Instance.GetCell(transform.position);
+        cell.DrawGizmo();
+        Gizmos.DrawLine(cell.Center(), transform.position);
+    }
 }

@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
-using static NavMeshCalculations;
 
 public class NavMeshCalculations : MonoBehaviour
 {
@@ -17,11 +15,24 @@ public class NavMeshCalculations : MonoBehaviour
     public float MINIMUM_AREA = 30;
     [Min(0)]
     public float MAXMIMUM_AREA = 50;
+    [Min(0)]
+    public int CLUSTER_SIZE = 30;
     [Range(0, 100)]
     public float MAX_VERTS_IN_COMPLEX = 50;
+    public Bounds octTreeBounds = new Bounds();
 
+    [Header("Lookonly")]
+    [SerializeReference]
+    OctTree octreeCells;
     [SerializeField]
-    private Cell center;
+    private List<Cluster> _clusters = new();
+    [SerializeField]
+    private Cell[] _cells;
+    [SerializeField]
+    private GameObject _cellTransformContainer;
+
+    [Header("Debug")]
+    public bool drawOctTree = false;
 
     public static NavMeshCalculations Instance
     {
@@ -40,15 +51,19 @@ public class NavMeshCalculations : MonoBehaviour
             {
                 _instance.transform.parent = null;
                 DontDestroyOnLoad(_instance.gameObject);
-            }*/            
+            }*/
 
             return _instance;
         }
     }
-    public class Cell
+    [Serializable]
+    public abstract class Cell
     {
         protected List<Cell> _neighbors = new List<Cell>();
         protected Vector3[] _vectorFormers;
+
+        [SerializeField]
+        protected Vector3 center;
 
         public void AddNeighbor(Cell neighbor)
         {
@@ -68,7 +83,6 @@ public class NavMeshCalculations : MonoBehaviour
         public void AddNeighbors(List<Cell> neighbors)
         {
             List<Cell> temp = new List<Cell>(neighbors);
-
             if (neighbors.Contains(this))
                 temp.Remove(this);
 
@@ -77,12 +91,7 @@ public class NavMeshCalculations : MonoBehaviour
 
         public Vector3 Center()
         {
-            Vector3 sum = Vector3.zero;
-
-            foreach (Vector3 former in _vectorFormers)
-                sum += former;
-
-            return sum / _vectorFormers.Length;
+            return center;
         }
 
         public Vector3 NavMeshCenter()
@@ -97,14 +106,11 @@ public class NavMeshCalculations : MonoBehaviour
             return _vectorFormers;
         }
 
-        public virtual void DrawGizmo()
-        {
+        public abstract void DrawGizmo();
 
-        }
-
-        public List<Cell> Neighbors { get => _neighbors; set => _neighbors = value; }
+        public List<Cell> Neighbors { get => _neighbors; }
     }
-
+    [Serializable]
     private class TriangleCell : Cell
     {
         public bool draw = true;
@@ -112,6 +118,13 @@ public class NavMeshCalculations : MonoBehaviour
         {
             _vectorFormers = new Vector3[3];
             _vectorFormers = formers;
+
+            Vector3 sum = Vector3.zero;
+
+            foreach (Vector3 former in _vectorFormers)
+                sum += former;
+
+            center = sum / _vectorFormers.Length;
         }
 
         public override void DrawGizmo()
@@ -137,6 +150,7 @@ public class NavMeshCalculations : MonoBehaviour
             }
         }
     }
+    [Serializable]
     private class ComplexCell : Cell
     {
         private List<TriangleCell> _trianglesFormers = new();
@@ -152,8 +166,6 @@ public class NavMeshCalculations : MonoBehaviour
 
                 for (int i = 0; i < 3; i++)
                     _vectorFormers[i] = cell.Formers()[i];
-
-                
             }
             else
             {
@@ -208,8 +220,9 @@ public class NavMeshCalculations : MonoBehaviour
                     Debug.Log(first + " " + second);
 
                     int i = 0;
-                    foreach (Vector3 vector in _vectorFormers)
-                        Utilities.CreateFlowText(i++.ToString(), 1, vector);
+                    if (EditorApplication.isPlaying)
+                        foreach (Vector3 vector in _vectorFormers)
+                            Utilities.CreateFlowText(i++.ToString(), 1, vector);
 
                     cell.Draw(Color.red, 100);
                     Draw(Color.red, 100);
@@ -250,11 +263,17 @@ public class NavMeshCalculations : MonoBehaviour
             }
 
             _trianglesFormers.Add(cell);
+
+            Vector3 sum = Vector3.zero;
+
+            foreach (Vector3 former in _vectorFormers)
+                sum += former;
+
+            center = sum / _vectorFormers.Length;
         }
 
         public override void DrawGizmo()
         {
-            Gizmos.color = Mathf.CorrelatedColorTemperatureToRGB(CellCount() * 1000);
             Vector3 prev = Vector3.zero;
             foreach (var former in _vectorFormers)
             {
@@ -279,7 +298,8 @@ public class NavMeshCalculations : MonoBehaviour
             Vector3 prev = Vector3.zero;
             foreach (var former in _vectorFormers)
             {
-                Utilities.CreateFlowText(i++.ToString(), 1, former + offset, color);
+                if (EditorApplication.isPlaying)
+                    Utilities.CreateFlowText(i++.ToString(), 1, former + offset, color);
 
                 if (prev == Vector3.zero) { prev = former; continue; }
 
@@ -293,6 +313,52 @@ public class NavMeshCalculations : MonoBehaviour
             float res = 0;
             foreach (TriangleCell triangle in _trianglesFormers)
                 res += TriangleArea(triangle.Formers());
+            return res;
+        }
+    }
+    [Serializable]
+    private class Cluster
+    {
+        private List<Cell> _included = new();
+        public Vector3 center { get; private set; } = Vector3.zero;
+
+        public void AddCell(Cell cell)
+        {
+            _included.Add(cell);
+
+            Vector3 v = Vector3.zero;
+            foreach (Cell c in _included)
+            {
+                v += c.Center();
+            }
+            center = v / _included.Count;
+        }
+
+        public void Clear() => _included.Clear();
+
+        /// <summary>
+        /// Находит ближайшую к данной точке клетку через алгоритм дийсктры.
+        /// Находит её только в пределах одного графа, из-за чего надо выбирать точки правильно
+        /// </summary>
+        /// <param name="pointNear"></param>
+        /// <returns></returns>
+        public Cell FindByAllCheck(Vector3 pointNear)
+        {
+            //Всегда даёт точный результат, но дорого!
+            Debug.LogWarning("Избегайте использование алгоритма поиска ближайшей вершины через прямой перебор");
+
+            Cell res = _included[0];
+            float bestDistance = 999999;
+            foreach (Cell cell in _included)
+            {
+                float dist = Vector3.Distance(cell.Center(), pointNear);
+                if (dist < bestDistance)
+                {
+                    res = cell;
+                    bestDistance = dist;
+                }
+            }
+
             return res;
         }
     }
@@ -330,12 +396,8 @@ public class NavMeshCalculations : MonoBehaviour
         }
     }
 
-    private Cell[] _cells;
-
     private void OnValidate()
     {
-        if (_instance)
-            _instance.Initialize();
         MAXMIMUM_AREA = Mathf.Clamp(MAXMIMUM_AREA, MINIMUM_AREA, int.MaxValue);
     }
 
@@ -344,19 +406,23 @@ public class NavMeshCalculations : MonoBehaviour
         Initialize();
     }
 
+    /*private void LateUpdate()
+    {
+        octreeCells.LateUpdate();
+    }*/
+
     public void Initialize()
     {
         //TODO? : Большой простор для оптимизации, хотя поскольку тут у нас инициализация - то особенно без разницы.
 
-        List<Cell> _cellsList = new();
+        _clusters = new();
+        List<Cell> cellsList = new();
         List<Cell> trianglesToCombine = new();
         Dictionary<Edge, List<Cell>> links = new(); //Каждому ребру соответствуют какие-то Cell'ы
 
-        List<Edge> edges = new();
-
         var triangulation = NavMesh.CalculateTriangulation();
 
-        //Формирование треугольников
+        #region form triangles
         for (int i = 0; i < triangulation.indices.Length; i += 3)
         {
             Vector3[] triangle = new Vector3[3];
@@ -384,9 +450,11 @@ public class NavMeshCalculations : MonoBehaviour
                 continue;
             }
 
-            _cellsList.Add(cell);
+            cellsList.Add(cell);
         }
-        //Соединение соседей
+        #endregion
+
+        #region connect neighbors
         foreach (KeyValuePair<Edge, List<Cell>> kvp in links)
         {
             foreach (Cell c in kvp.Value)
@@ -395,7 +463,9 @@ public class NavMeshCalculations : MonoBehaviour
                 c.AddNeighbors(neighbors);
             }
         }
-        // Объединение слишком маленьких треугольников
+        #endregion
+
+        #region unify small triangles
         while (trianglesToCombine.Count > 0)
         {
             //Есть вот какой-то начальный треугольник. Берём его за основу.
@@ -403,7 +473,7 @@ public class NavMeshCalculations : MonoBehaviour
             // Как только соседи кончились, и расширять некуда - новая итерация с новым ComplexCell
             ComplexCell consumer = new ComplexCell();
             LinkedList<TriangleCell> toConsume = new();
-            _cellsList.Add(consumer);
+            cellsList.Add(consumer);
 
             TriangleCell first = (TriangleCell)trianglesToCombine[0];
 
@@ -445,12 +515,51 @@ public class NavMeshCalculations : MonoBehaviour
                 trianglesToCombine.Remove(cell);
             }
         }
-        // Разбиение слишком больших треугольников
+        #endregion
 
-        //TODO : Подсчёт "Центра"
-        center = _cellsList[0];
+        #region subdivide big triangles
 
-        _cells = _cellsList.ToArray();
+        #endregion
+
+        #region create clusters
+        //TODO : Лучше сделать много маленьких terrain'ов. А ещё лучше - плоскостей, заменяющих Terrain'ы
+        int amount = 0;
+        Cluster used = new();
+        foreach (Cell c in cellsList)
+        {
+            used.AddCell(c);
+
+            if (amount++ > CLUSTER_SIZE)
+            {
+                amount = 0;
+                _clusters.Add(used);
+                used = new();
+            }
+        }
+        #endregion
+
+        if (EditorApplication.isPlaying)
+            Destroy(_cellTransformContainer);
+        else
+            DestroyImmediate(_cellTransformContainer);
+        _cellTransformContainer = new("Cells positions");
+        _cellTransformContainer.transform.parent = transform;
+
+        List<Transform> transforms = new List<Transform>();
+        foreach (Cell cell in cellsList)
+        {
+            GameObject cellGo = new(cell.Center().ToString());
+            var comp = cellGo.AddComponent<TransfromCellBehavior>();
+            comp.Aligned = cell;
+            cellGo.transform.position = cell.Center();
+            cellGo.transform.parent = _cellTransformContainer.transform;
+            transforms.Add(cellGo.transform);
+        }
+
+        octreeCells = new(octTreeBounds);
+        octreeCells.AddRangeToProcess(transforms);
+
+        _cells = cellsList.ToArray();
     }
 
     public Cell GetCell(Vector3 pointNear)
@@ -458,7 +567,34 @@ public class NavMeshCalculations : MonoBehaviour
         // Его TODO : Можно посчитать заранее, при инициализации
         // TODO : Json-файл для хранения ShootMesh'а, чтобы сохранить всё ещё в Editor'е.
 
-        return FindByAllCheck(pointNear);
+        return FindByOctTree(pointNear);
+    }
+
+    public Cell FindByOctTree(Vector3 pointNear)
+    {
+        var t = octreeCells.FindClosestObjectInTree(pointNear);
+        return t.GetComponent<TransfromCellBehavior>().Aligned;
+    }
+
+    /// <summary>
+    /// Использует кластеры, которые используются для разбиения всего NavMesh на меньшие участки
+    /// </summary>
+    /// <returns></returns>
+    public Cell FindByClusters(Vector3 pointNear)
+    {
+        Cluster res = null;
+        float bestDistance = 999999;
+        foreach (Cluster cluster in _clusters)
+        {
+            float dist = Vector3.Distance(cluster.center, pointNear);
+            if (dist < bestDistance)
+            {
+                res = cluster;
+                bestDistance = dist;
+            }
+        }
+
+        return res.FindByAllCheck(pointNear);
     }
 
     /// <summary>
@@ -467,14 +603,14 @@ public class NavMeshCalculations : MonoBehaviour
     /// </summary>
     /// <param name="pointNear"></param>
     /// <returns></returns>
-    public Cell FindByAllCheck(Vector3 pointNear) 
+    public Cell FindByAllCheck(Vector3 pointNear)
     {
         //Всегда даёт точный результат, но дорого!
         Debug.LogWarning("Избегайте использование алгоритма поиска ближайшей вершины через прямой перебор");
 
         Cell res = _cells[0];
         float bestDistance = 999999;
-        foreach(Cell cell in _cells) 
+        foreach (Cell cell in _cells)
         {
             float dist = Vector3.Distance(cell.Center(), pointNear);
             if (dist < bestDistance)
@@ -487,7 +623,7 @@ public class NavMeshCalculations : MonoBehaviour
         return res;
     }
 
-    public Cell DijkstraFindCell(Cell start, Vector3 pointNear ) 
+    public Cell DijkstraFindCell(Cell start, Vector3 pointNear)
     {
         float bestDistance = 100000;
         List<Cell> toCheck = new()
@@ -534,14 +670,6 @@ public class NavMeshCalculations : MonoBehaviour
     /// </summary>
     /// <param name="pointNear"></param>
     /// <returns></returns>
-   
-/*    public Cell NavMeshPathFindCell(Vector3 start,Vector3 pointNear) 
-    {
-        NavMeshPath path = new();
-        NavMesh.CalculatePath(start, pointNear, ~0, path);
-
-        return path.corners[path.corners.Length - 1];
-    }*/
 
     public void DrawCells()
     {
@@ -564,10 +692,19 @@ public class NavMeshCalculations : MonoBehaviour
         return (Vector3.Cross(line2, line1).magnitude) / 2;
     }
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         DrawCells();
+
+        Gizmos.color = Color.cyan;
+
+        foreach (Cluster cluster in _clusters)
+        {
+            Gizmos.DrawRay(cluster.center, Vector3.up * 100);
+        }
+
+        Gizmos.color = new Color(0, 0.6f, 0);
+        if (octreeCells != null && drawOctTree)
+            octreeCells.DrawGizmo();
     }
-
-
 }
