@@ -5,7 +5,7 @@
   "showAttachments": false,
   "hideUnresolved": false,
   "showOrphans": true,
-  "collapse-color-groups": false,
+  "collapse-color-groups": true,
   "colorGroups": [
     {
       "query": "path:Утилитарное",
@@ -67,6 +67,6 @@
   "repelStrength": 10.9147609147609,
   "linkStrength": 1,
   "linkDistance": 30,
-  "scale": 0.6617452007047357,
-  "close": true
+  "scale": 0.38905447406618604,
+  "close": false
 }
