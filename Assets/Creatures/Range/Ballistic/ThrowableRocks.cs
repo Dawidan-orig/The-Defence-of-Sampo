@@ -5,8 +5,9 @@ public class ThrowableRocks : BaseShooting
 {
     public int ONE_SIDE_SEPARAIONS = 0;
 
-    protected void Awake()
+    protected override void Awake()
     {
+        base.Awake ();
         // ” баллистического оружи€ дальность зависит от силы запуска
         float velocityAxis = Mathf.Sin(45 * Mathf.Deg2Rad) * gunPower; // 45 - угол, при котором полЄт будет дальше всего
         float flyTime = (velocityAxis / 9.8f) * 2; // ¬верх и потом вниз
@@ -149,7 +150,6 @@ public class ThrowableRocks : BaseShooting
         float flyTime = (velocityAxis / 9.8f) * 2;
 
         Vector3 res = target.position + flyTime * target.velocity;
-        Utilities.DrawSphere(res, duration: 3);
         return res;
     }
 

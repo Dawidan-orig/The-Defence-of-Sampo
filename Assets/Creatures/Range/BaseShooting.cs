@@ -18,6 +18,12 @@ public class BaseShooting : Tool
     public ForceMode forceMode;
 
     protected bool readyToFire = true;
+    protected TargetingUtilityAI AIUser;
+
+    protected virtual void Awake()
+    {
+        AIUser = host.GetComponent<TargetingUtilityAI>();
+    }
 
     public virtual void Shoot(Vector3? target = null)
     {
@@ -75,7 +81,7 @@ public class BaseShooting : Tool
     private Vector3 FindBestPointToShoot_Dijkstra(Transform target) 
     {
         Vector3 res = Vector3.zero;
-        Vector3 delta = transform.position - host.position;
+        Vector3 delta = transform.position - host.transform.position;
         delta.x = 0; delta.z = 0;
         float height = delta.magnitude + host.GetComponent<AliveBeing>().vital.bounds.size.y / 2;
 
@@ -123,10 +129,8 @@ public class BaseShooting : Tool
 
         if (res == Vector3.zero)
         {
-            res = host.transform.position;
-            //TODO : Целевой объект в данный момент недостижим.
-            // Значит его надо Discard'нуть и выбрать новый.
-            Debug.LogWarning("Лучшая клетка не была найдена", host.transform);
+            res = host.transform.position;            
+            AIUser.DecidingStateRequired();
         }
 
         return res;
@@ -143,6 +147,8 @@ public class BaseShooting : Tool
 
     protected void PenetratingRaycast(Vector3 from, Vector3 to, out RaycastHit hit, float duration = 0, Color? color = null) 
     {
+        const bool DRAW = false;
+
         if(color == null)
             color = Color.white;
 
@@ -152,7 +158,7 @@ public class BaseShooting : Tool
                 (to - from).normalized,
                 out hit,
                 (to - from).magnitude,
-                alive + structures, duration: duration, color: color);
+                alive + structures, duration: duration, color: color, visualise: DRAW);
 
         if (hit.collider)
             if (hit.collider.isTrigger)
@@ -161,7 +167,7 @@ public class BaseShooting : Tool
                 (to - from).normalized,
                 out hit,
                 (to - from).magnitude - (from - hit.point).magnitude,
-                alive + structures, duration: duration, color: color);
+                alive + structures, duration: duration, color: color, visualise: DRAW);
             }
 
         if (hit.transform == host)
@@ -170,7 +176,7 @@ public class BaseShooting : Tool
                 (to - from).normalized,
             out hit,
                 (to - from).magnitude - (from - hit.point).magnitude,
-                alive + structures, duration: duration, color: color);
+                alive + structures, duration: duration, color: color, visualise: DRAW);
         }
     }
 

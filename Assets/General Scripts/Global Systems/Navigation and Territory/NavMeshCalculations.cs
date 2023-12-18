@@ -37,10 +37,12 @@ public class NavMeshCalculations : MonoBehaviour
     public static NavMeshCalculations Instance
     {
         get
-        {
-            _instance = FindObjectOfType<NavMeshCalculations>();
+        {    
+            if(_instance == null)
+                _instance = FindObjectOfType<NavMeshCalculations>();
+
             if (_instance == null)
-            {
+            {                
                 GameObject go = new("NM Calculations");
                 _instance = go.AddComponent<NavMeshCalculations>();
                 _instance.Initialize();

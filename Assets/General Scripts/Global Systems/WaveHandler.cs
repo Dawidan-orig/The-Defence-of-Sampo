@@ -11,7 +11,8 @@ public class WaveHandler : MonoBehaviour
     {
         get
         {
-            _instance = FindObjectOfType<WaveHandler>();
+            if (_instance == null)
+                _instance = FindObjectOfType<WaveHandler>();
             if (_instance == null)
             {
                 GameObject go = new("Wave Controlling Singleton");

@@ -1,10 +1,10 @@
 using System;
 using UnityEditor;
 using UnityEngine;
-using static SwordFighter_StateMachine;
 
 [RequireComponent(typeof(AttackCatcher))]
 public class SwordControl : MonoBehaviour
+    // Меч, управляемый не ИИ, но чем-то совершенно непредсказуемым. Например, игроком. 
 {
     [Header("constraints")]
     public float actionSpeed = 10; // Скорость движения меча в руке

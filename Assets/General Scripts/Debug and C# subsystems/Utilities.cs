@@ -61,6 +61,7 @@ public class Utilities
     }
 
     //TODO : —делать всЄ с Ray!
+    //TODO !!! : REFACTOR!
     public static bool VisualisedRaycast(Vector3 origin, Vector3 direction, out RaycastHit hit, float maxDistance, LayerMask? layerMask = null, bool drawHit = true, Color? color = null, float duration = 0, bool visualise = true)
     {
         if (color == null)
@@ -72,13 +73,13 @@ public class Utilities
         else
             result = Physics.Raycast(origin, direction, out hit, maxDistance);
 
-        if (drawHit && result)
+        if (drawHit && result && visualise)
         {
             Debug.DrawLine(origin, hit.point, (Color)color, duration);
             DrawSphere(hit.point, 0.075f, (Color)color, duration);
         }
 
-        if (!result)
+        if (!result && visualise)
         {
             Debug.DrawRay(origin, direction.normalized * maxDistance, Color.red, duration);
         }

@@ -13,7 +13,7 @@ public class Blade : MeleeTool
 
     [Header("lookonly")]
     public Rigidbody body;
-    public Vector3 DEBUG_AngularVelocityEuler;
+    public Vector3 AngularVelocityEuler;
     public Faction faction;
 
     [Header("Constraints")]
@@ -68,18 +68,21 @@ public class Blade : MeleeTool
         }
     }
 
+    //TODO : Refactor, дорого по памяти.
     public List<border> FixedPredict(int prediction)
     {
         List<border> res = new List<border>();
 
         border start = new();
 
+        Quaternion rotationIteration = Quaternion.Euler(AngularVelocityEuler * Time.fixedDeltaTime);
+
         Vector3 rotatedPosUp = upperPoint.position - transform.position;
-        rotatedPosUp = Quaternion.Euler(DEBUG_AngularVelocityEuler * Time.fixedDeltaTime) * rotatedPosUp;
+        rotatedPosUp = rotationIteration * rotatedPosUp;
         start.posUp = transform.position + rotatedPosUp + (body.velocity * Time.fixedDeltaTime);
 
         Vector3 rotatedPosDown = downerPoint.position - transform.position;
-        rotatedPosDown = Quaternion.Euler(DEBUG_AngularVelocityEuler * Time.fixedDeltaTime) * rotatedPosDown;
+        rotatedPosDown = rotationIteration * rotatedPosDown;
         start.posDown = transform.position + rotatedPosDown + (body.velocity * Time.fixedDeltaTime);
 
         start.direction = body.velocity.normalized;
@@ -98,8 +101,8 @@ public class Blade : MeleeTool
             rotatedPosDown = downerPoint.position - transform.position;
             for (int j = 0; j < offset_i; j++)
             {
-                rotatedPosUp = Quaternion.Euler(DEBUG_AngularVelocityEuler * Time.fixedDeltaTime) * rotatedPosUp;
-                rotatedPosDown = Quaternion.Euler(DEBUG_AngularVelocityEuler * Time.fixedDeltaTime) * rotatedPosDown;
+                rotatedPosUp = rotationIteration * rotatedPosUp;
+                rotatedPosDown = rotationIteration * rotatedPosDown;
             }
 
             border.posUp = transform.position + rotatedPosUp + offset_i * body.velocity * Time.fixedDeltaTime;
@@ -169,7 +172,7 @@ public class Blade : MeleeTool
     private void FixedUpdate()
     {
         //TODO : Добавить boxcast для проверки на коллизию при высокой скорости.
-        DEBUG_AngularVelocityEuler = body.angularVelocity * 360 / (2 * Mathf.PI);
+        AngularVelocityEuler = body.angularVelocity * 360 / (2 * Mathf.PI);
 
         if (alwaysDraw)
             FixedPredict(iterations);

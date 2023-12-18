@@ -12,10 +12,10 @@ public class UtilityAI_Manager : MonoBehaviour
     private static UtilityAI_Manager _instance;
     public static UtilityAI_Manager Instance
     {
-        get //TODO : Ей богу, этот паттерн надо уже в делегат выводить...
-            // Надо сделать это универсальным
+        get
         {
-            _instance = FindObjectOfType<UtilityAI_Manager>();
+            if (_instance == null)
+                _instance = FindObjectOfType<UtilityAI_Manager>();
 
             if (_instance == null)
             {
@@ -34,67 +34,104 @@ public class UtilityAI_Manager : MonoBehaviour
         }
     }
 
-    private Dictionary<GameObject, int> _interactables = new Dictionary<GameObject, int>();
-    private Dictionary<GameObject, int> _targetedByEnemies = new Dictionary<GameObject, int>();
+    private Dictionary<Interactable_UtilityAI, int> _targetedByUnits = new Dictionary<Interactable_UtilityAI, int>();
 
-    public EventHandler<UAIData> changeHappened;
+    private Dictionary<Faction.FType, int> factionIndex_match = new();
+    //Этот список содержит в себе объекты взаимодействия от и для конкретной фракции.
+    //TODO : Использовать структуру данных типа бинарного дерева. У меня тут сортировка может происходить автоматически при добавлении
+    private List<Dictionary<Interactable_UtilityAI, int>> _factionsData = new();
+
+    public EventHandler<UAIData> changeHappened; //TODO : Мне не обязательно отправлять вообще весь Dictionary,
+                                                 //Достаточно бросить всем новый добавленный объект.
+                                                 // Уже там - разберуться, спасибо бинарным деревьям.
+    public class UAIData : EventArgs
+    {
+        public Faction.FType factionWhereChangeHappened;
+        public Dictionary<Interactable_UtilityAI, int> interactables;
+
+        public UAIData(Dictionary<Interactable_UtilityAI, int> interactables, Faction.FType factionAffected)
+        {
+            this.interactables = interactables;
+            this.factionWhereChangeHappened = factionAffected;
+        }
+    }
 
     private void OnApplicationQuit()
     {
         Destroy(_instance);
     }
-
-    public class UAIData : EventArgs
+    
+    #region setters-Getters
+    public void AddNewInteractable(Interactable_UtilityAI interactable, int weight)
     {
-        public Dictionary<GameObject, int> interactables;
-
-        public UAIData(Dictionary<GameObject, int> interactables)
+        if (interactable.TryGetComponent(out Faction f))
         {
-            this.interactables = interactables;
+            if (factionIndex_match.ContainsKey(f.f_type))
+            {
+                int resIndex = factionIndex_match[f.f_type];
+                _factionsData[resIndex].Add(interactable, weight);
+                changeHappened?.Invoke(this, new UAIData(_factionsData[resIndex], f.f_type));
+            }
+            else // Добавляем те фракции, которых ещё нет
+            {
+                _factionsData.Add(new Dictionary<Interactable_UtilityAI, int>());
+                int resIndex = _factionsData.Count - 1;
+                factionIndex_match.Add(f.f_type, resIndex);
+                _factionsData[resIndex].Add(interactable, weight);
+                changeHappened?.Invoke(this, new UAIData(_factionsData[resIndex], f.f_type));
+            }
+            
         }
-    }
-
-    public Dictionary<GameObject, int> GetInteractables()
-    {
-        return new Dictionary<GameObject, int>(_interactables);
-    }
-
-    public void AddNewInteractable(GameObject interactable, int weight)
-    {
-        if (_interactables.ContainsKey(interactable))
+        else // Фракция у объекта отсутствует, значит это объект взаимодействия для всех.
         {
-            Debug.LogWarning($"{interactable.transform.name} уже был добавлен в список, отмена");
-            return;
+            foreach(var key in factionIndex_match.Keys) 
+            {
+                var dict = _factionsData[factionIndex_match[key]];
+                dict.Add(interactable, weight);
+                changeHappened?.Invoke(this, new UAIData(dict, key));
+            }
+        }        
+    }
+
+    public void RemoveInteractable(Interactable_UtilityAI interactable)
+    {
+        int resIndex = 0;
+        if (interactable.TryGetComponent(out Faction f))
+        {
+            if (factionIndex_match.TryGetValue(f.f_type, out resIndex))
+            {
+                _factionsData[resIndex].Remove(interactable);
+            }
+            changeHappened?.Invoke(this, new UAIData(_factionsData[resIndex], f.f_type));
         }
-
-        _interactables.Add(interactable, weight);
-
-        changeHappened?.Invoke(this, new UAIData(_interactables));
-    }
-
-    public void RemoveInteractable(GameObject interactable)
-    {
-        _interactables.Remove(interactable);
-        _targetedByEnemies.Remove(interactable);
-
-        changeHappened?.Invoke(this, new UAIData(_interactables));
-    }
-
-    public void ChangeCongestion(GameObject to, int powerAdded)
-    {
-        if (!_targetedByEnemies.ContainsKey(to))
+        else // Фракция у объекта отсутствует, значит это объект взаимодействия для всех.
         {
-            _targetedByEnemies.Add(to, powerAdded);
+            foreach (var key in factionIndex_match.Keys)
+            {
+                var dict = _factionsData[factionIndex_match[key]];
+                dict.Remove(interactable);
+                changeHappened?.Invoke(this, new UAIData(dict, key)); // Три раза для каждой из фракций.
+            }
+        }
+        _targetedByUnits.Remove(interactable);        
+    }
+
+    public void ChangeCongestion(Interactable_UtilityAI to, int powerAdded)
+    {
+        if (!_targetedByUnits.ContainsKey(to))
+        {
+            _targetedByUnits.Add(to, powerAdded);
         }
         else
-            _targetedByEnemies[to] += powerAdded;
+            _targetedByUnits[to] += powerAdded;
     }
 
-    public int GetCongestion(GameObject from)
+    public int GetCongestion(Interactable_UtilityAI from)
     {
-        if (!_targetedByEnemies.ContainsKey(from))
+        if (!_targetedByUnits.ContainsKey(from))
             return 0;
         else
-            return _targetedByEnemies[from];
+            return _targetedByUnits[from];
     }
+    #endregion
 }

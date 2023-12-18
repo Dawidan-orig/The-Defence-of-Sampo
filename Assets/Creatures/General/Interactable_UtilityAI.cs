@@ -15,11 +15,11 @@ public class Interactable_UtilityAI : MonoBehaviour
 
     protected virtual void OnEnable()
     {
-        UtilityAI_Manager.Instance.AddNewInteractable(gameObject, ai_weight);
+        UtilityAI_Manager.Instance.AddNewInteractable(this, ai_weight);
     }
 
     protected virtual void OnDisable()
     {
-        UtilityAI_Manager.Instance.RemoveInteractable(gameObject);
+        UtilityAI_Manager.Instance.RemoveInteractable(this);
     }
 }

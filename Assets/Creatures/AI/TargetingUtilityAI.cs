@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 [SelectionBase]
 [RequireComponent(typeof(MovingAgent))]
+[RequireComponent(typeof(Faction))]
 public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDistribution
 // ИИ, ставящий приоритеты выполнения действий
 // Использует StateMachine в качестве исполнителя
@@ -39,7 +41,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDist
     [SerializeField]
     protected List<AIAction> _possibleActions = new();
     [SerializeField]
-    [Tooltip(@"Это очки, по котором ИИ определяет, насколько этот противник опасен.
+    [Tooltip(@"Это очки внешней опасности, по котором ИИ определяет, насколько этот противник опасен.
             Может менять визуальную составляющую.
             Изначально устанавливается при процедурной инициализации, но может меняться в ходе игры.")]
     protected int visiblePowerPoints = 100;
@@ -143,7 +145,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDist
     {
         UtilityAI_Manager.Instance.changeHappened -= DistributeActivityFromManager;
         if(_currentActivity.target)
-            UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.gameObject, -visiblePowerPoints);
+            UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), -visiblePowerPoints);
         NullifyActivity();
         _AIActive = false;
     }
@@ -192,21 +194,26 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDist
     #region actions
     private void DistributeActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
     {
-        if(_currentActivity != _noAction)
-            UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.gameObject, -visiblePowerPoints);
+        if (!GetComponent<Faction>().IsWillingToAttack(e.factionWhereChangeHappened))
+            return;
+
+        if (_currentActivity != _noAction)
+            UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), -visiblePowerPoints);
         _currentActivity = _noAction;
         _possibleActions.Clear();
 
         var activities = e.interactables;
-        foreach (KeyValuePair<GameObject, int> activity in activities)
+        foreach (KeyValuePair<Interactable_UtilityAI, int> activity in activities)
         {
-            GameObject target = activity.Key;
-            int weight = activity.Value;
-
-            // Прямо сейчас ИИ будут атаковать всё живое и разрушаемое
-            if (!target.TryGetComponent<Interactable_UtilityAI>(out _))
+            if (activity.Key == null)
                 continue;
 
+            Interactable_UtilityAI target = activity.Key;
+            int weight = activity.Value;
+
+            // Прямо сейчас ИИ будут тупо атаковать всё живое и разрушаемое
+            if (!target.TryGetComponent<Interactable_UtilityAI>(out _))
+                continue;
             if (!IsEnemyPassing(target.transform))
                 continue;
 
@@ -232,7 +239,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDist
         for (int i = 0; i < _possibleActions.Count; i++)
         {
             _possibleActions[i].distanceSubstraction = Mathf.RoundToInt(Vector3.Distance(transform.position, _possibleActions[i].target.position) * distanceWeightMultiplier);
-            _possibleActions[i].enemiesAmountSubstraction = UtilityAI_Manager.Instance.GetCongestion(_possibleActions[i].target.gameObject);            
+            _possibleActions[i].enemiesAmountSubstraction = UtilityAI_Manager.Instance.GetCongestion(_possibleActions[i].target.GetComponent<Interactable_UtilityAI>());            
 
             _possibleActions[i].TotalWeight = _possibleActions[i].baseWeight
             - _possibleActions[i].distanceSubstraction 
@@ -252,7 +259,8 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDist
 
         int bestActivityIndex = 0;
 
-        _possibleActions.Sort((i1, i2) => i2.TotalWeight.CompareTo(i1.TotalWeight));
+        _possibleActions.Sort((i1, i2) => i2.TotalWeight.CompareTo(i1.TotalWeight)); // TODO : Вот с этим надо бы что-то сделать. Дороговато.
+                                                                                     // У каждого юнита индивидуальна только дистанция. Значит плясать надо от этого.
 
         /*
         NavMeshPath path = new();
@@ -269,7 +277,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDist
             return null;*/
 
         _currentActivity = _possibleActions[bestActivityIndex];
-        UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.gameObject, visiblePowerPoints);
+        UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), visiblePowerPoints);
 
         return _currentActivity.whatDoWhenClose;
     }
@@ -328,6 +336,8 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDist
         return hands;
     }
 
+    //TODO : Сделать так, чтобы управляющая StateMachine была интегрирована сюда, либо вообще редуцирована.
+    // Эти Функции не должны быть публичны, они - только для управляющей StateMachine!
     /// <summary>
     /// Обычный Update, но вызываемый в состоянии, когда юнит атакует.
     /// </summary>
