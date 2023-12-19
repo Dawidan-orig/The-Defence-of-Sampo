@@ -47,13 +47,12 @@ public class NavMeshCalculations : MonoBehaviour
                 _instance = go.AddComponent<NavMeshCalculations>();
                 _instance.Initialize();
             }
-
-            /*
+            
             if (EditorApplication.isPlaying)
             {
                 _instance.transform.parent = null;
                 DontDestroyOnLoad(_instance.gameObject);
-            }*/
+            }
 
             return _instance;
         }
@@ -413,6 +412,12 @@ public class NavMeshCalculations : MonoBehaviour
         octreeCells.LateUpdate();
     }*/
 
+    [InitializeOnLoadMethod]
+    public static void InitLoad() 
+    {
+        Instance.Initialize();
+    }
+
     public void Initialize()
     {
         //TODO? : Ѕольшой простор дл€ оптимизации, хот€ поскольку тут у нас инициализаци€ - то особенно без разницы.
@@ -575,7 +580,10 @@ public class NavMeshCalculations : MonoBehaviour
     public Cell FindByOctTree(Vector3 pointNear)
     {
         var t = octreeCells.FindClosestObjectInTree(pointNear);
+        if(t != null)
         return t.GetComponent<TransfromCellBehavior>().Aligned;
+        else
+            return null;
     }
 
     /// <summary>
