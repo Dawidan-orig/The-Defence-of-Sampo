@@ -7,7 +7,8 @@ public class SwordControl : MonoBehaviour
     // Меч, управляемый не ИИ, но чем-то совершенно непредсказуемым. Например, игроком. 
 {
     [Header("constraints")]
-    public float actionSpeed = 10; // Скорость движения меча в руке
+    public float actionSpeed = 3; // Скорость движения меча в руке
+    public float swingSpeed = 3;
     public float block_minDistance = 1; // Минимальное расстояние для блока, используемое для боев с противником, а не отбивания.
     public float swing_EndDistanceMultiplier = 2; // Насколько далеко должен двинуться меч после отбивания.
     public float swing_startDistance = 2; // Насколько далеко должен двинуться меч до удара.
@@ -123,7 +124,12 @@ public class SwordControl : MonoBehaviour
     private void FixedUpdate()
     {
         if (_moveProgress < 1)
-            _moveProgress += actionSpeed * Time.fixedDeltaTime;
+        {
+            if (!_swinging)
+                _moveProgress += actionSpeed * Time.fixedDeltaTime;
+            else
+                _moveProgress += swingSpeed * Time.fixedDeltaTime;
+        }
 
         if (_attackRecharge < minimalTimeBetweenAttacks)
             _attackRecharge += Time.fixedDeltaTime;

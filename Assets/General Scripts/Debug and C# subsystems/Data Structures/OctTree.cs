@@ -125,6 +125,12 @@ public class OctTree
 
             foreach (Transform t in _objects)
             {
+                if (t == null)
+                {
+                    delist.Add(t);
+                    continue;
+                }
+
                 // Проверяем все октанты
                 for (int a = 0; a < 8; a++)
                 {

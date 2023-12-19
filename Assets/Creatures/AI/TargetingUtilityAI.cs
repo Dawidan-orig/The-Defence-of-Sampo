@@ -384,6 +384,9 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDist
     {
         Gizmos.color = Color.black;
         NavMeshCalculations.Cell cell = NavMeshCalculations.Instance.GetCell(transform.position);
+        if (cell == null)
+            return;
+
         cell.DrawGizmo();
         Gizmos.DrawLine(cell.Center(), transform.position);
     }
