@@ -5,6 +5,8 @@ public class AI_LongReposition : UtilityAI_BaseState
 // ИИ двигается в какую-то точку с помощью NavMesh, при это не делая более ничего
 {
     private NavMeshPath path;
+    Vector3 targetPos;
+    float recalcDifference = 3;
     public AI_LongReposition(TargetingUtilityAI currentContext, UtilityAI_Factory factory) : base(currentContext, factory)
     {
 
@@ -82,7 +84,8 @@ public class AI_LongReposition : UtilityAI_BaseState
         if (CheckSwitchStates())
             return;
 
-        if (_ctx.CurrentActivity.target.hasChanged)
+        if (!Utilities.ValueInArea(targetPos, _ctx.CurrentActivity.target.position, recalcDifference))
+            //TODO? : Оптимизация +-, но можно сделать лучше.
         {
             Repath();
         }
@@ -91,26 +94,16 @@ public class AI_LongReposition : UtilityAI_BaseState
     private void Repath()
     {
         //TODO : Что-то тут не так. Repath не должен вызываться постоянно...
-        Vector3 target = _ctx.CurrentActivity.target.position;
+        targetPos = _ctx.CurrentActivity.target.position;
 
-        if (_ctx.CurrentActivity.actWith is BaseShooting)
+        if (_ctx.CurrentActivity.actWith is BaseShooting) // Ищем лучшую позицию для стрельбы
         {
-            target = ((BaseShooting)_ctx.CurrentActivity.actWith).NavMeshClosestAviableToShoot(_ctx.CurrentActivity.target);
+            targetPos = ((BaseShooting)_ctx.CurrentActivity.actWith).NavMeshClosestAviableToShoot(_ctx.CurrentActivity.target);
         }
 
         path = new NavMeshPath();
-        NavMesh.CalculatePath(_ctx.navMeshCalcFrom.position, target, NavMesh.AllAreas, path);
+        NavMesh.CalculatePath(_ctx.navMeshCalcFrom.position, targetPos, NavMesh.AllAreas, path);
 
-        //Нет пути? Попробуем тогда по-другому:
-        if (path.status == NavMeshPathStatus.PathInvalid)
-        {
-            // Цель может быть высоко в небе
-            if (Physics.Raycast(target, Vector3.down, out var hit, 100))
-                NavMesh.CalculatePath(_ctx.navMeshCalcFrom.position, hit.point, NavMesh.AllAreas, path);
-        }
-
-        //TODO? : Попробовать убрать это разнообразие переменных в _ctx
-        // Лучше пусть будет одна, что хранит в себе какого-то агента.
         if (_ctx.NMAgent)
         {
             _ctx.NMAgent.SetPath(path);
@@ -126,7 +119,8 @@ public class AI_LongReposition : UtilityAI_BaseState
             else
             {
                 var closest = NavMeshCalculations.Instance.GetCell(_ctx.navMeshCalcFrom.position);
-                _ctx.MovingAgent.MoveIteration(closest.Center());
+                targetPos = closest.Center();
+                _ctx.MovingAgent.MoveIteration(targetPos);
             }
         }
     }

@@ -62,6 +62,7 @@ public class UtilityAI_Manager : MonoBehaviour
     }
     
     #region setters-Getters
+    //TODO : Поломалось кое-что, новодобавленные юниты не получают инфу
     public void AddNewInteractable(Interactable_UtilityAI interactable, int weight)
     {
         if (interactable.TryGetComponent(out Faction f))

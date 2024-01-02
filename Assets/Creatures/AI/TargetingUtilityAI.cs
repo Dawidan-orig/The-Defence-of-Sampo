@@ -214,7 +214,7 @@ public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDist
             // Прямо сейчас ИИ будут тупо атаковать всё живое и разрушаемое
             if (!target.TryGetComponent<Interactable_UtilityAI>(out _))
                 continue;
-            if (!IsEnemyPassing(target.transform))
+            if (!IsEnemyPassing(target.transform)) 
                 continue;
 
             Tool toolUsed = ToolChosingCheck(target.transform);

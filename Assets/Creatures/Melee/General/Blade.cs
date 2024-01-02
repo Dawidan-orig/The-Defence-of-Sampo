@@ -69,6 +69,8 @@ public class Blade : MeleeTool
     }
 
     //TODO : Refactor, дорого по пам€ти.
+    //IDEA : —делать фиксированное рассто€ние, относительно которого и будут ставитьс€ iterations.
+    // ѕолучитс€, что iterations будет определ€ть "ѕлотность" предсказаний, дава€ возможности дл€ алгоритмов оптимизиации
     public List<border> FixedPredict(int prediction)
     {
         List<border> res = new List<border>();

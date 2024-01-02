@@ -112,7 +112,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77f2875d5386eed408c325d7384722a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  predictions: 10
+  predictions: 2
   debug_Draw: 0
   sword_as_stuff: 0
   ignoredDistance: 2
