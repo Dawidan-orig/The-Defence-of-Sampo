@@ -1,50 +1,53 @@
 using UnityEngine;
 
-public abstract class MeleeFighter : TargetingUtilityAI
+namespace Sampo.AI
 {
-    //ƒобавить сюда использование кулаков
-    public MeleeTool weapon;
-
-    [SerializeField]
-    protected bool _swingReady = true;
-
-    public bool SwingReady { get => _swingReady; set => _swingReady = value; }
-
-    protected override void Start()
+    public abstract class MeleeFighter : TargetingUtilityAI
     {
-        base.Start();
+        //ƒобавить сюда использование кулаков
+        public MeleeTool weapon;
 
-        if (weapon == null)
+        [SerializeField]
+        protected bool _swingReady = true;
+
+        public bool SwingReady { get => _swingReady; set => _swingReady = value; }
+
+        protected override void Start()
         {
-            weapon = hands;
+            base.Start();
+
+            if (weapon == null)
+            {
+                weapon = hands;
+            }
         }
-    }
-    public override void AttackUpdate(Transform target)
-    {
-        
-    }
+        public override void AttackUpdate(Transform target)
+        {
 
-    protected override Tool ToolChosingCheck(Transform target)
-    {
-        return weapon;
+        }
+
+        protected override Tool ToolChosingCheck(Transform target)
+        {
+            return weapon;
+        }
+
+        public override Transform GetRightHandTarget()
+        {
+            return weapon.rightHandHandle;
+        }
+
+        public virtual void Swing(Vector3 toPoint)
+        {
+            _swingReady = false;
+
+            Invoke(nameof(BecomeReadyToSwing), weapon.cooldownBetweenAttacks);
+        }
+
+        public void BecomeReadyToSwing()
+        {
+            _swingReady = true;
+        }
+
+        public abstract void Block(Vector3 start, Vector3 end, Vector3 SlashingDir);
     }
-
-    public override Transform GetRightHandTarget()
-    {
-        return weapon.rightHandHandle;
-    }
-
-    public virtual void Swing(Vector3 toPoint) 
-    {
-        _swingReady = false;
-
-        Invoke(nameof(BecomeReadyToSwing), weapon.cooldownBetweenAttacks);
-    }
-
-    public void BecomeReadyToSwing()
-    {
-        _swingReady = true;
-    }
-
-    public abstract void Block(Vector3 start, Vector3 end, Vector3 SlashingDir);
 }

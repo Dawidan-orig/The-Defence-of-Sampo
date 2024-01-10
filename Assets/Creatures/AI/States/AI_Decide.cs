@@ -1,75 +1,63 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
-using UnityEngine.AI;
 
-public class AI_Decide : UtilityAI_BaseState
-// Если ИИ попал в патовую ситуацию, столкнулся с какой-то ошибкой или ещё по каким-то экстраординарным причинам не выполнил задачу -
-// Он попадает в это состояние.
+namespace Sampo.AI
 {
-    public AI_Decide(TargetingUtilityAI currentContext, UtilityAI_Factory factory) : base(currentContext, factory)
-    {
-    }
+    /// <summary>
+    /// Состояние-распределитель. Попадая сюда, ии решает, что ему делать дальше.
+    /// </summary>
+    public class AI_Decide : UtilityAI_BaseState
 
-    public override bool CheckSwitchStates()
+    // Если ИИ попал в патовую ситуацию, столкнулся с какой-то ошибкой или ещё по каким-то экстраординарным причинам не выполнил задачу -
+    // Он попадает в это состояние.
     {
-        UtilityAI_BaseState newAcitivty = _ctx.SelectBestActivity();
-
-        if(newAcitivty == null)
+        public AI_Decide(TargetingUtilityAI currentContext, UtilityAI_Factory factory) : base(currentContext, factory)
         {
-            // Задач нет ВООБЩЕ.
-            return false;
         }
 
-        switch(newAcitivty) 
+        public override bool CheckSwitchStates()
         {
-            case AI_LongReposition:
-                SwitchStates(_factory.Reposition());
-                return true;
-            default:
-                
-                if (!_ctx.MeleeReachable()) {
-                    SwitchStates(_factory.Reposition());
-                    return true;
-                }
-                
-                SwitchStates(newAcitivty);
-                return true;
+            UtilityAI_BaseState newAcitivty = _ctx.SelectBestActivity();
+
+            if (newAcitivty == null)
+            {
+                // Задач нет ВООБЩЕ.
+                return false;
+            }
+
+            SwitchStates(newAcitivty);
+            return true;
+
         }
-    }
 
-    public override void EnterState()
-    {
-        
-    }
+        public override void EnterState()
+        {
 
-    public override void ExitState()
-    {
-        
-    }
+        }
 
-    public override void InitializeSubState()
-    {
-        
-    }
+        public override void ExitState()
+        {
 
-    public override void UpdateState()
-    {
-        if (!_ctx._AIActive)
-            return;
+        }
 
-        Debug.DrawRay(_ctx.transform.position, Vector3.up * 2, Color.black);
+        public override void InitializeSubState()
+        {
 
-        CheckSwitchStates();
-    }
-    public override void FixedUpdateState()
-    {
+        }
 
-    }
+        public override void UpdateState()
+        {
+            Debug.DrawRay(_ctx.transform.position, Vector3.up * 2, Color.black);
 
-    public override string ToString()
-    {
-        return "Thinking";
+            CheckSwitchStates();
+        }
+        public override void FixedUpdateState()
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return "Thinking";
+        }
     }
 }

@@ -1,19 +1,21 @@
+using Sampo.AI;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(Movement))]
 public class MovingAgent : MonoBehaviour
 {
-    //TODO : Всё-таки нужно учесть ситуации, когда ввод отсутствовал, чтобы аннулировать движение напрочь.
-    // А то если ввода нет - движение продолжиться так, какое оно было при последнем вводе.
-
-    public float walkToTargetDist = 5; // Дистанция, меньше которой агент будет двигаться со скоростью ходьбы.
-    public float runToTargetDist = 30; // Дистанция, меньше которой агент будет бежать.
-
+    [Tooltip("Дистанция, меньше которой агент будет двигаться со скоростью ходьбы.")]
+    public float walkToTargetDist = 5;
+    [Tooltip("Дистанция, меньше которой агент будет бежать.")]
+    public float runToTargetDist = 30;
+    [Tooltip("Угловая скорость смещения скорости")]
     public float angularRotatingSpeed = 360;
-
+    [Tooltip("Высота стены, когда её уже следует избегать, чтобы не застрять")]
     public float wallHeight = 1;
+    [Tooltip("Длина от края, который лучше избегать")]
     public float edgeDistance = 2;
+    [Tooltip("Глубина вниз от края, когда его следует избегать")]
     public float edgeDepth = 1;
 
     public LayerMask terrainMask;
@@ -49,14 +51,13 @@ public class MovingAgent : MonoBehaviour
         transform.LookAt(transform.position + newDir, Vector3.up);
     }
 
-    //TODO : Путь оптимизировать должен агент, а не Movement.
     /// <summary>
-    /// Эта функция используется для передачи пути целиком, но это нужно в основном для наследников, чтобы переопределять их движение относительно NM-Пути 
+    /// Эта функция используется для передачи пути целиком для дальнейшей его оптимизации
     /// </summary>
     /// <param name="path">Передаваемый путь</param>
     public void PassPath(NavMeshPath path)
     {
-        //movement.PassPath(path);
+        //TODO : функционал оптимизации пути. Для тех же летающих.
     }
 
     public void MoveIteration(Vector3 newPos) 
@@ -98,20 +99,20 @@ public class MovingAgent : MonoBehaviour
         Vector3 wallHeightPoint = edgeFlatPoint + Vector3.up * wallHeight;
         Vector3 edgeDepthPoint = edgeFlatPoint + Vector3.down * edgeDepth;
 
-        bool wallHit = Utilities.VisualisedRaycast(bottom,
+        bool wallHit = Physics.Raycast(bottom,
             (wallHeightPoint - bottom).normalized,
             out RaycastHit wall,
             (wallHeightPoint - bottom).magnitude,
             terrainMask);
 
-        bool stepFloorHit = Utilities.VisualisedRaycast(wallHeightPoint,
+        bool stepFloorHit = Physics.Raycast(wallHeightPoint,
             (edgeDepthPoint - wallHeightPoint).normalized,
             out _,
             (edgeDepthPoint - wallHeightPoint).magnitude,
             terrainMask);
-        
 
-        Utilities.VisualisedRaycast(edgeDepthPoint,
+
+        Physics.Raycast(edgeDepthPoint,
             (bottom - edgeDepthPoint + Vector3.down * edgeDepth).normalized,
             out RaycastHit edge,
             (bottom - edgeDepthPoint + Vector3.down * edgeDepth).magnitude,

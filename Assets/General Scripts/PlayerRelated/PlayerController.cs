@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Movement))]
 public class PlayerController : MonoBehaviour, IAnimationProvider
 {
-    //TODO : Перенести в State Machine для более удобного контроля
+    //TODO DESIGN :  Продумать систему, при которой можно будет использовать разное оружие, а не только ближний бой
     Movement movement;
 
     public Transform usedMainHand;
@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour, IAnimationProvider
 
         movement.PassInputDirect(input, type, Input.GetKeyDown(KeyCode.Space) && movement.IsGrounded && movement.JumpReady);
 
+        #region sword fighting
         if (swordControl)
         {
             // Простое перемещение оружия
@@ -81,6 +82,7 @@ public class PlayerController : MonoBehaviour, IAnimationProvider
                 prevMouse = new Vector3(Screen.width/2,Screen.height/2);
             }
         }
+        #endregion
     }
 
     private Vector3 CastMouseToSwordSpace() 

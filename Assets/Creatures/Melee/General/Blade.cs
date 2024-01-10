@@ -62,14 +62,13 @@ public class Blade : MeleeTool
         if (faction)
         {
             if (host)
-                faction.f_type = host.GetComponent<Faction>().f_type;
+                faction.ChangeFactionCompletely(host.GetComponent<Faction>().FactionType);
             else
-                faction.f_type = Faction.FType.aggressive;
+                faction.ChangeFactionCompletely(Faction.FType.aggressive);
         }
     }
 
-    //TODO : Refactor, дорого по пам€ти.
-    //IDEA : —делать фиксированное рассто€ние, относительно которого и будут ставитьс€ iterations.
+    //TODO : —делать фиксированное рассто€ние, относительно которого и будут ставитьс€ iterations.
     // ѕолучитс€, что iterations будет определ€ть "ѕлотность" предсказаний, дава€ возможности дл€ алгоритмов оптимизиации
     public List<border> FixedPredict(int prediction)
     {

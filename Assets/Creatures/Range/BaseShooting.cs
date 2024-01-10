@@ -1,10 +1,7 @@
+using Sampo.AI;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using Unity.Burst.CompilerServices;
 using UnityEngine;
-using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
 public class BaseShooting : Tool
 {
@@ -38,12 +35,13 @@ public class BaseShooting : Tool
         Faction BFac;
         if (!bullet.TryGetComponent(out BFac))
             BFac = bullet.AddComponent<Faction>();
-        BFac.f_type = host.GetComponent<Faction>().f_type;
+        BFac.ChangeFactionCompletely(host.GetComponent<Faction>().FactionType);
 
         Physics.IgnoreCollision(GetComponent<Collider>(), bullet.GetComponent<Collider>());
         Physics.IgnoreCollision(host.GetComponent<Collider>(), bullet.GetComponent<Collider>());
 
         Bullet b = bullet.GetComponent<Bullet>();
+        b.SetDamageDealer(transform);
         b.possibleDistance = range;
 
         readyToFire = false;
@@ -90,7 +88,7 @@ public class BaseShooting : Tool
         List<NavMeshCalculations.Cell> toCheck = new() { start };
         List<NavMeshCalculations.Cell> alreadyChecked = new();
         //TODO : Добавить в формулу высоту. Чем выше - тем лучше.
-        // Это вводит в систему, а точнее превращает её в AStar-аналог
+        // Это превращает систему в AStar-аналог
 
         float bestDistanceToTarget = 0;
         float bestDistanceFromGun = 100000;

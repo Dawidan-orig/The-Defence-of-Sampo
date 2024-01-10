@@ -13,8 +13,6 @@ public class WindSlide : Ability
     [SerializeField]
     private Rigidbody _body;
     [SerializeField]
-    private PlayerController _playerController;
-    [SerializeField]
     private float _currentRecharge = 0;
     [SerializeField]
     private float _surpassedDistance = 0;
@@ -29,7 +27,6 @@ public class WindSlide : Ability
         _currentRecharge = RECHARGE;
         _prevPos = user.position;
         _body = user.GetComponent<Rigidbody>();
-        _playerController = user.GetComponent<PlayerController>();
     }
 
     public override void Activate()
@@ -37,7 +34,6 @@ public class WindSlide : Ability
         if (_currentRecharge >= RECHARGE)
         {
             base.Activate();
-            _playerController.enabled = false;
             _direction= Camera.main.transform.forward;
         }
     }
@@ -47,7 +43,6 @@ public class WindSlide : Ability
         base.Deactivate();
         _currentRecharge = 0;
         _surpassedDistance = 0;
-        _playerController.enabled = true; //TODO : Заменить это на внутреннюю в PlayerController bool-переменную, чтобы отключать лишь ограничение скорости (Это и нужно), а не всё управление. 
     }
 
     public override void FixedUpdate()

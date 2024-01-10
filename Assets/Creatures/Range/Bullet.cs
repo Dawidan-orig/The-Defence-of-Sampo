@@ -1,10 +1,13 @@
 using UnityEngine;
 
-public class Bullet : MonoBehaviour
+public class Bullet : MonoBehaviour, IDamageDealer
 {
     public Vector3 startPoint;
     public float possibleDistance = 1000;
     public float remainingTime = 300;
+
+    private Transform _damageSource; 
+    public Transform DamageFrom { get => _damageSource; }
 
     private void Start()
     {
@@ -31,5 +34,10 @@ public class Bullet : MonoBehaviour
 
         if (Vector3.Distance(startPoint, transform.position) > possibleDistance)
             Destroy(gameObject);
+    }
+
+    public void SetDamageDealer(Transform dealer) 
+    {
+        _damageSource = dealer;
     }
 }

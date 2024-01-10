@@ -7,16 +7,12 @@ using UnityEngine.AI;
 
 public class NavMeshCalculations : MonoBehaviour
 {
-    //TODO : Сделать вычисление ещё в Editor через корутины, как это было в рогалике про культистов!
-
     private static NavMeshCalculations _instance;
 
     [Min(0)]
     public float MINIMUM_AREA = 30;
     [Min(0)]
     public float MAXMIMUM_AREA = 50;
-    [Min(0)]
-    public int CLUSTER_SIZE = 30;
     [Range(0, 100)]
     public float MAX_VERTS_IN_COMPLEX = 50;
     public Bounds octTreeBounds = new Bounds();
@@ -230,13 +226,8 @@ public class NavMeshCalculations : MonoBehaviour
                     Debug.LogError("При поглощении нарисованного треугольника не нашлось внешней вершины (Error Pause, чтобы увидеть)");
                     return;
                 }
-                if (_vectorFormers.Contains(res)) //TODO?? : LINQ-Check, дорого!
+                if (_vectorFormers.Contains(res))
                 {
-                    // Добавляемый треугольник полностью соответствует тому, что уже есть в фигуре
-
-                    //int i = 0;
-                    //foreach (Vector3 vector in _vectorFormers)
-                    //    Utilities.CreateFlowText(i++.ToString(), 1, res + Vector3.up *_vectorFormers.Length - Vector3.down * 0.3f, Color.red);
                     return;
                 }
 
@@ -318,9 +309,10 @@ public class NavMeshCalculations : MonoBehaviour
         }
     }
     [Serializable]
-    private class Cluster
+    public class Cluster
     {
         private List<Cell> _included = new();
+        public Transform linkedTransform;
         public Vector3 center { get; private set; } = Vector3.zero;
 
         public void AddCell(Cell cell)
@@ -420,8 +412,6 @@ public class NavMeshCalculations : MonoBehaviour
 
     public void Initialize()
     {
-        //TODO? : Большой простор для оптимизации, хотя поскольку тут у нас инициализация - то особенно без разницы.
-
         _clusters = new();
         List<Cell> cellsList = new();
         List<Cell> trianglesToCombine = new();
@@ -525,22 +515,23 @@ public class NavMeshCalculations : MonoBehaviour
         #endregion
 
         #region subdivide big triangles
-
+        //TODO : Triangle subdivision
         #endregion
 
-        #region create clusters
-        //TODO : Лучше сделать много маленьких terrain'ов. А ещё лучше - плоскостей, заменяющих Terrain'ы
-        int amount = 0;
-        Cluster used = new();
+        #region create clusters        
         foreach (Cell c in cellsList)
         {
-            used.AddCell(c);
-
-            if (amount++ > CLUSTER_SIZE)
+            if (Physics.Raycast(c.Center() + Vector3.up, Vector3.down, out RaycastHit hit, 10))
             {
-                amount = 0;
-                _clusters.Add(used);
-                used = new();
+                Cluster used = _clusters.Find(item => item.linkedTransform == hit.transform);
+                if (used == null)
+                {
+                    used = new Cluster();
+                    used.linkedTransform = hit.transform;
+                    _clusters.Add(used);                    
+                }
+
+                used.AddCell(c);
             }
         }
         #endregion
@@ -571,9 +562,6 @@ public class NavMeshCalculations : MonoBehaviour
 
     public Cell GetCell(Vector3 pointNear)
     {
-        // Его TODO : Можно посчитать заранее, при инициализации
-        // TODO : Json-файл для хранения ShootMesh'а, чтобы сохранить всё ещё в Editor'е.
-
         return FindByOctTree(pointNear);
     }
 
@@ -587,7 +575,7 @@ public class NavMeshCalculations : MonoBehaviour
     }
 
     /// <summary>
-    /// Использует кластеры, которые используются для разбиения всего NavMesh на меньшие участки
+    /// Использует кластеры, которые разбивают весь NavMesh на меньшие участки
     /// </summary>
     /// <returns></returns>
     public Cell FindByClusters(Vector3 pointNear)

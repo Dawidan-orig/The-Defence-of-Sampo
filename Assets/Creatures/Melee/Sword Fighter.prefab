@@ -140,18 +140,18 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: -1
-      inSlope: 1
-      outSlope: 1
+      value: 0
+      inSlope: 0.5
+      outSlope: 0.5
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 0
-      inSlope: 1
-      outSlope: 1
+      value: 0.5
+      inSlope: 0.5
+      outSlope: 0.5
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -173,7 +173,7 @@ MonoBehaviour:
     enemiesAmountSubstraction: 0
     actWith: {fileID: 0}
   _possibleActions: []
-  visiblePowerPoints: 0
+  visiblePowerPoints: 100
   weapon: {fileID: 6555781427904815356}
   _swingReady: 1
   actionSpeed: 5
@@ -275,7 +275,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  f_type: 2
+  _ftype: 2
 --- !u!114 &6974210331038364377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -326,7 +326,7 @@ MonoBehaviour:
   slopeAngle: 65
   ground:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 9
   vital: {fileID: 6060500822727802340}
   _movement: {x: 0, y: 0, z: 0}
   _currentMoveSpeed: 0
@@ -355,7 +355,7 @@ MonoBehaviour:
   edgeDepth: 1
   terrainMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 9
 --- !u!114 &1961015284316083203
 MonoBehaviour:
   m_ObjectHideFlags: 0

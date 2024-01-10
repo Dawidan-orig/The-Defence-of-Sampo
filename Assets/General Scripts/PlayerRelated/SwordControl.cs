@@ -7,14 +7,23 @@ public class SwordControl : MonoBehaviour
     // Меч, управляемый не ИИ, но чем-то совершенно непредсказуемым. Например, игроком. 
 {
     [Header("constraints")]
-    public float actionSpeed = 3; // Скорость движения меча в руке
+    [Tooltip("Скорость движения меча в руке")]
+    public float actionSpeed = 3;
+    [Tooltip("Скорость взмаха мечом")]
     public float swingSpeed = 3;
-    public float block_minDistance = 1; // Минимальное расстояние для блока, используемое для боев с противником, а не отбивания.
-    public float swing_EndDistanceMultiplier = 2; // Насколько далеко должен двинуться меч после отбивания.
-    public float swing_startDistance = 2; // Насколько далеко должен двинуться меч до удара.
-    public float toBladeHandle_MaxDistance = 0.6f; // Максимальное расстояние от vital до рукояти меча. По сути, длина руки.
-    public float toBladeHandle_MinDistance = 0.1f; // Минимальное расстояние от vital.
-    public float close_enough = 0.1f; // Расстояние до цели, при котором можно менять состояние.
+    [Tooltip("Минимальное расстояние для блока, используемое для боев с противником, а не отбивания.")]
+    public float block_minDistance = 1;
+    [Tooltip("Насколько далеко должен двинуться меч после отбивания.")]
+    public float swing_EndDistanceMultiplier = 2;
+    [Tooltip("Насколько далеко должен двинуться меч до удара.")]
+    public float swing_startDistance = 2;
+    [Tooltip("Максимальное расстояние от vital до рукояти меча. По сути, длина руки.")]
+    public float toBladeHandle_MaxDistance = 0.6f;
+    [Tooltip("Минимальное расстояние от vital.")]
+    public float toBladeHandle_MinDistance = 0.1f;
+    [Tooltip("Расстояние до цели, при котором можно менять состояние.")]
+    public float close_enough = 0.1f;
+    [Tooltip("Угол между другим мечом и управляемым этим скриптом, при котором осуществляется автоблок")]
     public float automaticBlockAngleEuler = 15f;
 
     [Header("Toggles")]
@@ -22,7 +31,7 @@ public class SwordControl : MonoBehaviour
     private bool _automaticBlock = true;
 
     [Header("timers")]
-    public float minimalTimeBetweenAttacks = 2; //TODO : Не работает, проверить.
+    public float minimalTimeBetweenAttacks = 0;
 
     [Header("init-s")]
     public Blade blade;
@@ -132,7 +141,9 @@ public class SwordControl : MonoBehaviour
         }
 
         if (_attackRecharge < minimalTimeBetweenAttacks)
+        {
             _attackRecharge += Time.fixedDeltaTime;
+        }
 
         if (!_swinging)
             Control_MoveSword();
@@ -159,6 +170,11 @@ public class SwordControl : MonoBehaviour
     {
         if (_swinging)
             return;
+
+        if (_attackRecharge < minimalTimeBetweenAttacks)
+            return;
+
+        _attackRecharge = 0;
 
         _swinging = true;
         Vector3 moveTo = toPoint + (toPoint - bladeHandle.position).normalized * swing_EndDistanceMultiplier;

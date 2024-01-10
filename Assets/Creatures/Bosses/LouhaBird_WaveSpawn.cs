@@ -5,7 +5,8 @@ public class LouhaBird_WaveSpawn : MonoBehaviour
 // Этот компонент отвечает за управление Птицы Лоухи, когда она ещё не является боссом и непосредственно не сражается.
 // Она просто раскидывает волны.
 {
-    public Terrain waveSpawningLocation;
+    public Transform leftCornerSpawnLocation;
+    public Transform rightCornerSpawnLocation;
     public float timeToNewWave = 100;
     public float offsetFromBorder = 25;
 
@@ -56,7 +57,7 @@ public class LouhaBird_WaveSpawn : MonoBehaviour
         PerformMove();
     }
 
-    private void PerformMove() //TODO : Декомпозиция.
+    private void PerformMove()
     {
         const float CLOSE_ENOUGH = 2f;
         Vector3 flatPos = new Vector3(transform.position.x, 0, transform.position.z);
@@ -105,11 +106,10 @@ public class LouhaBird_WaveSpawn : MonoBehaviour
                 flightProgress = 1 / flightProgress;
 
             float progressFraction = 1 / (float)WaveHandler.Instance.GetAmountOfUnitsToSpawn();
-            if (lastSpawnProgress + progressFraction < flightProgress)
+            if (flightProgress > lastSpawnProgress + progressFraction)
             {
-                GameObject unit = WaveHandler.Instance.GetSpawnedUnit(transform.position, transform.rotation);
+                GameObject unit = WaveHandler.Instance.GetSpawnedUnit(transform.position, GetComponent<Faction>().FactionType, transform.rotation);
                 unit.GetComponent<Rigidbody>().AddForce(Vector3.up * 10);
-                unit.GetComponent<Faction>().f_type = GetComponent<Faction>().f_type;
                 lastSpawnProgress = flightProgress;
             }
         }
@@ -121,19 +121,17 @@ public class LouhaBird_WaveSpawn : MonoBehaviour
     }
     private void Moving_Idle()
     {
-        agent.MoveIteration(transform.position); //TODO : Убрать, это должно делаться автоматически.
+        
     }
 
     private void InitiateWave()
     {
-        Vector3 extentsRelative = waveSpawningLocation.terrainData.bounds.extents;
-        extentsRelative.y = 0;
-        Vector3 center = waveSpawningLocation.terrainData.bounds.center + waveSpawningLocation.transform.position;
+        Vector3 center = Vector3.Lerp(leftCornerSpawnLocation.position,rightCornerSpawnLocation.position,0.5f);
         center.y = 0;
 
-        Vector3 rectPointFrom = center - extentsRelative;
+        Vector3 rectPointFrom = leftCornerSpawnLocation.position;
         rectPointFrom = rectPointFrom +(center - rectPointFrom).normalized * offsetFromBorder;
-        Vector3 rectPointTo = center + extentsRelative;
+        Vector3 rectPointTo =rightCornerSpawnLocation.position;
         rectPointTo = rectPointTo +(center - rectPointTo).normalized * offsetFromBorder;
 
         Vector3 diagonalRelative = rectPointTo - rectPointFrom;

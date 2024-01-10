@@ -47,7 +47,7 @@ public class AttackCatcher : MonoBehaviour
 
             if(thing.TryGetComponent(out Faction f)) 
             {
-                if (!f.IsWillingToAttack(GetComponent<Faction>().f_type))
+                if (!f.IsWillingToAttack(GetComponent<Faction>().FactionType))
                     continue;
             }
 

@@ -1,8 +1,10 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Movement : MonoBehaviour
 {
+    //TODO DESIGN : Придумать разные типы движения на основе одного базого. Летающие, наследующие от наземных, теряя огромный пласт функционала - это параша.
     #region variables
     [Header("constraints")]
     [Header("On ground")]
@@ -53,6 +55,9 @@ public class Movement : MonoBehaviour
     [SerializeField]
     protected Vector3 _contactNormal= Vector3.zero;
     protected Rigidbody _rb;
+
+    private const float NO_INPUT_TIME = 0.3f;
+    private float currentNoInputTime = 0;
     #endregion
 
     public enum SpeedType
@@ -77,7 +82,6 @@ public class Movement : MonoBehaviour
         }
     }
 
-
     protected virtual void Update()
     {
         if (_inputMovement == Vector2.zero)
@@ -87,6 +91,11 @@ public class Movement : MonoBehaviour
 
         if(!externalGravityControl)
             _rb.useGravity = !OnSlope();
+
+        if (currentNoInputTime < NO_INPUT_TIME)
+            currentNoInputTime += Time.deltaTime;
+        else
+            _inputMovement = Vector2.zero;
     }
 
     protected virtual void FixedUpdate()
@@ -117,6 +126,7 @@ public class Movement : MonoBehaviour
 
     public virtual void PassInputDirect(Vector2 inputMovement, SpeedType type, bool jump)
     {
+        currentNoInputTime = 0;
         _inputMovement = inputMovement;
 
         if (type == SpeedType.sprint)

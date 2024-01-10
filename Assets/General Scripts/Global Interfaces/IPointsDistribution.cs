@@ -8,5 +8,5 @@ public interface IPointsDistribution
     /// Распределяет данные очки силы по параметрам объекта, к которому прикреплён интерфейс.
     /// </summary>
     /// <param name="points"> Количество силы, которое распределяется </param>
-    public abstract void GivePoints(int points);
+    public abstract void AssignPoints(int points);
 }

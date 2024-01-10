@@ -34,10 +34,7 @@ public class WaveHandler : MonoBehaviour
     [Header("Setup")]
     public Transform container;
     [Tooltip("Волны, что используются исключительно в Editor и являют собой заранее созданные палитры")]
-    public List<Pallete> prefabPalletes = new List<Pallete>();
-    [Tooltip("Префабы всех юнитов, которые будут процедурно появляться в волну")]
-    public List<GameObject> allUnits = new List<GameObject>();
-    //TODO : Автоматизация добавления prefab'ов в этот список. Либо использование Resources.
+    public List<WaveData> prefabPalletes = new List<WaveData>();
     [Tooltip("Распределение очков для создания юнитов.")]
     public AnimationCurve wavePointDistribution;
 
@@ -49,15 +46,18 @@ public class WaveHandler : MonoBehaviour
     [Header("Lookonly")]
     [SerializeField]
     private List<GameObject> unitPrefabsToSpawn = new List<GameObject>();
-    // TODO : Надо будет переписать в планировке: Во время боссфайта пусть игрок обязан будет уйти с боссом сражаться, в то время как юниты сражаются друг с другом.
-    // Если Сампо при этом будет уничтожено, то это вина игрока. Значит, обороына плохо выстроена.
-    // но тогда ИИ надо будет реально прям крутым сделать.
-    public GameObject GetSpawnedUnit(Vector3 onPosition, Quaternion withRotation = default) 
-    {
+
+    public GameObject GetSpawnedUnit(Vector3 onPosition, Faction.FType ofFactionType, Quaternion withRotation = default) 
+    {     
         if (unitPrefabsToSpawn.Count == 0)
             return null;
 
+        bool activeSave = unitPrefabsToSpawn[0].activeSelf;
+        unitPrefabsToSpawn[0].SetActive(false);
         GameObject unit = Instantiate(unitPrefabsToSpawn[0], onPosition, withRotation, container);
+        unit.GetComponent<Faction>().ChangeFactionCompletely(ofFactionType);
+        unit.SetActive(activeSave);
+        unitPrefabsToSpawn[0].SetActive(activeSave);
         unitPrefabsToSpawn.RemoveAt(0);
         return unit;
     }
@@ -81,7 +81,7 @@ public class WaveHandler : MonoBehaviour
 
             //Debug.Log(givenPallete.Pass(generationValue).GetType());
             GameObject newUnitPrefab = (GameObject)givenPallete.Pass(generationValue);
-            newUnitPrefab.GetComponent<IPointsDistribution>().GivePoints(usedPoints);
+            newUnitPrefab.GetComponent<IPointsDistribution>().AssignPoints(usedPoints);
             unitPrefabsToSpawn.Add(newUnitPrefab);
 
             toSpawn--;
@@ -94,7 +94,7 @@ public class WaveHandler : MonoBehaviour
         unitPrefabsToSpawn.Clear();
         int chosenPalleteIndex = Random.Range(0, prefabPalletes.Count);
 
-        Pallete former = prefabPalletes[chosenPalleteIndex];
+        Pallete former = prefabPalletes[chosenPalleteIndex].enemies;
 
         FormFromPallete(former);
     }
@@ -103,16 +103,6 @@ public class WaveHandler : MonoBehaviour
     {
         unitPrefabsToSpawn.Clear();
 
-        //TODO 
-    }
-
-    public void FormPaletteRandomly() // Создаём палитру волны из совершенно случайно выбранных юнитов
-    {
-        unitPrefabsToSpawn.Clear();
-
-        foreach (GameObject unit in allUnits)
-        {
-
-        }
+        //TODO (Когда будет много систем, пока что - ядерная бомба) : Процедурная палитра из наборов правил
     }
 }

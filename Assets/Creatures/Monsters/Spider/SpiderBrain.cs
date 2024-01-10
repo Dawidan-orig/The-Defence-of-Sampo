@@ -1,5 +1,5 @@
+using Sampo.AI;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 [SelectionBase]
 public class SpiderBrain : TargetingUtilityAI
@@ -88,7 +88,7 @@ public class SpiderBrain : TargetingUtilityAI
             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x,transform.rotation.eulerAngles.y, diff * rotationInfluence + initialEulerY);
         }
 
-        if(_currentState is not AI_Attack && _spiderState != SpiderState.nothing && attackingLeg != null) 
+        if(_currentState != _factory.Attack() && _spiderState != SpiderState.nothing && attackingLeg != null) 
         {
             if (_spiderState != SpiderState.toReturn)
             {
@@ -177,9 +177,9 @@ public class SpiderBrain : TargetingUtilityAI
         }
     }
 
-    public override void GivePoints(int points)
+    public override void AssignPoints(int points)
     {
-        base.GivePoints(points);
+        base.AssignPoints(points);
 
         int remaining = points;
 

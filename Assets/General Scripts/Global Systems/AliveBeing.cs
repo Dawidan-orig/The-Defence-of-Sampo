@@ -12,6 +12,11 @@ public class AliveBeing : Interactable_UtilityAI, IDamagable
     {
         if (GetComponents<Collider>().Length == 1)
             vital = GetComponent<Collider>();
+
+        if (mainBody == null)
+            mainBody = transform;
+        if(root == null)
+            root = transform;
     }
 
     public void Damage(float harm, IDamagable.DamageType type)

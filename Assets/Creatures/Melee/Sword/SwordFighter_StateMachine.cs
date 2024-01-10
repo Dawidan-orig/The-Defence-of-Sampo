@@ -1,5 +1,7 @@
+using Sampo.AI;
 using System.Collections.Generic;
 using UnityEngine;
+
 
 [RequireComponent(typeof(AttackCatcher))]
 public class SwordFighter_StateMachine : MeleeFighter
@@ -7,13 +9,13 @@ public class SwordFighter_StateMachine : MeleeFighter
     #region parameters
     [Header("constraints")]
     [Tooltip("Скорость движения меча в руке")]
-    public float actionSpeed = 1; 
+    public float actionSpeed = 1;
     [Tooltip("Скорость взмаха мечом, для большего контроль")]
     public float swingSpeed = 1;
     [Tooltip("Минимальное расстояние для блока, используемое для боев с противником, а не отбивания.")]
     public float block_minDistance = 0.3f;
     [Tooltip("Насколько далеко должен двинуться меч после отбивания.")]
-    public float swing_EndDistanceMultiplier = 1.5f; 
+    public float swing_EndDistanceMultiplier = 1.5f;
     [Tooltip("Насколько далеко должен двинуться меч до удара.")]
     public float swing_startDistance = 1.5f;
     [Tooltip("Лучше увернуться, чем отбить объект с импульсом больше этого!")]
@@ -23,7 +25,7 @@ public class SwordFighter_StateMachine : MeleeFighter
     [Tooltip("Максимальное расстояние от vital до рукояти меча. По сути, длина руки.")]
     public float toBladeHandle_MaxDistance = 2;
     [Tooltip("Минимальное расстояние от vital.")]
-    public float toBladeHandle_MinDistance = 0.1f;  
+    public float toBladeHandle_MinDistance = 0.1f;
     [Tooltip("Расстояние до цели, при котором можно менять состояние.")]
     public float close_enough = 0.1f;
     [Tooltip("Достаточный угол, чтобы считать что handle близок к desire")]
@@ -209,10 +211,11 @@ public class SwordFighter_StateMachine : MeleeFighter
         base.FixedUpdate();
         _currentSwordState.FixedUpdateState();
 
-        if (_moveProgress < 1) {
-            if (_currentSwordState is SwordFighter_RepositioningState)            
-                _moveProgress += actionSpeed * Time.fixedDeltaTime / Vector3.Distance(_moveFrom.position, _desireBlade.position);            
-            else if(_currentSwordState is SwordFighter_SwingingState)
+        if (_moveProgress < 1)
+        {
+            if (_currentSwordState is SwordFighter_RepositioningState)
+                _moveProgress += actionSpeed * Time.fixedDeltaTime / Vector3.Distance(_moveFrom.position, _desireBlade.position);
+            else if (_currentSwordState is SwordFighter_SwingingState)
                 _moveProgress += swingSpeed * Time.fixedDeltaTime / Vector3.Distance(_moveFrom.position, _desireBlade.position);
         }
     }
@@ -376,8 +379,8 @@ public class SwordFighter_StateMachine : MeleeFighter
             Vector3 centerOffset = (Blade.downerPoint.position - Blade.downerPoint.position).normalized *
                 (-Vector3.Distance(BladeHandle.position, Blade.downerPoint.position)); // Смещение для ровной установки рукояти
 
-            OnRepositionIncoming?.Invoke(this, new IncomingReposEventArgs { bladeDown = centerOffset+ bladeDown, bladeUp = centerOffset+ bladeUp, bladeDir = toEnemyBlade_Dir });
-        }   
+            OnRepositionIncoming?.Invoke(this, new IncomingReposEventArgs { bladeDown = centerOffset + bladeDown, bladeUp = centerOffset + bladeUp, bladeDir = toEnemyBlade_Dir });
+        }
     }
 
     // Установка меча по всем возможным параметрам
@@ -396,59 +399,63 @@ public class SwordFighter_StateMachine : MeleeFighter
         if (!_swingReady || CurrentCombo.Count > 0)
             return;
 
-        //Тут ещё можем выбирать конкретную комбинацию из библиотеки комбо.
-
-        ActionJoint afterPreparation = new ActionJoint();
-        ActionJoint preparation = new ActionJoint();
-
-        /*
-        Plane transformXY = new(transform.forward, transform.position);
-        Vector3 toNewPosDir = (transformXY.ClosestPointOnPlane(BladeHandle.position) - transform.position).normalized;
-        Vector3 newPos = distanceFrom.position + toNewPosDir * swing_startDistance;
-        */
-
-        // Выбираем какую-то точку для удара
-        const int LIMIT = 50;
-        float posX=0;
-        bool res = false;
-        int iteration = 0;
-        while(!res) //TODO : Оптимизировать для решения одной формулой, а не циклом.
+        if (MeleeReachable())
         {
-            posX = UnityEngine.Random.Range(0, 1);
-            float prob = UnityEngine.Random.Range(0, 1);
-            res = attackProbability.Evaluate(posX) > prob;
 
-            if (iteration++ > LIMIT)
-                break;
+            //TODO : Тут ещё можем выбирать конкретную комбинацию из библиотеки комбо.
+
+            ActionJoint afterPreparation = new ActionJoint();
+            ActionJoint preparation = new ActionJoint();
+
+            /*
+            Plane transformXY = new(transform.forward, transform.position);
+            Vector3 toNewPosDir = (transformXY.ClosestPointOnPlane(BladeHandle.position) - transform.position).normalized;
+            Vector3 newPos = distanceFrom.position + toNewPosDir * swing_startDistance;
+            */
+
+            // Выбираем какую-то точку для удара
+            const int LIMIT = 50;
+            float posX = 0;
+            bool res = false;
+            int iteration = 0;
+            while (!res) //TODO : Оптимизировать для решения одной формулой, а не циклом.
+            {
+                posX = UnityEngine.Random.Range(0, 1);
+                float prob = UnityEngine.Random.Range(0, 1);
+                res = attackProbability.Evaluate(posX) > prob;
+
+                if (iteration++ > LIMIT)
+                    break;
+            }
+
+            Vector3 newPos = distanceFrom.position + new Vector3(posX - 0.5f, Mathf.Abs(posX - 0.5f)).normalized * swing_startDistance;
+
+            GameObject gameObj = new GameObject("NotDestroyedInAttackUpdate");
+            Transform preaparePoint = gameObj.transform;
+            preaparePoint.parent = transform;
+            preaparePoint.position = newPos;
+            preaparePoint.LookAt(preaparePoint.position + (preaparePoint.position - Vital.bounds.center).normalized,
+                (CurrentActivity.target.position - preaparePoint.position).normalized);
+            preaparePoint.RotateAround(preaparePoint.position, preaparePoint.right, 90);
+
+            preparation.rotationFrom = _bladeHandle.rotation;
+            preparation.relativeDesireFrom = _bladeHandle.position - transform.position;
+            preparation.nextRelativeDesire = preaparePoint.position - transform.position;
+            preparation.nextRotation = preaparePoint.rotation;
+            preparation.currentActionType = ActionType.Reposition;
+
+            afterPreparation.relativeDesireFrom = preaparePoint.position - transform.position;
+            afterPreparation.rotationFrom = preaparePoint.rotation;
+            afterPreparation.nextRelativeDesire = CurrentActivity.target.position - transform.position; //TODO : Поменять на Transform
+                                                                                                        //Поворот игнорируем, поскольку swing
+            afterPreparation.currentActionType = ActionType.Swing;
+
+            //Добавляем начиная с последнего
+            _currentCombo.Push(afterPreparation);
+            _currentCombo.Push(preparation);
+
+            Destroy(gameObj);
         }
-
-        Vector3 newPos = distanceFrom.position + new Vector3(posX-0.5f,Mathf.Abs(posX-0.5f)).normalized * swing_startDistance;
-
-        GameObject gameObj = new GameObject("NotDestroyedInAttackUpdate");
-        Transform preaparePoint = gameObj.transform;
-        preaparePoint.parent = transform;
-        preaparePoint.position = newPos;
-        preaparePoint.LookAt(preaparePoint.position + (preaparePoint.position - Vital.bounds.center).normalized,
-            (CurrentActivity.target.position - preaparePoint.position).normalized);
-        preaparePoint.RotateAround(preaparePoint.position, preaparePoint.right, 90);
-
-        preparation.rotationFrom = _bladeHandle.rotation;
-        preparation.relativeDesireFrom = _bladeHandle.position - transform.position;
-        preparation.nextRelativeDesire = preaparePoint.position - transform.position;
-        preparation.nextRotation = preaparePoint.rotation;
-        preparation.currentActionType = ActionType.Reposition;
-
-        afterPreparation.relativeDesireFrom = preaparePoint.position - transform.position;
-        afterPreparation.rotationFrom = preaparePoint.rotation;
-        afterPreparation.nextRelativeDesire = CurrentActivity.target.position - transform.position; //TODO : Поменять на Transform
-        //Поворот игнорируем, поскольку swing
-        afterPreparation.currentActionType = ActionType.Swing;
-
-        //Добавляем начиная с последнего
-        _currentCombo.Push(afterPreparation);
-        _currentCombo.Push(preparation);
-
-        Destroy(gameObj);
     }
 
     // Атака оружием по какой-то точке из текущей позиции.
@@ -583,9 +590,9 @@ public class SwordFighter_StateMachine : MeleeFighter
         return _blade.rightHandHandle;
     }
 
-    public override void GivePoints(int points)
+    public override void AssignPoints(int points)
     {
-        base.GivePoints(points);
+        base.AssignPoints(points);
 
         int remaining = points;
 

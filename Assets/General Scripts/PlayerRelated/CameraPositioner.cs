@@ -112,8 +112,7 @@ public class CameraPositioner : MonoBehaviour
             / 20;
     }
 
-    //TODO : ¬пору его в Utilities переместить
-    protected bool PenetratingRaycast(Vector3 from, Vector3 to, out RaycastHit hit, float duration = 0, Color? color = null)
+    public bool PenetratingRaycast(Vector3 from, Vector3 to, out RaycastHit hit, float duration = 0, Color? color = null)
     {
         if (color == null)
             color = Color.white;
@@ -134,6 +133,7 @@ public class CameraPositioner : MonoBehaviour
                     out hit, duration, color);
             }
 
+        //TODO dep PlayerController : —делать эту проверку относительно любого оружи€ игрока, а не только меча
         if (hit.transform == player.transform || hit.transform == player.swordControl.blade.transform) // ѕропускаем тело игрока и его оружие
         {
             return PenetratingRaycast(hit.point + dirAddition,

@@ -14,16 +14,13 @@ public class Utilities
 {
     //public static GameObject utility = new("Utilitary");
 
-    //Краткая запись, дабы сократить сильнее нужен TODO : Ray.
     public static bool VisualisedBoxCast(Vector3 center, Vector3 halfExtends, Vector3 direction, float maxDistance, LayerMask layerMask, bool drawHit, Color? color = null, float duration = 0)
     {
         return VisualisedBoxCast(center, halfExtends, direction, out _, Quaternion.identity, maxDistance, layerMask, drawHit, color, duration);
     }
 
-    //TODO : Поменять местами out и Quaternion
     public static bool VisualisedBoxCast(Vector3 center, Vector3 halfExtends, Vector3 direction, out RaycastHit hitInfo, Quaternion orientation, float maxDistance, LayerMask layerMask, bool drawHit = true, Color? color = null, float duration = 0, bool visualise = true)
     {
-        //TODO: Визуализация поворота коробки
         if (color == null)
             color = Color.white;
 
@@ -153,7 +150,7 @@ public class Utilities
         CreateTextInWorld(text, duration: duration, position: Vector3.Lerp(start, end, 0.5f));
         Debug.DrawLine(start, end, (Color)color, duration);
     }
-    public static void DrawSphere(Vector3 center, float radius = 0.075f, Color? color = null, float duration = 0) //TODO : Не проверено! 
+    public static void DrawSphere(Vector3 center, float radius = 0.075f, Color? color = null, float duration = 0) 
     {
         if (color == null)
             color = Color.white;
@@ -194,7 +191,6 @@ public class Utilities
         Debug.DrawLine(upCenter + rightBack + down, upCenter + leftBack + down, (Color)color, duration);
         Debug.DrawLine(upCenter + leftBack + down, upCenter + leftUp + down, (Color)color, duration);
     }
-
     public static void DrawEllipse(Vector3 pos, Vector3 forward, Vector3 up, float radiusX, float radiusY, int segments, Color color, float duration = 0)
     {
         float angle = 0f;
@@ -216,7 +212,6 @@ public class Utilities
             angle += 360f / segments;
         }
     }
-
     public static void DrawAxisVector(Vector3 vector, Vector3 from, Color? color = null, float duration = 0)
     {
         if (color == null)
@@ -226,7 +221,6 @@ public class Utilities
         Debug.DrawRay(from, vector.y * Vector3.up, (Color)color, duration);
         Debug.DrawRay(from, vector.z * Vector3.forward, (Color)color, duration);
     }
-
     public static bool GetMouseInWorldObject(out Transform hitObject)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -240,7 +234,6 @@ public class Utilities
         hitObject = null;
         return false;
     }
-
     public static bool GetMouseInWorldCollision(out Vector3 hitPoint)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -254,17 +247,14 @@ public class Utilities
         hitPoint = Vector3.zero;
         return false;
     }
-
     public static bool ValueInArea(Vector3 input, Vector3 targetValue, float area)
     {
         return Vector3.Distance(input, targetValue) < area;
     }
-
     public static bool ValueInArea(float input, float targetValue, float area)
     {
         return (input >= targetValue - area) && (input <= targetValue + area);
     }
-
     public static bool ValueInArea(float input, float targetValue, float area, Vector2 loopBorders)
     {
         if (targetValue + area > loopBorders.y)
@@ -274,7 +264,6 @@ public class Utilities
 
         return ValueInArea(input, targetValue, area);
     }
-
     public static float NavMeshPathLength(NavMeshPath path)
     {
         float res = -1;
@@ -295,10 +284,13 @@ public class Utilities
 
         return res;
     }
-
-    //pointOnLine - Точка, через которую проходит линяя
-    //lineDir - Направление линии
-    //targetPoint - Относительно этой точки ищем ближайшую на линии
+    /// <summary>
+    /// Поиск ближайшей точки на линии
+    /// </summary>
+    /// <param name="pointOnLine">Точка, через которую проходит линяя</param>
+    /// <param name="lineDir">Направление линии</param>
+    /// <param name="targetPoint">Относительно этой точки ищем ближайшую на линии</param>
+    /// <returns></returns>
     public static Vector3 NearestPointOnLine(Vector3 pointOnLine, Vector3 lineDir, Vector3 targetPoint)
     {
         lineDir.Normalize();//this needs to be a unit vector
@@ -306,12 +298,11 @@ public class Utilities
         var d = Vector3.Dot(v, lineDir);
         return pointOnLine + lineDir * d;
     }
-
     public static void DrawArrow(Vector3 from, Vector3 to, float duration = 0, Color? color = null)
     {
         Color usedColor = color == null ? Color.white : color.Value;
 
-        const int SEGMENTS = 10;
+        const int SEGMENTS = 3;
 
         Debug.DrawLine(from, to, usedColor, duration);
         Vector3 circleCenter = Vector3.Lerp(from, to, 0.9f);
@@ -402,18 +393,15 @@ public class Utilities
             return raysastResults;
         }
     }
-
-
     public class Editor
     {
         //https://discussions.unity.com/t/convert-serializedproperty-to-custom-class/94163/4
 
-        private static int serializationDepth = 0;
+        private static int serializationDepth = 0; //Переменная-регистр, что постоянно используется в сериализации
         public static T SerializedPropertyToObject<T>(SerializedProperty property)
         {
             return GetNestedObject<T>(property.propertyPath, GetSerializedPropertyRoot(property), true); //The "true" means we will also check all base classes
         }
-
         public static UnityEngine.Object GetSerializedPropertyRoot(SerializedProperty property)
         {
             var checking = property.serializedObject.targetObject;
@@ -424,7 +412,6 @@ public class Utilities
             else
                 throw new InvalidCastException($"{checking.GetType()} - не компонент и не ScriptableObject");
         }
-
         public static T GetNestedObject<T>(string path, object obj, bool includeAllBases = false)
         {
             serializationDepth = 0;
@@ -435,7 +422,6 @@ public class Utilities
             }
             return (T)obj;
         }
-
         public static T GetFieldOrPropertyValue<T>(string fieldName, object obj, string fullPath, bool includeAllBases = false, BindingFlags bindings = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
         {
             if (typeof(IList).IsAssignableFrom(obj.GetType()))
@@ -471,7 +457,6 @@ public class Utilities
 
             return default(T);
         }
-
         public static void SetFieldOrPropertyValue<T>(string fieldName, object obj, object value, bool includeAllBases = false, BindingFlags bindings = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
         {
             FieldInfo field = obj.GetType().GetField(fieldName, bindings);

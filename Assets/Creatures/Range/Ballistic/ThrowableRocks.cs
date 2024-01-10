@@ -30,6 +30,7 @@ public class ThrowableRocks : BaseShooting
         bullet.transform.position = shootPoint.position;
         bullet.transform.rotation = shootPoint.rotation;
 
+        //TODO : Если цель находится над transform, то происходит бесконечность.
         Vector3 flatEquvivalent = FlatEquialent(target.Value);
         float actualPower = Power(flatEquvivalent.magnitude);
 
@@ -41,12 +42,13 @@ public class ThrowableRocks : BaseShooting
         Faction BFac;
         if (!bullet.TryGetComponent(out BFac))
             BFac = bullet.AddComponent<Faction>();
-        BFac.f_type = host.GetComponent<Faction>().f_type;
+        BFac.ChangeFactionCompletely(host.GetComponent<Faction>().FactionType);
 
         Physics.IgnoreCollision(GetComponent<Collider>(), bullet.GetComponent<Collider>());
         Physics.IgnoreCollision(host.GetComponent<Collider>(), bullet.GetComponent<Collider>());
 
         Bullet b = bullet.GetComponent<Bullet>();
+        b.SetDamageDealer(transform);
         const int ADDITION_TO_NOT_EARLY_DISSOLVE = 10;
         b.possibleDistance = range + ADDITION_TO_NOT_EARLY_DISSOLVE;
 

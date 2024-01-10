@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace Sampo.AI { 
 public class AI_LocalReposition : UtilityAI_BaseState
 // Перемещение ИИ с помощью Navmesh, но на короткие расстояния,
 // С применением параллельных систем.
@@ -45,4 +46,5 @@ public class AI_LocalReposition : UtilityAI_BaseState
     {
         return "Local moving";
     }
+}
 }
