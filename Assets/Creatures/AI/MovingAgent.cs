@@ -5,6 +5,8 @@ using UnityEngine.AI;
 [RequireComponent(typeof(Movement))]
 public class MovingAgent : MonoBehaviour
 {
+    //TODO : Добавить интейрфейс "Агентов", добавить скрипт контроля NavMeshAgent, чтобы он с физикой работал.
+
     [Tooltip("Дистанция, меньше которой агент будет двигаться со скоростью ходьбы.")]
     public float walkToTargetDist = 5;
     [Tooltip("Дистанция, меньше которой агент будет бежать.")]

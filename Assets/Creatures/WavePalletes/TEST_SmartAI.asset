@@ -15,11 +15,11 @@ MonoBehaviour:
   enemies:
     objectsSummary:
     - left: 0
-      right: 0
+      right: 0.784
       obj: {fileID: 1526482222200477036, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       index: 0
       wasModified: 0
-    - left: 0
+    - left: 0.784
       right: 0.9
       obj: {fileID: 2397089146008967548, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
       index: 1

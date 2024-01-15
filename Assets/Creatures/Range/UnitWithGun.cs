@@ -7,8 +7,6 @@ public class UnitWithGun : TargetingUtilityAI
 
     public override void AttackUpdate(Transform target)
     {
-        base.AttackUpdate(target);
-
         if (weapon.AvilableToShoot(target, out _))
         {
             if (target.TryGetComponent(out Rigidbody body))
@@ -37,5 +35,10 @@ public class UnitWithGun : TargetingUtilityAI
         int remaining = points;
 
         //TODO
+    }
+
+    public override void ActionUpdate(Transform target)
+    {
+
     }
 }

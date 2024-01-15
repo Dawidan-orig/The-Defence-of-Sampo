@@ -178,6 +178,11 @@ public class BaseShooting : Tool
         }
     }
 
+    public override float GetRange()
+    {
+        return range;
+    }
+
     protected void NextShotReady()
     {
         readyToFire = true;

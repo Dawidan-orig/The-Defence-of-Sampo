@@ -112,14 +112,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77f2875d5386eed408c325d7384722a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  predictions: 2
+  minDistance: 0.3
   debug_Draw: 0
-  sword_as_stuff: 0
+  blade_as_stuff: 0
   ignoredDistance: 2
   ignoredSpeed: 1
-  ignored: []
   checker: {fileID: 1778603663242361104}
   vital: {fileID: 6060500822727802340}
+  ignored: []
   controlled: []
 --- !u!114 &5048345013734752868
 MonoBehaviour:
@@ -134,13 +134,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _AIActive: 1
-  baseReachDistance: 1
   retreatInfluence:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: -0.05
       inSlope: 0.5
       outSlope: 0.5
       tangentMode: 34
@@ -148,10 +147,28 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
+      time: 0.1
+      value: 0
+      inSlope: 0.0000067761657
+      outSlope: 0.0000067761657
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5
+      value: 0.01
+      inSlope: -0.000020793439
+      outSlope: -0.000020793439
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.41821557
+    - serializedVersion: 3
       time: 1
-      value: 0.5
-      inSlope: 0.5
-      outSlope: 0.5
+      value: 0.1
+      inSlope: 0.18
+      outSlope: 0.18
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -160,8 +177,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   distanceWeightMultiplier: 6
-  hands: {fileID: 1333285464684098757}
-  distanceFrom: {fileID: 1414065828752686693}
   vital: {fileID: 6060500822727802340}
   toGroundDist: 0.3
   navMeshCalcFrom: {fileID: 0}
@@ -175,11 +190,78 @@ MonoBehaviour:
   _possibleActions: []
   visiblePowerPoints: 100
   weapon: {fileID: 6555781427904815356}
-  _swingReady: 1
-  actionSpeed: 5
-  swingSpeed: 5
-  block_minDistance: 0.3
-  swing_EndDistanceMultiplier: 1.5
+  defaultWeapon: {fileID: 0}
+  baseReachDistance: 1
+  distanceFrom: {fileID: 1414065828752686693}
+  swingMotion:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: -3.287205
+      outSlope: -3.287205
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.069199465
+    - serializedVersion: 3
+      time: 0.50364614
+      value: 0.50441885
+      inSlope: 6.35213
+      outSlope: 6.35213
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.053563066
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -0.7937807
+      outSlope: -0.7937807
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.70809394
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  repositionMotion:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.6991408
+      value: 1.0652872
+      inSlope: 1.7190185
+      outSlope: 1.7190185
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -1.7543536
+      outSlope: -1.7543536
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.28058672
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  actionSpeed: 3
+  swingSpeed: 3
+  swing_EndDistanceMultiplyer: 1.5
   swing_startDistance: 1.5
   criticalImpulse: 400
   blockCriticalVelocity: 5
@@ -193,29 +275,47 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 34
+      inSlope: 8.327882
+      outSlope: 8.327882
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.33333334
+      outWeight: 0.07476585
+    - serializedVersion: 3
+      time: 0.25
+      value: 1
+      inSlope: -0.017254677
+      outSlope: -0.017254677
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.36448583
     - serializedVersion: 3
       time: 0.5
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
+      value: 0.25
+      inSlope: -0.00000017914887
+      outSlope: -0.00000017914887
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.75
+      value: 1
+      inSlope: -0.027467849
+      outSlope: -0.027467849
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
     - serializedVersion: 3
       time: 1
-      value: 0
-      inSlope: -2
-      outSlope: -2
-      tangentMode: 34
+      value: 0.0047302246
+      inSlope: -4.2054753
+      outSlope: -4.2054753
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.11215019
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -225,13 +325,15 @@ MonoBehaviour:
   _bladeContainer: {fileID: 3809664213183082030}
   _bladeHandle: {fileID: 6555781429139069839}
   _vital: {fileID: 6060500822727802340}
+  _catcher: {fileID: 0}
   _initialBlade: {fileID: 0}
   _moveFrom: {fileID: 0}
   _desireBlade: {fileID: 0}
   _moveProgress: 0
+  _AnimatedMoveProgress: 0
   _currentToInitialAwait: 0
-  _catcher: {fileID: 0}
-  isSwordFixing: 1
+  _swingReady: 1
+  isSwordFixing: 0
   currentState: 
 --- !u!54 &795735766536500156
 Rigidbody:

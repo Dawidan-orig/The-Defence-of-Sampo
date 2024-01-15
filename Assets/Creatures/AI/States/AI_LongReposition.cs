@@ -1,3 +1,4 @@
+using Sampo.Melee;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -36,7 +37,8 @@ namespace Sampo.AI
                 return false;
             }
 
-            if (_ctx.MeleeReachable())
+            if (_ctx.CurrentActivity.actWith.GetRange() >
+                Vector3.Distance(_ctx.transform.position, _ctx.CurrentActivity.target.position)) //TODO? : В будущем в этой проверке может ошибка возникнуть
             {
                 SwitchStates(_factory.Deciding());
                 return true;

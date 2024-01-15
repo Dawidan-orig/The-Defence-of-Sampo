@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class Tool : MonoBehaviour
@@ -13,4 +14,6 @@ public class Tool : MonoBehaviour
     {
         host = newHost;
     }
+
+    public virtual float GetRange() { return additionalMeleeReach; }
 }

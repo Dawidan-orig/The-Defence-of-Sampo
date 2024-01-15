@@ -4,6 +4,7 @@ using UnityEngine;
 [SelectionBase]
 public class SpiderBrain : TargetingUtilityAI
 {
+    //TODO : Преобразовать в StateMachine от Git-Amend.
     [Header("Spider")]
     public float attackSpeed = 1;
     public LegsHarmoniser legsHarmony;
@@ -108,8 +109,6 @@ public class SpiderBrain : TargetingUtilityAI
 
     public override void AttackUpdate(Transform target)
     {
-        base.AttackUpdate(target);
-
         if (attackingLeg == null)
         {
             legsHarmony.legs.RemoveAll(item => item == null);
@@ -184,5 +183,15 @@ public class SpiderBrain : TargetingUtilityAI
         int remaining = points;
 
         //TODO
+    }
+
+    protected override Tool ToolChosingCheck(Transform target)
+    {
+        return attackingLeg.limb;
+    }
+
+    public override void ActionUpdate(Transform target)
+    {
+        throw new System.NotImplementedException();
     }
 }

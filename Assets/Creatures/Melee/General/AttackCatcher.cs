@@ -1,3 +1,4 @@
+using Sampo.Melee.Sword;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -7,22 +8,28 @@ public class AttackCatcher : MonoBehaviour
 {
 
     [Header("init-s")]
-    [Range(0, 30)]
-    public int predictions = 10;
+    public float minDistance = 0.3f;
     public bool debug_Draw = true;
-    public bool sword_as_stuff = false;
+    public bool blade_as_stuff = false;
     [Min(0.75f)]
-    public float ignoredDistance = 10; // Домножается на CriticalDistance. Чем выше - тем больше предсказаний будет учтено.
-    public float ignoredSpeed = 5; // Определеяет минимальную скорость, начиная с которой объект надо отбить. TODO : Заменить на импульс f=mv
-    public List<Rigidbody> ignored = new List<Rigidbody>();
+    [Tooltip("Домножается на CriticalDistance. Чем выше - тем больше предсказаний будет учтено.")]
+    public float ignoredDistance = 10;
+    [Tooltip("Определеяет минимальную скорость, начиная с которой объект надо отбить")]
+    public float ignoredSpeed = 5; //TODO : Заменить на импульс p=mv, а не использовать лишь скорость v
 
-    [Header("Readonly")]
+    [Header("Setup")]
     [SerializeField]
-    private Collider checker; // Этот колайдер - шестое чувство бойца.
+    [Tooltip("Этот колайдер - шестое чувство бойца")]
+    private Collider checker;
     [SerializeField]
-    private Collider vital; // Этого колайдера объекты коснуться не должны!
+    [Tooltip("Этого колайдера объекты коснуться не должны")]
+    private Collider vital;
+    [Header("lookonly")]
     [SerializeField]
-    private List<GameObject> controlled = new(); // Это те штуки, за которыми надо следить в течении каждого кадра.
+    private List<Rigidbody> ignored = new List<Rigidbody>();
+    [SerializeField]
+    [Tooltip("Это те штуки, за которыми надо следить в течении каждого кадра")]
+    private List<GameObject> controlled = new();
 
     public List<GameObject> Controlled { get => new List<GameObject>(controlled);}
 
@@ -38,11 +45,11 @@ public class AttackCatcher : MonoBehaviour
 
     public event EventHandler<AttackEventArgs> OnIncomingAttack;
 
-    private void FixedUpdate()
+    private void Update()
     {
         foreach (GameObject thing in controlled)
         {
-            if (!thing) // Позволяет пропустить удалённые в этом кадре объекты
+            if (!thing) // Пропускаем только что удалённые объекты
                 continue;
 
             if(thing.TryGetComponent(out Faction f)) 
@@ -60,9 +67,9 @@ public class AttackCatcher : MonoBehaviour
                 continue;
 
             if (thing.TryGetComponent(out Blade blade))
-                if (blade.host != null || !sword_as_stuff)
+                if (blade.host != null || !blade_as_stuff)
                 {
-                    SwordIncoming(blade);
+                    BladeIncoming(blade);
                     continue;
                 }
             
@@ -70,62 +77,31 @@ public class AttackCatcher : MonoBehaviour
         }
     }
 
-    private void SwordIncoming(Blade blade)
+    public void AddIgnoredObject(Rigidbody toAdd) 
+    {
+        ignored.Add(toAdd);
+    }
+
+    private void BladeIncoming(Blade blade)
     {
         // Тут вычисляем две точки: Куда прилетит меч?
-        Vector3 center = vital.bounds.center;
-        List<Blade.border> preditionList = blade.FixedPredict(predictions);
-        //preditionList.Reverse();
-
-        Blade.border closest = preditionList[0];
-
-        foreach (Blade.border border in preditionList) // Проходимся по всем предсказаням
-        {
-            Vector3 borderCenter = Vector3.Lerp(border.posDown, border.posUp, 0.5f);
-            if (Vector3.Dot(border.direction, vital.bounds.center - borderCenter) < 0)
-                continue;
-            // В этом предсказании вектор движения меча будет направлен в сторону vital.
-
-            if ((center - border.posUp).magnitude > ignoredDistance)
-            {
-                continue;
-            }
-            // В этом предсказании верхний край меча находится достаточно близко
-
-            if (Physics.Raycast(border.posDown, (border.posUp - border.posDown).normalized, (border.posUp - border.posDown).magnitude) //Снизу вверх
-                || 
-                Physics.Raycast(border.posUp, (border.posDown-border.posUp).normalized, (border.posUp - border.posDown).magnitude) //Сверху вниз
-                )
-            {
-                continue;
-            }
-
-            // Игнорируем всё, что ударяется во внейшний коллайдер - оно далеко.
-            // А так же всё, что ударяется во внутренний - оно уже чрезвычайно близко.
-
-            const float TOO_CLOSE = 0.5f; // Определяем минимальную дистанцию предсказания
-            if (Vector3.Distance(border.posDown, vital.ClosestPointOnBounds(border.posDown)) < TOO_CLOSE
-                || Vector3.Distance(border.posUp, vital.ClosestPointOnBounds(border.posUp)) < TOO_CLOSE)
-                continue;
-
-            closest = border;
-        }
-
-        // Нет смысла делать что-то с самим мечом - в следующем кадре он уже будет в vital коллайдере.
-        // У struct'ов нет "==", но сравнить достаточно и по одному значению, чтобы убедится в полном равенстве.
-        if (closest.posUp == preditionList[0].posUp)
+        Vector3 center = vital.bounds.center;        
+        Blade.Border predition = blade.GetPrediction(Vector3.Distance(center, blade.transform.position) - minDistance);
+        Vector3 bladeCenter = Vector3.Lerp(predition.posUp, predition.posDown, 0.5f);
+        Vector3 toVital = vital.bounds.ClosestPoint(predition.posUp) - bladeCenter;
+        if (Vector3.Dot(predition.direction, toVital) < 0)
             return;
 
         if (debug_Draw)
         {
-            Debug.DrawLine(closest.posUp, closest.posDown, Color.yellow);
-            Debug.DrawRay(closest.posUp, closest.direction * 0.1f, Color.green);
-            Debug.DrawLine(vital.bounds.center, closest.posDown, Color.yellow * 0.3f);
-            Debug.DrawLine(vital.bounds.center, closest.posUp, Color.yellow * 0.3f);
+            Debug.DrawLine(predition.posUp, predition.posDown, Color.yellow);
+            Debug.DrawRay(bladeCenter, predition.direction * 0.1f, Color.green);
+            Debug.DrawLine(vital.bounds.center, predition.posDown, Color.yellow * 0.3f);
+            Debug.DrawLine(vital.bounds.center, predition.posUp, Color.yellow * 0.3f);
         }
 
         OnIncomingAttack?.Invoke(this,
-            new AttackEventArgs { body = blade.body, free = false, start = closest.posUp, end = closest.posDown, direction = closest.direction, impulse = blade.body.mass * blade.body.velocity.magnitude });
+            new AttackEventArgs { body = blade.body, free = false, start = predition.posUp, end = predition.posDown, direction = predition.direction, impulse = blade.body.mass * blade.body.velocity.magnitude });
     }
 
     private void StuffIncoming(Rigidbody rb)
@@ -134,7 +110,7 @@ public class AttackCatcher : MonoBehaviour
             return;
         // Штука летит в сторону этого transform
 
-        Vector3 center = rb.GetComponent<Collider>().bounds.center;
+        Vector3 center = vital.bounds.center;
 
         if ((rb.position - center).magnitude >= ignoredDistance)
             return;
@@ -144,20 +120,11 @@ public class AttackCatcher : MonoBehaviour
             return;
         // У штуки достаточно высокая скорость
 
-        Vector3 predictionPoint = rb.position + predictions * Time.fixedDeltaTime * rb.velocity;
-
-        // Если точка пролетела насквозь - уже надо брать максимально близкую позицию к себе
-        if (Vector3.Dot(rb.velocity, vital.bounds.center - predictionPoint) < 0)
-        {
-            predictionPoint = Utilities.NearestPointOnLine(rb.position, rb.velocity, vital.ClosestPointOnBounds(rb.position));
-            //Debug.DrawLine(vital.bounds.center, predictionPoint, Color.cyan, 2);
-        }
-
-        const float BLADE_MIN_DIST = 0.5f;
+        Vector3 predictionPoint = rb.position + rb.velocity.normalized* (Vector3.Distance(center, rb.position) - minDistance);
 
         // Отталкиваем
-        if(Vector3.Distance(predictionPoint, vital.ClosestPointOnBounds(predictionPoint)) < BLADE_MIN_DIST)
-            predictionPoint = predictionPoint + (rb.position - predictionPoint).normalized * BLADE_MIN_DIST;
+        if(Vector3.Distance(predictionPoint, vital.ClosestPointOnBounds(predictionPoint)) < minDistance)
+            predictionPoint = predictionPoint + (rb.position - predictionPoint).normalized * minDistance;
 
         if (debug_Draw)
         {

@@ -9,26 +9,18 @@ namespace Sampo.AI
     [SelectionBase]
     [RequireComponent(typeof(MovingAgent))]
     [RequireComponent(typeof(Faction))]
-    public class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDistribution
+    public abstract class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDistribution
     // ИИ, ставящий приоритеты выполнения действий
     // Использует StateMachine в качестве исполнителя
     {
-        //TODO : Повесить обратную зависимость всех скриптов (Движение, Фракция и др.) от этого. Нужно для процедурного спавна и единого контроля.
-        //TODO : Убрать отсюда всё, что связано с войной. Этот ИИ не занимается контролем оружия
         public bool _AIActive = true;
 
         [Header("Setup")]
-        [Tooltip("Длина конечности, что держит оружие")]
-        public float baseReachDistance = 1;
+        [Tooltip("Кривая от 0 до 1, определяющая то," +
+            "с какой интенсивностью в зависимости от дальности оружия ИИ будет отдоходить от цели")]
         public AnimationCurve retreatInfluence;
         [Tooltip("Влияние дистанции на выбор этого ИИ")]
         public float distanceWeightMultiplier = 1;
-        [SerializeField]
-        [Tooltip("То, что используется в качестве базового оружия ближнего боя и не может быть выброшено.")]
-        protected MeleeTool hands;
-        [SerializeField]
-        [Tooltip("Определяет начало конечности, откуда и происходит отсчёт.")]
-        protected Transform distanceFrom;
 
         [Header("Ground for animation and movement")]
         public Collider vital;
@@ -189,15 +181,15 @@ namespace Sampo.AI
         protected virtual void OnDrawGizmosSelected()
         {
             if (EditorApplication.isPlaying && !EditorApplication.isPaused)
-
+            {
+                NormilizeActions();
                 foreach (AIAction action in _possibleActions)
                 {
-                    NormilizeActions();
-
                     Utilities.CreateTextInWorld(action.baseWeight.ToString(), action.target, position: action.target.position + Vector3.up * 2);
                     Utilities.CreateTextInWorld(action.distanceSubstraction.ToString(), action.target, position: action.target.position + Vector3.up * 2.5f, color: Color.blue);
                     Utilities.CreateTextInWorld(action.enemiesAmountSubstraction.ToString(), action.target, position: action.target.position + Vector3.up * 3f, color: Color.yellow);
                 }
+            }
         }
 
         #endregion
@@ -297,7 +289,6 @@ namespace Sampo.AI
                 }
             }
         }
-
         private void NullifyActivity()
         {
             _currentActivity = _noAction; // Нужно, чтобы StateMachine перебросилась в состояние Decide и не ловила nullReference
@@ -305,33 +296,27 @@ namespace Sampo.AI
         public bool IsNoActionCurrently() => _currentActivity == _noAction;
         #endregion
 
-        public bool MeleeReachable()
-        {
-            Vector3 closestToMe;
-            Vector3 calculateFrom = distanceFrom ? distanceFrom.position : transform.position;
-            if (_currentActivity.target.TryGetComponent<AliveBeing>(out var ab))
-                closestToMe = ab.vital.ClosestPointOnBounds(calculateFrom);
-            else if (_currentActivity.target.TryGetComponent<Collider>(out var c))
-                closestToMe = c.ClosestPointOnBounds(calculateFrom);
-            else
-                closestToMe = _currentActivity.target.position;
-
-            return Vector3.Distance(calculateFrom, closestToMe) < _currentActivity.actWith.additionalMeleeReach + baseReachDistance;
-        }
-
         public bool DecidingStateRequired()
         {
             return _currentActivity == _noAction;
         }
 
+        #region virtual functions
+        /// <summary>
+        /// Присваивание очков и изменение параметров
+        /// </summary>
+        /// <param name="points">Присваиваемые очки</param>
         public virtual void AssignPoints(int points)
         {
             int remaining = points;
             visiblePowerPoints = points;
             //TODO : Изменение скорости движения
         }
-
-        #region virtual functions
+        /// <summary>
+        /// Проверка фракции на себя
+        /// </summary>
+        /// <param name="target">Относительно этой цели</param>
+        /// <returns>true, если цель подходит</returns>
         protected virtual bool IsEnemyPassing(Transform target)
         {
             bool res = true;
@@ -347,29 +332,29 @@ namespace Sampo.AI
 
             return res;
         }
+        /// <summary>
+        /// Выбор оружия
+        /// </summary>
+        /// <param name="target">Относительно этой цели</param>
+        /// <returns></returns>
+        protected abstract Tool ToolChosingCheck(Transform target);
 
-        protected virtual Tool ToolChosingCheck(Transform target)
-        {
-            return hands;
-        }
-
-        //TODO : Сделать так, чтобы управляющая StateMachine была интегрирована сюда, либо вообще редуцирована.
-        // Эти Функции не должны быть публичны, они - только для управляющей StateMachine!
+        /*TODO : Сделать так, чтобы управляющая StateMachine была интегрирована сюда, либо вообще редуцирована...
+        * Эти Функции не должны быть публичны, они - только для управляющей StateMachine!
+        * Сделать через Event'ы после переделки factory.
+        */
         /// <summary>
         /// Обычный Update, но вызываемый в состоянии, когда юнит атакует.
         /// </summary>
         /// <param name="target"></param>
-        public virtual void AttackUpdate(Transform target)
-        {
-
-        }
+        public abstract void AttackUpdate(Transform target);
 
 
         /// <summary>
         /// Обычный Update, но когда юнит действует
         /// </summary>
         /// <param name="target"></param>
-        public virtual void ActionUpdate(Transform target) { }
+        public abstract void ActionUpdate(Transform target);
         #endregion
 
         #region animation
@@ -389,11 +374,11 @@ namespace Sampo.AI
             //TODO DESIGN : ИИ Никогда не бывают в прыжке. Что, вообще-то, надо бы исправить.
             return false;
         }
-
-        public virtual Transform GetRightHandTarget()
-        {
-            return hands.transform;
-        }
+        /// <summary>
+        /// Нужно для анимации тела
+        /// </summary>
+        /// <returns>Точка, куда будет направлена рука</returns>
+        public virtual Transform GetRightHandTarget() {  return null; }
         #endregion
 
         private void OnDrawGizmos()

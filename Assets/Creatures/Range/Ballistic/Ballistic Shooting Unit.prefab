@@ -87,7 +87,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _AIActive: 1
-  baseReachDistance: 1
   retreatInfluence:
     serializedVersion: 2
     m_Curve:
@@ -113,8 +112,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   distanceWeightMultiplier: 1
-  hands: {fileID: 2397089146338771504}
-  distanceFrom: {fileID: 0}
   vital: {fileID: 2397089146008967546}
   toGroundDist: 0.3
   navMeshCalcFrom: {fileID: 0}

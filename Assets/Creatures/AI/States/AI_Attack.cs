@@ -47,10 +47,7 @@ namespace Sampo.AI
             // Отходим назад
             if (_ctx.MovingAgent)
             {
-                //TODO : Вообще-то, эту зависимость надо инвертировать
-                float weaponRange = _ctx.CurrentActivity.actWith.additionalMeleeReach + _ctx.baseReachDistance;
-                if (_ctx.CurrentActivity.actWith is BaseShooting shooting)
-                    weaponRange = shooting.range;
+                float weaponRange = _ctx.CurrentActivity.actWith.GetRange();
 
                 float progress = 1 - (Vector3.Distance(_ctx.CurrentActivity.target.position, _ctx.transform.position)
                     / weaponRange);
@@ -61,7 +58,7 @@ namespace Sampo.AI
                 }
                 else
                 {
-                    _ctx.MovingAgent.MoveIteration(moveTargetPos);
+                    _ctx.MovingAgent.MoveIteration(moveTargetPos, _ctx.CurrentActivity.target.position);
                 }
             }
 
