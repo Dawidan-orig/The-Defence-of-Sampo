@@ -393,17 +393,17 @@ MonoBehaviour:
   toGroundForce: 5
   dragOffGround: 0.2
   airMultiplier: 0.5
-  externalGracityControl: 1
+  externalGravityControl: 0
   jumpForce: 10
   jumpCooldown: 2
   _inJump: 0
   slopeAngle: 65
   ground:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 9
   vital: {fileID: 4752761894220124767}
   _movement: {x: 0, y: 0, z: 0}
-  _moveSpeed: 0
+  _currentMoveSpeed: 0
   _isGrounded: 1
   _jumpReady: 1
   _inputMovement: {x: 0, y: 0}
@@ -429,7 +429,7 @@ MonoBehaviour:
   edgeDepth: 0
   terrainMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 9
 --- !u!114 &8287644828423447346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -444,8 +444,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _AIActive: 1
   baseReachDistance: 10
-  maxSpeed: 3.5
-  retreatMultiplier: 0.2
   retreatInfluence:
     serializedVersion: 2
     m_Curve: []
@@ -462,9 +460,11 @@ MonoBehaviour:
     target: {fileID: 0}
     name: 
     baseWeight: 0
-    distanceAddition: 0
+    distanceSubstraction: 0
+    enemiesAmountSubstraction: 0
     actWith: {fileID: 0}
   _possibleActions: []
+  visiblePowerPoints: 100
   attackSpeed: 1
   legsHarmony: {fileID: 2875792448395030527}
   attackingLeg: {fileID: 0}

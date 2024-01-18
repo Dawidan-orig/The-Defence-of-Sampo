@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [Serializable]
 public class Blow : Ability
@@ -33,8 +34,11 @@ public class Blow : Ability
                 continue;
 
             if (c.TryGetComponent<Faction>(out _))
-                if (!c.transform.GetComponent<Faction>().IsWillingToAttack(user.GetComponent<Faction>().f_type))
+                if (!c.transform.GetComponent<Faction>().IsWillingToAttack(user.GetComponent<Faction>().FactionType))
                     continue;
+
+            if (c.TryGetComponent<IMovingAgent>(out var agent))
+                agent.ExternalForceMacros();
 
             if (c.TryGetComponent<Rigidbody>(out var otherBody))
             {

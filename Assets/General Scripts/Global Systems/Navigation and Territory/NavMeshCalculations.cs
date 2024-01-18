@@ -7,16 +7,12 @@ using UnityEngine.AI;
 
 public class NavMeshCalculations : MonoBehaviour
 {
-    //TODO : Сделать вычисление ещё в Editor через корутины, как это было в рогалике про культистов!
-
     private static NavMeshCalculations _instance;
 
     [Min(0)]
     public float MINIMUM_AREA = 30;
     [Min(0)]
     public float MAXMIMUM_AREA = 50;
-    [Min(0)]
-    public int CLUSTER_SIZE = 30;
     [Range(0, 100)]
     public float MAX_VERTS_IN_COMPLEX = 50;
     public Bounds octTreeBounds = new Bounds();
@@ -33,21 +29,20 @@ public class NavMeshCalculations : MonoBehaviour
 
     [Header("Debug")]
     public bool drawOctTree = false;
-
     public static NavMeshCalculations Instance
     {
         get
-        {    
-            if(_instance == null)
+        {
+            if (_instance == null)
                 _instance = FindObjectOfType<NavMeshCalculations>();
 
             if (_instance == null)
-            {                
+            {
                 GameObject go = new("NM Calculations");
                 _instance = go.AddComponent<NavMeshCalculations>();
                 _instance.Initialize();
             }
-            
+
             if (EditorApplication.isPlaying)
             {
                 _instance.transform.parent = null;
@@ -57,6 +52,8 @@ public class NavMeshCalculations : MonoBehaviour
             return _instance;
         }
     }
+
+    #region data structures
     [Serializable]
     public abstract class Cell
     {
@@ -230,13 +227,8 @@ public class NavMeshCalculations : MonoBehaviour
                     Debug.LogError("При поглощении нарисованного треугольника не нашлось внешней вершины (Error Pause, чтобы увидеть)");
                     return;
                 }
-                if (_vectorFormers.Contains(res)) //TODO?? : LINQ-Check, дорого!
+                if (_vectorFormers.Contains(res))
                 {
-                    // Добавляемый треугольник полностью соответствует тому, что уже есть в фигуре
-
-                    //int i = 0;
-                    //foreach (Vector3 vector in _vectorFormers)
-                    //    Utilities.CreateFlowText(i++.ToString(), 1, res + Vector3.up *_vectorFormers.Length - Vector3.down * 0.3f, Color.red);
                     return;
                 }
 
@@ -318,9 +310,10 @@ public class NavMeshCalculations : MonoBehaviour
         }
     }
     [Serializable]
-    private class Cluster
+    public class Cluster
     {
         private List<Cell> _included = new();
+        public Transform linkedTransform;
         public Vector3 center { get; private set; } = Vector3.zero;
 
         public void AddCell(Cell cell)
@@ -396,6 +389,7 @@ public class NavMeshCalculations : MonoBehaviour
             return former1.GetHashCode() ^ former2.GetHashCode();
         }
     }
+    #endregion
 
     private void OnValidate()
     {
@@ -413,18 +407,17 @@ public class NavMeshCalculations : MonoBehaviour
     }*/
 
     [InitializeOnLoadMethod]
-    public static void InitLoad() 
+    public static void InitLoad()
     {
         Instance.Initialize();
     }
 
     public void Initialize()
     {
-        //TODO? : Большой простор для оптимизации, хотя поскольку тут у нас инициализация - то особенно без разницы.
-
         _clusters = new();
         List<Cell> cellsList = new();
         List<Cell> trianglesToCombine = new();
+        List<TriangleCell> trianglesToSubdivide = new();
         Dictionary<Edge, List<Cell>> links = new(); //Каждому ребру соответствуют какие-то Cell'ы
 
         var triangulation = NavMesh.CalculateTriangulation();
@@ -446,7 +439,7 @@ public class NavMeshCalculations : MonoBehaviour
                     links.Add(triEdges[j], new List<Cell>());
             }
 
-            Cell cell = new TriangleCell(triangle);
+            TriangleCell cell = new TriangleCell(triangle);
 
             for (int j = 0; j < 3; j++)
                 links[triEdges[j]].Add(cell);
@@ -454,6 +447,11 @@ public class NavMeshCalculations : MonoBehaviour
             if (TriangleArea(triangle) < MINIMUM_AREA)
             {
                 trianglesToCombine.Add(cell);
+                continue;
+            }
+            else if (TriangleArea(triangle) > MAXMIMUM_AREA)
+            {
+                trianglesToSubdivide.Add(cell);
                 continue;
             }
 
@@ -472,7 +470,7 @@ public class NavMeshCalculations : MonoBehaviour
         }
         #endregion
 
-        #region unify small triangles
+        #region unite small triangles
         while (trianglesToCombine.Count > 0)
         {
             //Есть вот какой-то начальный треугольник. Берём его за основу.
@@ -525,26 +523,108 @@ public class NavMeshCalculations : MonoBehaviour
         #endregion
 
         #region subdivide big triangles
+        foreach (TriangleCell cell in trianglesToSubdivide)
+        {
+            //https://stackoverflow.com/questions/26259893/how-do-i-subdivide-a-triangle-in-three-dimensions
+            int BREAKPOINT = 30;
 
+            Vector3[] formers = cell.Formers();
+
+            int subdivisions = 1;
+            float subdivisionPower = 1 / (float)subdivisions;
+            // Для начала надо понять, насколько сильно надо разделить треугольник
+            Vector3[] scalingTri = new Vector3[3];
+            for(int i = 0; i < 3; i++)
+                scalingTri[i] = formers[i];
+
+            int iteration = 0;
+            while (TriangleArea(scalingTri) > MAXMIMUM_AREA)
+            {
+                subdivisions++;
+                subdivisionPower = 1 / ((float)subdivisions);
+
+                scalingTri[1] = Vector3.Lerp(formers[0], formers[1], subdivisionPower);
+                scalingTri[2] = Vector3.Lerp(formers[0], formers[2], subdivisionPower);
+                if (iteration++ > BREAKPOINT)
+                {
+                    throw new StackOverflowException("Бесконечный цикл!");
+                }
+            }
+
+            //А теперь надо этот треугольник разделить, с учётом изменения соседей.
+            int subdivionIteration = 1;
+            Vector3 prevLeftEnd = default;
+            Vector3 prevRightEnd = default;
+            iteration = 0;
+            do //О, первый раз в жизни его использую
+            {
+                float currentPower = subdivisionPower * subdivionIteration;
+                Vector3 leftEnd = Vector3.Lerp(formers[0], formers[2], currentPower);
+                Vector3 rightEnd = Vector3.Lerp(formers[0], formers[1], currentPower);
+                for (int i = 0; i < subdivionIteration * 2-1; i++)
+                {
+                    Vector3[] newTriFormers = new Vector3[3];
+                    TriangleCell subdivided;
+                    if (subdivionIteration == 1) // Самый верх, самое начало
+                    {
+                        newTriFormers[0] = formers[0];
+                        newTriFormers[1] = leftEnd;
+                        newTriFormers[2] = rightEnd;
+                        subdivided = new TriangleCell(newTriFormers);
+                        cellsList.Add(subdivided);
+                        break;
+                    }
+                    
+                    
+                    if (i % 2 == 0) //Вверху - одна точка, снизу - две
+                    {
+                        newTriFormers[1] = Vector3.Lerp(leftEnd, rightEnd, (i / 2) / (float)subdivionIteration);
+                        newTriFormers[2] = Vector3.Lerp(leftEnd, rightEnd, (i / 2+1) / (float)subdivionIteration);
+                        newTriFormers[0] = Vector3.Lerp(prevLeftEnd, prevRightEnd, (i / 2) / (float)(subdivionIteration - 1));
+                    }
+                    else  //Вверху - две точки, снизу - одна
+                    {
+                        newTriFormers[1] = Vector3.Lerp(prevLeftEnd, prevRightEnd, ((i + 1) / 2) / (float)(subdivionIteration-1));
+                        newTriFormers[2] = Vector3.Lerp(prevLeftEnd, prevRightEnd, ((i + 1) / 2-1) / (float)(subdivionIteration-1));
+                        newTriFormers[0] = Vector3.Lerp(leftEnd, rightEnd, (1+((i-1)/2)) / (float)subdivionIteration);
+                    }
+
+                    subdivided = new TriangleCell(newTriFormers);
+                    cellsList.Add(subdivided);
+                }
+
+                prevLeftEnd = leftEnd;
+                prevRightEnd = rightEnd;
+
+                if (iteration++ > BREAKPOINT)
+                {
+                    throw new StackOverflowException("Бесконечный цикл!");
+                }
+
+                subdivionIteration++;
+            } while (subdivisionPower * subdivionIteration < 1 + subdivisionPower);
+        }
         #endregion
 
-        #region create clusters
-        //TODO : Лучше сделать много маленьких terrain'ов. А ещё лучше - плоскостей, заменяющих Terrain'ы
-        int amount = 0;
-        Cluster used = new();
+        #region create clusters        
         foreach (Cell c in cellsList)
         {
-            used.AddCell(c);
-
-            if (amount++ > CLUSTER_SIZE)
+            if (Physics.Raycast(c.Center() + Vector3.up, Vector3.down, out RaycastHit hit, 10))
             {
-                amount = 0;
-                _clusters.Add(used);
-                used = new();
+                Cluster used = _clusters.Find(item => item.linkedTransform == hit.transform);
+                if (used == null)
+                {
+                    used = new Cluster();
+                    used.linkedTransform = hit.transform;
+                    _clusters.Add(used);
+                }
+
+                used.AddCell(c);
             }
         }
         #endregion
 
+        #region connect to gameobject components
         if (EditorApplication.isPlaying)
             Destroy(_cellTransformContainer);
         else
@@ -562,6 +642,7 @@ public class NavMeshCalculations : MonoBehaviour
             cellGo.transform.parent = _cellTransformContainer.transform;
             transforms.Add(cellGo.transform);
         }
+        #endregion
 
         octreeCells = new(octTreeBounds);
         octreeCells.AddRangeToProcess(transforms);
@@ -571,23 +652,20 @@ public class NavMeshCalculations : MonoBehaviour
 
     public Cell GetCell(Vector3 pointNear)
     {
-        // Его TODO : Можно посчитать заранее, при инициализации
-        // TODO : Json-файл для хранения ShootMesh'а, чтобы сохранить всё ещё в Editor'е.
-
         return FindByOctTree(pointNear);
     }
 
     public Cell FindByOctTree(Vector3 pointNear)
     {
         var t = octreeCells.FindClosestObjectInTree(pointNear);
-        if(t != null)
-        return t.GetComponent<TransfromCellBehavior>().Aligned;
+        if (t != null)
+            return t.GetComponent<TransfromCellBehavior>().Aligned;
         else
             return null;
     }
 
     /// <summary>
-    /// Использует кластеры, которые используются для разбиения всего NavMesh на меньшие участки
+    /// Использует кластеры, которые разбивают весь NavMesh на меньшие участки
     /// </summary>
     /// <returns></returns>
     public Cell FindByClusters(Vector3 pointNear)

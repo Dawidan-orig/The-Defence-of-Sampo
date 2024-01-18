@@ -1,10 +1,7 @@
+using Sampo.AI;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using Unity.Burst.CompilerServices;
 using UnityEngine;
-using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
 public class BaseShooting : Tool
 {
@@ -14,8 +11,6 @@ public class BaseShooting : Tool
     public float range;
     public float timeBetweenBullets;
     public float gunPower;
-
-    public ForceMode forceMode;
 
     protected bool readyToFire = true;
     protected TargetingUtilityAI AIUser;
@@ -33,17 +28,18 @@ public class BaseShooting : Tool
         GameObject bullet = Instantiate(bulletPrefab);
         bullet.transform.position = shootPoint.position;
         bullet.transform.rotation = shootPoint.rotation;
-        bullet.GetComponent<Rigidbody>().AddForce(shootPoint.forward * gunPower, forceMode);
+        bullet.GetComponent<Rigidbody>().AddForce(shootPoint.forward * gunPower, ForceMode.VelocityChange);
 
         Faction BFac;
         if (!bullet.TryGetComponent(out BFac))
             BFac = bullet.AddComponent<Faction>();
-        BFac.f_type = host.GetComponent<Faction>().f_type;
+        BFac.ChangeFactionCompletely(host.GetComponent<Faction>().FactionType);
 
         Physics.IgnoreCollision(GetComponent<Collider>(), bullet.GetComponent<Collider>());
         Physics.IgnoreCollision(host.GetComponent<Collider>(), bullet.GetComponent<Collider>());
 
         Bullet b = bullet.GetComponent<Bullet>();
+        b.SetDamageDealer(transform);
         b.possibleDistance = range;
 
         readyToFire = false;
@@ -89,8 +85,8 @@ public class BaseShooting : Tool
 
         List<NavMeshCalculations.Cell> toCheck = new() { start };
         List<NavMeshCalculations.Cell> alreadyChecked = new();
-        //TODO : Добавить в формулу высоту. Чем выше - тем лучше.
-        // Это вводит в систему, а точнее превращает её в AStar-аналог
+        //TODO DESIGN : Добавить в формулу высоту. Чем выше - тем лучше.
+        // Это превращает систему в AStar-аналог
 
         float bestDistanceToTarget = 0;
         float bestDistanceFromGun = 100000;
@@ -138,6 +134,7 @@ public class BaseShooting : Tool
 
     public virtual Vector3 PredictMovement(Rigidbody target)
     {
+        //TODO : Учёт движения навстречу, когда сам ИИ - убегает.
         Vector3 speedToTarget = Vector3.ProjectOnPlane(shootPoint.forward * gunPower, target.velocity);
         float timeToTarget = Vector3.Distance(transform.position, target.position) / speedToTarget.magnitude;
 
@@ -147,37 +144,29 @@ public class BaseShooting : Tool
 
     protected void PenetratingRaycast(Vector3 from, Vector3 to, out RaycastHit hit, float duration = 0, Color? color = null) 
     {
-        const bool DRAW = true;
+        const bool DRAW = false;
 
         if(color == null)
             color = Color.white;
 
-        //TODO : Перевести в рекурсию
-
+        Vector3 dir = (to - from).normalized;
         Utilities.VisualisedRaycast(from,
-                (to - from).normalized,
+                dir,
                 out hit,
                 (to - from).magnitude,
                 alive + structures, duration: duration, color: color, visualise: DRAW);
 
         if (hit.collider)
             if (hit.collider.isTrigger)
-            {
-                Utilities.VisualisedRaycast(hit.point,
-                (to - from).normalized,
-                out hit,
-                (to - from).magnitude - (from - hit.point).magnitude,
-                alive + structures, duration: duration, color: color, visualise: DRAW);
-            }
+                PenetratingRaycast(hit.point + dir*0.05f, to, out hit, duration, color);
 
-        if (hit.transform == host)
-        {
-            Utilities.VisualisedRaycast(hit.point,
-                (to - from).normalized,
-            out hit,
-                (to - from).magnitude - (from - hit.point).magnitude,
-                alive + structures, duration: duration, color: color, visualise: DRAW);
-        }
+        if (hit.transform == host)        
+            PenetratingRaycast(hit.point + dir * 0.05f, to, out hit, duration, color);        
+    }
+
+    public override float GetRange()
+    {
+        return range;
     }
 
     protected void NextShotReady()

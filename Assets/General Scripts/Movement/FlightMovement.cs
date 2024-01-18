@@ -3,7 +3,7 @@ using UnityEngine.AI;
 
 public class FlightMovement : Movement
 {
-    //TODO : превратить это в модификацию основного Movement, то-есть чтобы летающий и просто ходить мог.
+    //TODO DESIGN: превратить это в модификацию основного Movement, то-есть чтобы летающий и просто ходить мог.
 
     [Header("===Flying===")]
     [Tooltip("¬ысота, которой придерживаетс€ юнит относительно текущей точки")]
@@ -12,15 +12,34 @@ public class FlightMovement : Movement
 
     private Vector3 lastGroundPos = Vector3.zero;
 
+    protected override void Update()
+    {
+        if (flightHeight == 0) // Ќахождение на земле
+        {
+            base.ApplyMovement();
+        }
+
+        base.Update();
+    }
     protected override void FixedUpdate()
     {
+        if (flightHeight == 0) //Ќахождение на земле
+        {
+            base.ApplyMovement();
+        }
+
         ApplyMovement();
 
         FixMovement();
     }
 
-    protected override void ApplyMovement()
+    protected override void ApplyMovement() //Ќахождение на земле
     {
+        if (flightHeight == 0)
+        {
+            base.ApplyMovement();
+        }
+
         _inputMovement.x = Mathf.Clamp(_inputMovement.x, -1, 1);
         _inputMovement.y = Mathf.Clamp(_inputMovement.y, -1, 1);
 

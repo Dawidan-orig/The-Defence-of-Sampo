@@ -30,23 +30,25 @@ public class ThrowableRocks : BaseShooting
         bullet.transform.position = shootPoint.position;
         bullet.transform.rotation = shootPoint.rotation;
 
+        //TODO : Если цель находится над transform, то происходит бесконечность.
         Vector3 flatEquvivalent = FlatEquialent(target.Value);
         float actualPower = Power(flatEquvivalent.magnitude);
 
         transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, transform.eulerAngles.z);
         bullet.GetComponent<Rigidbody>().AddForce(
             (shootPoint.forward + shootPoint.up).normalized * actualPower,
-            forceMode);
+            ForceMode.VelocityChange);
 
         Faction BFac;
         if (!bullet.TryGetComponent(out BFac))
             BFac = bullet.AddComponent<Faction>();
-        BFac.f_type = host.GetComponent<Faction>().f_type;
+        BFac.ChangeFactionCompletely(host.GetComponent<Faction>().FactionType);
 
         Physics.IgnoreCollision(GetComponent<Collider>(), bullet.GetComponent<Collider>());
         Physics.IgnoreCollision(host.GetComponent<Collider>(), bullet.GetComponent<Collider>());
 
         Bullet b = bullet.GetComponent<Bullet>();
+        b.SetDamageDealer(transform);
         const int ADDITION_TO_NOT_EARLY_DISSOLVE = 10;
         b.possibleDistance = range + ADDITION_TO_NOT_EARLY_DISSOLVE;
 
@@ -78,7 +80,6 @@ public class ThrowableRocks : BaseShooting
 
 
         #region arc-check
-        //TODO : Почистить этот кошмар из условий.
         float toUpHorizontal = (flatEquvivalent.normalized * actualRange / 2).magnitude;
         float step = toUpHorizontal / (ONE_SIDE_SEPARAIONS + 1);
         Vector3 checkFrom = from;

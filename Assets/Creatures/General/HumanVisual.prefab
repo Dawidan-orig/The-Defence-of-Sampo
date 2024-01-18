@@ -447,6 +447,7 @@ MonoBehaviour:
   rightShoulder: {fileID: 5433774906254787656}
   controlled: {fileID: 6173810556982661391}
   rightHandOffset: {x: -0.05, y: 0, z: 0.12}
+  HeadLookAt: {fileID: 838073379678625321}
   firstIK: {fileID: 4040830649649788128}
   recalculationIK: {fileID: 2911337930319537505}
   shoulders: {fileID: 2084662883561681807}

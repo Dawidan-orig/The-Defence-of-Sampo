@@ -10,27 +10,20 @@ public struct PalleteObject
     public float right;
     public UnityEngine.Object obj;
 
-    [SerializeReference] // „тобы не было цикла сериализации
-    private Pallete container;
     public int index;
 
+    [SerializeField]
     private bool wasModified; // Ќужен дл€ корректного использовани€ PropertyDrawer, чтобы соблюдать пор€док обновлений.
 
     public bool WasModified { get => wasModified; set => wasModified = value; }
 
-    public PalleteObject(float left, float right, UnityEngine.Object obj, Pallete container, int index)
+    public PalleteObject(float left, float right, UnityEngine.Object obj, int index)
     {
         this.left = left;
         this.right = right;
         this.obj = obj;
-        this.container = container;
         this.index = index;
         wasModified = false;
-    }
-
-    public void OnValidate() 
-    {
-        container.Validate(this);
     }
 
     public override string ToString()
@@ -42,8 +35,8 @@ public struct PalleteObject
     {
         if (obj is not PalleteObject casted) return false;
 
-        return Utilities.ValueInArea(casted.left, left,0.000001f) &&
-            Utilities.ValueInArea(casted.right, right, 0.000001f);
+        return Utilities.ValueInArea(casted.left, left,0.00001f) &&
+            Utilities.ValueInArea(casted.right, right, 0.00001f);
     }
 
     public override int GetHashCode()

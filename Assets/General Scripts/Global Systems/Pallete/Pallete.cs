@@ -64,8 +64,7 @@ public class Pallete
 
     public UnityEngine.Object Pass(float val) 
     {
-        //TODO : Бинарный поиск, потому что а чоб нет
-
+        //Да, это можно оптимизировать, но в этом мало смысла. Нагрузки почти нет - тут вряд ли будет да даже больше 100 объектов
         foreach(PalleteObject pObj in objectsSummary) 
         {
             if (pObj.left < val && pObj.right > val)
@@ -114,11 +113,11 @@ public class Pallete
 
         if (objectsSummary.Count == 0)
         {
-            objectsSummary.Add(new PalleteObject(0, 1, toAdd, this, 0));
+            objectsSummary.Add(new PalleteObject(0, 1, toAdd, 0));
             return;
         }
 
-        objectsSummary.Insert(0,new PalleteObject(0,probability,toAdd, this, 0));
+        objectsSummary.Insert(0,new PalleteObject(0,probability,toAdd, 0));
         float reBuild = probability;
 
         float decreasingK = 1 - probability;
@@ -149,24 +148,5 @@ public class Pallete
     }
 
     #region Unity-Adjusters
-#if UNITY_EDITOR
-    //TODO : Это можно и даже нужно перенести в Utilities
-    public static Pallete GetActualObjectForSerializedProperty(FieldInfo info, SerializedProperty prop) 
-    {
-        var obj = info.GetValue(prop.serializedObject.targetObject);
-
-        Pallete res = null;
-
-        if (obj.GetType().IsArray)
-        {
-            var index = Convert.ToInt32(new string(prop.propertyPath.Where(c => char.IsDigit(c)).ToArray()));
-            res = ((Pallete[])obj)[index];
-        }
-        else
-            res = obj as Pallete;
-
-        return res;
-    }
-#endif
 #endregion
 }

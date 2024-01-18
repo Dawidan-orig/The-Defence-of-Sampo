@@ -1,9 +1,10 @@
+using Sampo.AI;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 [SelectionBase]
 public class SpiderBrain : TargetingUtilityAI
 {
+    //TODO : Преобразовать в StateMachine от Git-Amend.
     [Header("Spider")]
     public float attackSpeed = 1;
     public LegsHarmoniser legsHarmony;
@@ -44,7 +45,6 @@ public class SpiderBrain : TargetingUtilityAI
     {
         base.Start();
 
-        //TODO : Если вдруг ноги изначально будут поставлены не правильно, то эта штука не сработает.
         initialBodyHeightOffset = transform.position.y - legsHarmony.legs[0].legTarget.position.y;
         initialBodyRotation = transform.rotation;
     }
@@ -88,7 +88,7 @@ public class SpiderBrain : TargetingUtilityAI
             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x,transform.rotation.eulerAngles.y, diff * rotationInfluence + initialEulerY);
         }
 
-        if(_currentState is not AI_Attack && _spiderState != SpiderState.nothing && attackingLeg != null) 
+        if(_currentState != _factory.Attack() && _spiderState != SpiderState.nothing && attackingLeg != null) 
         {
             if (_spiderState != SpiderState.toReturn)
             {
@@ -108,8 +108,6 @@ public class SpiderBrain : TargetingUtilityAI
 
     public override void AttackUpdate(Transform target)
     {
-        base.AttackUpdate(target);
-
         if (attackingLeg == null)
         {
             legsHarmony.legs.RemoveAll(item => item == null);
@@ -177,12 +175,22 @@ public class SpiderBrain : TargetingUtilityAI
         }
     }
 
-    public override void GivePoints(int points)
+    public override void AssignPoints(int points)
     {
-        base.GivePoints(points);
+        base.AssignPoints(points);
 
         int remaining = points;
 
-        //TODO
+        //TODO DESIGN
+    }
+
+    protected override Tool ToolChosingCheck(Transform target)
+    {
+        return attackingLeg.limb;
+    }
+
+    public override void ActionUpdate(Transform target)
+    {
+        throw new System.NotImplementedException();
     }
 }

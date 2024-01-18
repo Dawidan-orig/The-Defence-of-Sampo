@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9ab12d299b4d2b42a9cb6ac4f31cef3, type: 3}
+  m_Name: TEST_SmartAI
+  m_EditorClassIdentifier: 
+  enemies:
+    objectsSummary:
+    - left: 0
+      right: 0.737
+      obj: {fileID: 1526482222200477036, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
+      index: 0
+      wasModified: 0
+    - left: 0.737
+      right: 0.865
+      obj: {fileID: 2397089146008967548, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
+      index: 1
+      wasModified: 0
+    - left: 0.865
+      right: 1
+      obj: {fileID: 2397089146008967548, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
+      index: 2
+      wasModified: 0

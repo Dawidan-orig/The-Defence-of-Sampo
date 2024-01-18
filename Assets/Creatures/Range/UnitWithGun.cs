@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using Sampo.AI;
 using UnityEngine;
 
 public class UnitWithGun : TargetingUtilityAI
@@ -7,14 +7,15 @@ public class UnitWithGun : TargetingUtilityAI
 
     public override void AttackUpdate(Transform target)
     {
-        base.AttackUpdate(target);
+        if (weapon.AvilableToShoot(target, out _))
+        {
+            if (target.TryGetComponent(out Rigidbody body))
+                weapon.transform.LookAt(weapon.PredictMovement(body));
+            else
+                weapon.transform.LookAt(target.position);
 
-        if (target.TryGetComponent(out Rigidbody body))
-            weapon.transform.LookAt(weapon.PredictMovement(body));
-        else
-            weapon.transform.LookAt(target.position);
-
-        weapon.Shoot(target.position);
+            weapon.Shoot(target.position);
+        }
     }
 
     protected override Tool ToolChosingCheck(Transform target)
@@ -27,12 +28,17 @@ public class UnitWithGun : TargetingUtilityAI
         return weapon.transform;
     }
 
-    public override void GivePoints(int points)
+    public override void AssignPoints(int points)
     {
-        base.GivePoints(points);
+        base.AssignPoints(points);
 
         int remaining = points;
 
-        //TODO
+        //TODO DESIGN
+    }
+
+    public override void ActionUpdate(Transform target)
+    {
+
     }
 }

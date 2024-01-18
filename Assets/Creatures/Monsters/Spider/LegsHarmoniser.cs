@@ -94,7 +94,7 @@ public class LegsHarmoniser : MonoBehaviour
         currentActiveGroup = -1;
     }
 
-    //TODO : Editor, чтобы видеть как в списке идёт разделение на группы
+    //TODO? : Editor, чтобы чётко видеть как в списке идёт разделение на группы
     private void ReGroup()
     {
         groups.Clear();

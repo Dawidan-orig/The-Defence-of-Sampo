@@ -86,7 +86,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _AIActive: 1
-  baseReachDistance: 1
   retreatInfluence:
     serializedVersion: 2
     m_Curve:
@@ -100,8 +99,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.1916687
-      value: 0.004714966
+      time: 0.15
+      value: 0.5
       inSlope: -0.05658541
       outSlope: -0.05658541
       tangentMode: 0
@@ -109,8 +108,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 1
     - serializedVersion: 3
-      time: 0.4
-      value: 0
+      time: 0.35
+      value: 0.5
       inSlope: -0.003735752
       outSlope: -0.003735752
       tangentMode: 0
@@ -119,7 +118,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: -1
+      value: 0
       inSlope: -1.3378018
       outSlope: -1.3378018
       tangentMode: 0
@@ -130,8 +129,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   distanceWeightMultiplier: 1
-  hands: {fileID: 2397089146338771504}
-  distanceFrom: {fileID: 0}
   vital: {fileID: 2397089146008967546}
   toGroundDist: 0.3
   navMeshCalcFrom: {fileID: 0}
@@ -143,7 +140,7 @@ MonoBehaviour:
     enemiesAmountSubstraction: 0
     actWith: {fileID: 0}
   _possibleActions: []
-  visiblePowerPoints: 0
+  visiblePowerPoints: 100
   weapon: {fileID: 2397089146641432726}
 --- !u!114 &2397089146008967542
 MonoBehaviour:
@@ -174,7 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  f_type: 2
+  _ftype: 0
 --- !u!54 &2397089146008967547
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -238,7 +235,7 @@ MonoBehaviour:
   slopeAngle: 65
   ground:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 9
   vital: {fileID: 2397089146008967546}
   _movement: {x: 0, y: 0, z: 0}
   _currentMoveSpeed: 0
@@ -267,7 +264,7 @@ MonoBehaviour:
   edgeDepth: 1
   terrainMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 9
 --- !u!114 &6325525520336111847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -460,7 +457,6 @@ MonoBehaviour:
   range: 40
   timeBetweenBullets: 0.35
   gunPower: 30
-  forceMode: 2
 --- !u!1001 &2538407679295669753
 PrefabInstance:
   m_ObjectHideFlags: 0

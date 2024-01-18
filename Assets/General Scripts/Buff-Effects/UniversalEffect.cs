@@ -24,7 +24,7 @@ public class UniversalEffect
     public bool Depretiated { get => _depretiated; set => _depretiated = value; }
     public float EffectDuration { get => _effectDuration; set => _effectDuration = value; }
 
-    //TODO : И ещё переменная для эффекта-классификации.
+    //TODO DESIGN : И ещё переменная-спрайт-шейдер для эффекта-классификации.
     //- Какая-нибудь красная оконтовка для дебаффа;
     //- Жёлтая яркая для командных положительных баффов...
 
