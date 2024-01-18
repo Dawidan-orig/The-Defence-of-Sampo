@@ -116,7 +116,7 @@ MonoBehaviour:
   debug_Draw: 0
   blade_as_stuff: 0
   ignoredDistance: 2
-  ignoredSpeed: 1
+  ignoredImpulse: 5
   checker: {fileID: 1778603663242361104}
   vital: {fileID: 6060500822727802340}
   ignored: []
@@ -265,7 +265,6 @@ MonoBehaviour:
   swing_startDistance: 1.5
   criticalImpulse: 400
   blockCriticalVelocity: 5
-  toBladeHandle_MaxDistance: 1
   toBladeHandle_MinDistance: 0.1
   close_enough: 0.1
   angle_enough: 10
@@ -625,23 +624,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7455112557779443598, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.175
       objectReference: {fileID: 0}
     - target: {fileID: 7455112557779443598, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.7
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 7455112557779443598, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7455112557779443598, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9659258
+      value: 0.9990483
       objectReference: {fileID: 0}
     - target: {fileID: 7455112557779443598, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.2588191
+      value: 0.043619405
       objectReference: {fileID: 0}
     - target: {fileID: 7455112557779443598, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
       propertyPath: m_LocalRotation.y
@@ -653,7 +652,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7455112557779443598, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 30
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7455112557779443598, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y

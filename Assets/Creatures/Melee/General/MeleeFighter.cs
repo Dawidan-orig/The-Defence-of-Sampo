@@ -16,7 +16,7 @@ namespace Sampo.Melee
         [Tooltip("Оружие, которое всегда есть у этого ИИ, например кулаки.")]
         public MeleeTool defaultWeapon;
         [Tooltip("Длина конечности, что держит оружие")]
-        public float baseReachDistance = 1; //TODO? (С учётом двуручки вроде посохов) : Считать от distanceFrom до самого оружия.
+        public float baseReachDistance = 1; //TODO DESIGN (С учётом двуручки вроде посохов) : Считать от distanceFrom до самого оружия.
         [SerializeField]
         [Tooltip("Определяет начало конечности, откуда и происходит отсчёт.")]
         protected Transform distanceFrom;
@@ -40,8 +40,6 @@ namespace Sampo.Melee
         public float criticalImpulse = 400;
         [Tooltip("Всё, что имеет скорость выше этого значения - должно блокироваться")]
         public float blockCriticalVelocity = 5;
-        [Tooltip("Максимальное расстояние от vital до рукояти меча. По сути, длина руки.")]
-        public float toBladeHandle_MaxDistance = 1.2f;
         [Tooltip("Минимальное допустимое расстояние от vital")]
         public float toBladeHandle_MinDistance = 0.1f;
         [Tooltip("Расстояние до цели, при котором можно менять состояние")]

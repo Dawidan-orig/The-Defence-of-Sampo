@@ -7,12 +7,12 @@ public class Ascended_Effect : UniversalEffect
     [SerializeField]
     private float _power;
 
-    Movement _changedMovement;
+    IMovingAgent _changedMovement;
     bool _movementEnabled;
     float _rbDrag;
 
 
-    // TODO : Ещё ж надо систему локализации прикрутить...
+    // TODO DESIGN : Ещё ж надо систему локализации прикрутить...
     public Ascended_Effect(float power, float time, Rigidbody affected) : base(affected,
         "Ascended and fixed",
         "This entity is being pulled up and fixed by constant air force, unable to move.",
@@ -20,9 +20,9 @@ public class Ascended_Effect : UniversalEffect
     {
         _power = power;
         _rbDrag = _affected.drag;
-        _changedMovement = _affected.GetComponent<Movement>();
-        _movementEnabled = _changedMovement.enabled;
-        _changedMovement.enabled = false;
+        _changedMovement = _affected.GetComponent<IMovingAgent>();
+        _movementEnabled = _changedMovement.Component.enabled;
+        _changedMovement.Component.enabled = false;
     }
 
     public override void FixedUpdate()
@@ -45,7 +45,7 @@ public class Ascended_Effect : UniversalEffect
     public override void Update()
     {
         base.Update();
-        _changedMovement.enabled = false;
+        _changedMovement.Component.enabled = false;
     }
 
     public override void ReverseEffect()

@@ -37,7 +37,7 @@ public class ThrowableRocks : BaseShooting
         transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, transform.eulerAngles.z);
         bullet.GetComponent<Rigidbody>().AddForce(
             (shootPoint.forward + shootPoint.up).normalized * actualPower,
-            forceMode);
+            ForceMode.VelocityChange);
 
         Faction BFac;
         if (!bullet.TryGetComponent(out BFac))
@@ -80,7 +80,6 @@ public class ThrowableRocks : BaseShooting
 
 
         #region arc-check
-        //TODO : Почистить этот кошмар из условий.
         float toUpHorizontal = (flatEquvivalent.normalized * actualRange / 2).magnitude;
         float step = toUpHorizontal / (ONE_SIDE_SEPARAIONS + 1);
         Vector3 checkFrom = from;

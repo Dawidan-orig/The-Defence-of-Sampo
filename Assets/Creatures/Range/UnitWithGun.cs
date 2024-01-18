@@ -34,7 +34,7 @@ public class UnitWithGun : TargetingUtilityAI
 
         int remaining = points;
 
-        //TODO
+        //TODO DESIGN
     }
 
     public override void ActionUpdate(Transform target)

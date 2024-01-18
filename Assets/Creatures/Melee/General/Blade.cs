@@ -98,7 +98,7 @@ public class Blade : MeleeTool
 
     private void FixedUpdate()
     {
-        //TODO : Добавить систему для проверки коллизии на высокой скорости
+        //TODO DESIGN : Добавить систему для проверки коллизии на высокой скорости
         AngularVelocityEuler = body.angularVelocity * 360 / (2 * Mathf.PI);
     }
 

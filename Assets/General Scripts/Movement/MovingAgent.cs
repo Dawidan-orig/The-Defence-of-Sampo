@@ -3,10 +3,8 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(Movement))]
-public class MovingAgent : MonoBehaviour
+public class MovingAgent : MonoBehaviour, IMovingAgent
 {
-    //TODO : Добавить интейрфейс "Агентов", добавить скрипт контроля NavMeshAgent, чтобы он с физикой работал.
-
     [Tooltip("Дистанция, меньше которой агент будет двигаться со скоростью ходьбы.")]
     public float walkToTargetDist = 5;
     [Tooltip("Дистанция, меньше которой агент будет бежать.")]
@@ -25,7 +23,13 @@ public class MovingAgent : MonoBehaviour
     private Vector3 desireLookDir;
     private Transform countFrom;
 
-    Movement movement;
+    private Movement movement;
+
+    Vector3 IMovingAgent.DesireLookDir  => desireLookDir; 
+    Transform IMovingAgent.CountFrom => countFrom;
+    public Component Component=> this;
+
+    MonoBehaviour IMovingAgent.Component => this;
 
     private void Awake()
     {
@@ -45,6 +49,16 @@ public class MovingAgent : MonoBehaviour
             countFrom = ai.navMeshCalcFrom;
     }
 
+    private void OnEnable()
+    {
+        movement.enabled = true;
+    }
+
+    private void OnDisable()
+    {
+        movement.enabled = false;
+    }
+
     private void FixedUpdate()
     {
         Vector3 newDir = Vector3.RotateTowards(transform.forward,desireLookDir, Time.fixedDeltaTime * angularRotatingSpeed * Mathf.Deg2Rad, 1);
@@ -59,7 +73,7 @@ public class MovingAgent : MonoBehaviour
     /// <param name="path">Передаваемый путь</param>
     public void PassPath(NavMeshPath path)
     {
-        //TODO : функционал оптимизации пути. Для тех же летающих.
+        //TODO DESIGN : функционал оптимизации пути. Для тех же летающих.
     }
 
     public void MoveIteration(Vector3 newPos) 
@@ -69,14 +83,14 @@ public class MovingAgent : MonoBehaviour
         MoveIteration(newPos, newPos+ dir);       
     }
 
-    public void MoveIteration(Vector3 newPos, Vector3? lookPos = null)
+    public void MoveIteration(Vector3 newPos, Vector3 lookPos)
     {
         Vector3 dir = (newPos - countFrom.position).normalized;
         dir.y = 0;
 
         if (lookPos != null)
         {
-            Vector3 lookDir = (lookPos.Value - countFrom.position).normalized;
+            Vector3 lookDir = (lookPos - countFrom.position).normalized;
             lookDir.y = 0;
             desireLookDir = lookDir;
         }

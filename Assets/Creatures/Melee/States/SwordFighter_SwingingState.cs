@@ -60,7 +60,7 @@ namespace Sampo.Melee.Sword
                 (_ctx.DesireBlade.position - _ctx.BladeHandle.position).normalized);
             _ctx.BladeHandle.RotateAround(_ctx.BladeHandle.position, _ctx.BladeHandle.right, 90);
 
-            Debug.DrawLine(_ctx.BladeHandle.position, savePos, Color.white, 0.5f); //trail, TODO : Remove
+            Debug.DrawLine(_ctx.BladeHandle.position, savePos, Color.white, 0.5f);
         }
 
         private void BladeCollisionEnter(object sender, Collision collision)
@@ -72,7 +72,7 @@ namespace Sampo.Melee.Sword
                 return;
             }
 
-            //TODO : Raycast для хорошей коллизии; Пули не отбиваются - слишком маленькие. Но с Continious Detection сбиваются нормально.
+            //TODO? : Raycast для хорошей коллизии; Пули не отбиваются - слишком маленькие. Но с Continious Detection сбиваются нормально.
         }
 
         private void BladeTriggerEnter(object sender, Collider other)

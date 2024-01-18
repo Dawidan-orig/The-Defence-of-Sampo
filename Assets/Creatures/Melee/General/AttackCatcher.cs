@@ -15,7 +15,7 @@ public class AttackCatcher : MonoBehaviour
     [Tooltip("Домножается на CriticalDistance. Чем выше - тем больше предсказаний будет учтено.")]
     public float ignoredDistance = 10;
     [Tooltip("Определеяет минимальную скорость, начиная с которой объект надо отбить")]
-    public float ignoredSpeed = 5; //TODO : Заменить на импульс p=mv, а не использовать лишь скорость v
+    public float ignoredImpulse = 5;
 
     [Header("Setup")]
     [SerializeField]
@@ -63,7 +63,7 @@ public class AttackCatcher : MonoBehaviour
             if (ignored.Contains(rb))
                 continue;
 
-            if (rb.velocity.magnitude < ignoredSpeed)
+            if (rb.velocity.magnitude * rb.mass < ignoredImpulse)
                 continue;
 
             if (thing.TryGetComponent(out Blade blade))
@@ -116,7 +116,7 @@ public class AttackCatcher : MonoBehaviour
             return;
         // Штука уже близко!
 
-        if (rb.velocity.magnitude < ignoredSpeed)
+        if (rb.velocity.magnitude * rb.mass < ignoredImpulse)
             return;
         // У штуки достаточно высокая скорость
 

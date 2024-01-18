@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Sampo.Melee.Sword
@@ -162,7 +164,7 @@ namespace Sampo.Melee.Sword
 
                 Vector3 bladeCenter = Vector3.Lerp(Blade.upperPoint.position, Blade.downerPoint.position, 0.5f);
                 float bladeCenterLen = Vector3.Distance(bladeCenter, Blade.downerPoint.position);
-                float swingDistance = bladeCenterLen + toBladeHandle_MaxDistance;
+                float swingDistance = bladeCenterLen + baseReachDistance;
 
                 if (Vector3.Distance(distanceFrom.position, toPoint) < swingDistance)
                 {
@@ -283,24 +285,28 @@ namespace Sampo.Melee.Sword
 
             if (MeleeReachable())
             {
-                //TODO : Тут ещё можем выбирать конкретную комбинацию из библиотеки комбо.
+                //TODO DESIGN : Тут ещё можем выбирать конкретную комбинацию из библиотеки комбо.
 
                 ActionJoint afterPreparation = new ActionJoint();
                 ActionJoint preparation = new ActionJoint();
 
                 // Выбираем какую-то точку для удара
-                const int LIMIT = 50;
                 float posX = 0;
-                bool res = false;
-                int iteration = 0;
-                while (!res) //TODO : Оптимизировать для решения одной формулой, а не циклом.
+                List<Keyframe> sorted = attackProbability.keys.ToList();
+                sorted.Sort((item1, item2) => item1.value.CompareTo(item2.value));
+                for (int i = 0; i < sorted.Count; i++) 
                 {
-                    posX = UnityEngine.Random.Range(0, 1);
+                    Keyframe key = sorted[i];
+                    posX = key.time;
                     float prob = UnityEngine.Random.Range(0, 1);
-                    res = attackProbability.Evaluate(posX) > prob;
-
-                    if (iteration++ > LIMIT)
+                    if (prob > key.value)
+                    {
+                        float offset = UnityEngine.Random.Range(
+                            attackProbability.Evaluate(i == 0 ? 0 : sorted[i - 1].time),
+                            attackProbability.Evaluate(i == sorted.Count -1 ? sorted.Count - 1 : sorted[i + 1].time));
+                        attackProbability.Evaluate(posX + offset);
                         break;
+                    }
                 }
 
                 Vector3 newPos = distanceFrom.position + new Vector3(posX - 0.5f, Mathf.Abs(posX - 0.5f)).normalized * swing_startDistance;
@@ -354,61 +360,11 @@ namespace Sampo.Melee.Sword
         #region check desire
         private void FixDesire()
         {
-            throw new NotImplementedException();
-
             Vector3 countFrom = distanceFrom.position;
-            Vector3 closest = _vital.ClosestPointOnBounds(_desireBlade.position);
-            if (Vector3.Distance(_desireBlade.position, countFrom) > toBladeHandle_MaxDistance)
+            if (Vector3.Distance(_desireBlade.position, countFrom) > baseReachDistance)
             {
-                Vector3 toCloseDir = (closest - _desireBlade.position).normalized;
-                Vector3 exceededHand = _desireBlade.position - countFrom;
-                float toCloseLen = -1;
-
-                // Теорема косинусов + Решение квадратного уравнения
-                float angle = Vector3.Angle(toCloseDir, -exceededHand);
-
-                Debug.DrawRay(_desireBlade.position, toCloseDir);
-                Debug.DrawRay(_desireBlade.position, -exceededHand);
-
-                float b = exceededHand.magnitude * Mathf.Cos(angle);
-                float diskr = 4 *
-                    (Mathf.Pow(toBladeHandle_MaxDistance, 2) -
-                    Mathf.Pow(exceededHand.magnitude, 2) *
-                    Mathf.Pow(Mathf.Sin(angle * Mathf.Deg2Rad), 2));
-                float s1 = b + Mathf.Sqrt(diskr);
-                float s2 = b - Mathf.Sqrt(diskr);
-                toCloseLen = (s1 > s2 ? s1 : s2);
-
-                if (diskr > 0)
-                {
-                    Debug.DrawLine(countFrom, _desireBlade.position + toCloseDir * toCloseLen, Color.black);
-
-                    _desireBlade.position += toCloseDir * toCloseLen;
-                }
-                else
-                {
-                    // Означает, что решения нет. А нет его по той причине, что новая точка будет уже в пределах досягаемости руки,
-                    // А значит нет смысла двигать ещё ближе.
-                }
-            }
-
-            if (Vector3.Distance(_desireBlade.position, countFrom) < toBladeHandle_MinDistance)
-            {
-                //TODO:
-                /*
-                Vector3 fromCloseDir = (_desireBlade.position - closest).normalized;
-                Vector3 exceededHand = _desireBlade.position - countFrom;
-                // Теорема косинусов
-                float a = 1;
-                float b = -2 * exceededHand.magnitude * Mathf.Cos(Vector3.Angle(fromCloseDir, -exceededHand));
-                float c = Mathf.Pow(exceededHand.magnitude, 2) - Mathf.Pow(toBladeHandle_MaxDistance, 2);
-                float diskr = Mathf.Pow(b, 2) - 4 * a * c;
-                float s1 = (-b - Mathf.Sqrt(diskr)) / (2 * a);
-                float s2 = (-b + Mathf.Sqrt(diskr)) / (2 * a);
-                float fromCloseLen = (s1 > s2 ? s1 : s2);
-
-                _desireBlade.position += fromCloseDir * fromCloseLen;
-                */
+                Vector3 dir = (_desireBlade.position - countFrom).normalized;
+                _desireBlade.position = countFrom + dir * baseReachDistance;
             }
         }
 
@@ -469,7 +425,7 @@ namespace Sampo.Melee.Sword
 
             int remaining = points;
 
-            //TODO
+            //TODO DESIGN
         }
 
         public override void ActionUpdate(Transform target)

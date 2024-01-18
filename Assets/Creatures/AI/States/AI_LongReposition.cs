@@ -5,7 +5,7 @@ using UnityEngine.AI;
 namespace Sampo.AI
 {
     public class AI_LongReposition : UtilityAI_BaseState
-    // ИИ двигается в какую-то точку с помощью NavMesh, при это не делая более ничего
+    // ИИ двигается в какую-то точку, при это не делая более ничего
     {        
         public AI_LongReposition(TargetingUtilityAI currentContext, UtilityAI_Factory factory) : base(currentContext, factory)
         {
@@ -37,35 +37,15 @@ namespace Sampo.AI
                 return false;
             }
 
-            if (_ctx.CurrentActivity.actWith.GetRange() >
-                Vector3.Distance(_ctx.transform.position, _ctx.CurrentActivity.target.position)) //TODO? : В будущем в этой проверке может ошибка возникнуть
+            //TODO? : Выглядит мерзковато
+            if (_ctx.CurrentActivity.actWith.GetRange() + (_ctx is MeleeFighter fighter ? fighter.baseReachDistance : 0) >
+                Vector3.Distance(_ctx.transform.position, _ctx.CurrentActivity.target.position))
             {
                 SwitchStates(_factory.Deciding());
                 return true;
             }
 
             return false;
-        }
-
-        public override void EnterState()
-        {
-            Rigidbody body = _ctx.GetComponent<Rigidbody>();
-
-            if (_ctx.NMAgent)
-            {
-                body.isKinematic = true;
-                _ctx.NMAgent.enabled = true;
-            }
-            base.EnterState();
-        }
-
-        public override void ExitState()
-        {
-            if (_ctx.NMAgent)
-            {
-                _ctx.NMAgent.enabled = false;
-                _ctx.GetComponent<Rigidbody>().isKinematic = false;
-            }
         }
 
         public override void FixedUpdateState()

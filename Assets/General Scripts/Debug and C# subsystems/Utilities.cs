@@ -14,12 +14,11 @@ public class Utilities
 {
     //public static GameObject utility = new("Utilitary");
 
-    public static bool VisualisedBoxCast(Vector3 center, Vector3 halfExtends, Vector3 direction, float maxDistance, LayerMask layerMask, bool drawHit, Color? color = null, float duration = 0)
+    public static bool VisualisedBoxCast(Vector3 center, Vector3 halfExtends, Vector3 direction, float maxDistance, LayerMask layerMask = default, bool drawHit = false, Color? color = null, float duration = 0)
     {
         return VisualisedBoxCast(center, halfExtends, direction, out _, Quaternion.identity, maxDistance, layerMask, drawHit, color, duration);
     }
-
-    public static bool VisualisedBoxCast(Vector3 center, Vector3 halfExtends, Vector3 direction, out RaycastHit hitInfo, Quaternion orientation, float maxDistance, LayerMask layerMask, bool drawHit = true, Color? color = null, float duration = 0, bool visualise = true)
+    public static bool VisualisedBoxCast(Vector3 center, Vector3 halfExtends, Vector3 direction, out RaycastHit hitInfo, Quaternion orientation, float maxDistance, LayerMask layerMask = default, bool drawHit = true, Color? color = null, float duration = 0, bool visualise = true)
     {
         if (color == null)
             color = Color.white;
@@ -29,12 +28,6 @@ public class Utilities
             DrawSphere(center, 0.1f, color, duration);
             Debug.DrawRay(center, direction * maxDistance, color.Value, duration);
         }
-
-        /*
-         Utilities.DrawSphere(transform.position + movementDirection.normalized * stepDistance, 0.01f);
-        Debug.DrawRay(transform.position + movementDirection.normalized * stepDistance, halfWidth + halfLength + Vector3.up * 0.01f);
-        Debug.DrawRay(transform.position + movementDirection.normalized * stepDistance, Vector3.up* toGroundStickDistance);
-         */
 
         bool result = Physics.BoxCast(center, halfExtends, direction, out hitInfo, orientation, maxDistance, layerMask);
 
@@ -56,9 +49,6 @@ public class Utilities
 
         return result;
     }
-
-    //TODO : Сделать всё с Ray!
-    //TODO !!! : REFACTOR!
     public static bool VisualisedRaycast(Vector3 origin, Vector3 direction, out RaycastHit hit, float maxDistance, LayerMask? layerMask = null, bool drawHit = true, Color? color = null, float duration = 0, bool visualise = true)
     {
         if (color == null)
@@ -83,9 +73,7 @@ public class Utilities
 
         return result;
     }
-
-    //С подсчётом угла
-    public static bool VisualisedRaycast(Vector3 origin, Vector3 direction, float maxDistance, out RaycastHit hit, out float angle, LayerMask layerMask, bool drawAngle = true, bool drawHit = true, Color? color = null, float duration = 0, bool visualise = true)
+    public static bool VisualisedRaycast(Vector3 origin, Vector3 direction, float maxDistance, out RaycastHit hit, out float angle, LayerMask layerMask,  Color? color = null, float duration = 0, bool drawAngle = true, bool drawHit = true, bool visualise = true)
     {
         bool result = VisualisedRaycast(origin, direction, out hit, maxDistance, layerMask, drawHit, color, duration, visualise);
 
@@ -114,7 +102,6 @@ public class Utilities
 
         return result;
     }
-
     public static void CreateFlowText(string text, float duration, Vector3 position, Color? color = null)
     {
         var tMesh = CreateTextInWorld(text, duration: duration, position: position, color: color);
@@ -362,14 +349,15 @@ public class Utilities
             textMesh.raycastTarget = false;
             return textMesh;
         }
-
-        //Returns 'true' if we touched or hovering on Unity UI element.
         public static bool IsPointerOverUIElement()
         {
             return IsPointerOverUIElement(GetEventSystemRaycastResults());
         }
-
-        //Returns 'true' if we touched or hovering on Unity UI element.
+        /// <summary>
+        /// Returns 'true' if we touched or hovering on Unity UI element.
+        /// </summary>
+        /// <param name="eventSystemRaysastResults"></param>
+        /// <returns></returns>
         public static bool IsPointerOverUIElement(List<RaycastResult> eventSystemRaysastResults)
         {
             int UILayer = LayerMask.NameToLayer("UI");
@@ -383,7 +371,10 @@ public class Utilities
             return false;
         }
 
-        //Gets all event system raycast results of current mouse or touch position.
+        /// <summary>
+        /// Gets all event system raycast results of current mouse or touch position.
+        /// </summary>
+        /// <returns></returns>
         public static List<RaycastResult> GetEventSystemRaycastResults()
         {
             PointerEventData eventData = new PointerEventData(EventSystem.current);
@@ -455,7 +446,7 @@ public class Utilities
                 }
             }
 
-            return default(T);
+            return default;
         }
         public static void SetFieldOrPropertyValue<T>(string fieldName, object obj, object value, bool includeAllBases = false, BindingFlags bindings = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
         {

@@ -526,13 +526,12 @@ public class NavMeshCalculations : MonoBehaviour
         foreach (TriangleCell cell in trianglesToSubdivide)
         {
             //https://stackoverflow.com/questions/26259893/how-do-i-subdivide-a-triangle-in-three-dimensions
-            //TODO : Нестабильная работа, надо проверять.
             int BREAKPOINT = 30;
 
             Vector3[] formers = cell.Formers();
 
             int subdivisions = 1;
-            float subdivisionPower = 1 / subdivisions;
+            float subdivisionPower = 1 / (float)subdivisions;
             // Для начала надо понять, насколько сильно надо разделить треугольник
             Vector3[] scalingTri = new Vector3[3];
             for(int i = 0; i < 3; i++)
@@ -553,7 +552,6 @@ public class NavMeshCalculations : MonoBehaviour
             }
 
             //А теперь надо этот треугольник разделить, с учётом изменения соседей.
-            Vector3 currentAbove = formers[0];
             int subdivionIteration = 1;
             Vector3 prevLeftEnd = default;
             Vector3 prevRightEnd = default;
@@ -561,33 +559,34 @@ public class NavMeshCalculations : MonoBehaviour
             do //О, первый раз в жизни его использую
             {
                 float currentPower = subdivisionPower * subdivionIteration;
-                Vector3 leftEnd = Vector3.Lerp(formers[0], formers[1], currentPower);
-                Vector3 rightEnd = Vector3.Lerp(formers[0], formers[2], currentPower);
-                for (int i = 0; i < 1 + subdivionIteration * 2; i++)
+                Vector3 leftEnd = Vector3.Lerp(formers[0], formers[2], currentPower);
+                Vector3 rightEnd = Vector3.Lerp(formers[0], formers[1], currentPower);
+                for (int i = 0; i < subdivionIteration * 2-1; i++)
                 {
                     Vector3[] newTriFormers = new Vector3[3];
                     TriangleCell subdivided;
                     if (subdivionIteration == 1) // Самый верх, самое начало
                     {
-                        newTriFormers[0] = currentAbove;
+                        newTriFormers[0] = formers[0];
                         newTriFormers[1] = leftEnd;
                         newTriFormers[2] = rightEnd;
                         subdivided = new TriangleCell(newTriFormers);
                         cellsList.Add(subdivided);
                         break;
                     }
-
+                    
+                    
                     if (i % 2 == 0) //Вверху - одна точка, снизу - две
                     {
                         newTriFormers[1] = Vector3.Lerp(leftEnd, rightEnd, (i / 2) / (float)subdivionIteration);
-                        newTriFormers[2] = Vector3.Lerp(leftEnd, rightEnd, (i / 2 + 1) / (float)subdivionIteration);
+                        newTriFormers[2] = Vector3.Lerp(leftEnd, rightEnd, (i / 2+1) / (float)subdivionIteration);
                         newTriFormers[0] = Vector3.Lerp(prevLeftEnd, prevRightEnd, (i / 2) / (float)(subdivionIteration - 1));
                     }
                     else  //Вверху - две точки, снизу - одна
                     {
-                        newTriFormers[1] = Vector3.Lerp(prevLeftEnd, prevRightEnd, ((i + 1) / 2 - 1) / (float)(subdivionIteration - 1));
-                        newTriFormers[2] = Vector3.Lerp(prevLeftEnd, prevRightEnd, (i + 1) / 2 / (float)(subdivionIteration - 1));
-                        newTriFormers[0] = Vector3.Lerp(leftEnd, rightEnd, i / (float)subdivionIteration);
+                        newTriFormers[1] = Vector3.Lerp(prevLeftEnd, prevRightEnd, ((i + 1) / 2) / (float)(subdivionIteration-1));
+                        newTriFormers[2] = Vector3.Lerp(prevLeftEnd, prevRightEnd, ((i + 1) / 2-1) / (float)(subdivionIteration-1));
+                        newTriFormers[0] = Vector3.Lerp(leftEnd, rightEnd, (1+((i-1)/2)) / (float)subdivionIteration);
                     }
 
                     subdivided = new TriangleCell(newTriFormers);

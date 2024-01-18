@@ -7,7 +7,7 @@ using UnityEngine.AI;
 namespace Sampo.AI
 {
     [SelectionBase]
-    [RequireComponent(typeof(MovingAgent))]
+    [RequireComponent(typeof(IMovingAgent))]
     [RequireComponent(typeof(Faction))]
     public abstract class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDistribution
     // ИИ, ставящий приоритеты выполнения действий
@@ -39,18 +39,16 @@ namespace Sampo.AI
             Изначально устанавливается при процедурной инициализации, но может меняться в ходе игры.")]
         protected int visiblePowerPoints = 100;
 
-        NavMeshAgent _nmAgent;
-        MovingAgent _movingAgent;
+        IMovingAgent _movingAgent;
         Rigidbody _body;
         private AIAction _noAction;
         protected UtilityAI_Factory _factory;
         protected UtilityAI_BaseState _currentState;
 
         public UtilityAI_BaseState CurrentState { get => _currentState; set => _currentState = value; }
-        public NavMeshAgent NMAgent { get => _nmAgent; set => _nmAgent = value; }
         public AIAction CurrentActivity { get => _currentActivity; }        
         public Rigidbody Body { get => _body; set => _body = value; }
-        public MovingAgent MovingAgent { get => _movingAgent; set => _movingAgent = value; }
+        public IMovingAgent MovingAgent { get => _movingAgent; set => _movingAgent = value; }
 
         [Serializable]
         public class AIAction
@@ -126,8 +124,7 @@ namespace Sampo.AI
         #region Unity
         protected virtual void Awake()
         {
-            _nmAgent = GetComponent<NavMeshAgent>();
-            _movingAgent = GetComponent<MovingAgent>();
+            _movingAgent = GetComponent<IMovingAgent>();
             _body = GetComponent<Rigidbody>();
             _factory = new UtilityAI_Factory(this);
             _currentState = _factory.Deciding();
@@ -225,19 +222,15 @@ namespace Sampo.AI
 
             Tool toolUsed = ToolChosingCheck(target.transform);
 
-            AddNewPossibleAction(target.transform, weight, target.transform.name, toolUsed, _factory.Attack());
-
-            NullifyActivity(); // Обновляем состояние, чтобы выбрать наиболее подходящую цель.
-            //TODO : Нужно лишь проверить, что новодобавленная цель не является более подходящей, а не проверять всё сразу
+            //TODO DESIGN : _factory.Attack() - не обязательно он, надо выбирать из фабрики нужное
+            AIAction action = new AIAction(target.transform, name, weight, toolUsed, _factory.Attack());
+            NormilizeAction(action);
+            AddNewPossibleAction(action);
+            if (action.TotalWeight > CurrentActivity.TotalWeight)
+                ChangeAction(action);
         }
-        private void FetchRemovedActivityFromManager(object sender, UtilityAI_Manager.UAIData e) 
+        private void AddNewPossibleAction(AIAction action)
         {
-            
-        }
-        private void AddNewPossibleAction(Transform target, int weight, string name, Tool actWith, UtilityAI_BaseState treatment)
-        {
-            AIAction action = new AIAction(target, name, weight, actWith, treatment);
-
             if (_possibleActions.Contains(action))
             {
                 Debug.LogWarning("Уже был добавлен " + name, transform);
@@ -245,7 +238,22 @@ namespace Sampo.AI
             }
 
             _possibleActions.Add(action);
-        }        
+        }
+        private void AddNewPossibleAction(Transform target, int weight, string name, Tool actWith, UtilityAI_BaseState treatment)
+        {
+            AIAction action = new AIAction(target, name, weight, actWith, treatment);
+
+            AddNewPossibleAction(action);
+
+            _possibleActions.Add(action);
+        }
+        private void ChangeAction(AIAction to)
+        {
+            if (!IsNoActionCurrently() && _currentActivity.target) //Убираем влияние текущей цели
+                UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), -visiblePowerPoints);
+            _currentActivity = to;
+            UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), visiblePowerPoints);
+        }
         public UtilityAI_BaseState SelectBestActivity()
         {          
             if (_possibleActions.Count == 0)            
@@ -260,10 +268,7 @@ namespace Sampo.AI
 
             _possibleActions.Sort((i1, i2) => i2.TotalWeight.CompareTo(i1.TotalWeight));
 
-            if (!IsNoActionCurrently() && _currentActivity.target) //Убираем влияние текущей цели
-                UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), -visiblePowerPoints);
-            _currentActivity = _possibleActions[bestActivityIndex];
-            UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), visiblePowerPoints);
+            ChangeAction(_possibleActions[bestActivityIndex]);
 
             return _currentActivity.whatDoWhenClose;
         }
@@ -271,16 +276,10 @@ namespace Sampo.AI
         {
             for (int i = 0; i < _possibleActions.Count; i++)
             {
-                if (_possibleActions[i].target != null)
+                AIAction action = _possibleActions[i];
+                if (action.target != null)
                 {
-                    _possibleActions[i].distanceSubstraction =
-                        Mathf.RoundToInt(Vector3.Distance(transform.position, _possibleActions[i].target.position) * distanceWeightMultiplier);
-                    _possibleActions[i].enemiesAmountSubstraction =
-                        UtilityAI_Manager.Instance.GetCongestion(_possibleActions[i].target.GetComponent<Interactable_UtilityAI>());
-
-                    _possibleActions[i].TotalWeight = _possibleActions[i].baseWeight
-                    - _possibleActions[i].distanceSubstraction
-                    - _possibleActions[i].enemiesAmountSubstraction;
+                    NormilizeAction(action);
                 }
                 else 
                 {
@@ -288,6 +287,17 @@ namespace Sampo.AI
                     i--;
                 }
             }
+        }
+        private void NormilizeAction(AIAction action)
+        {
+            action.distanceSubstraction =
+                        Mathf.RoundToInt(Vector3.Distance(transform.position, action.target.position) * distanceWeightMultiplier);
+            action.enemiesAmountSubstraction =
+                UtilityAI_Manager.Instance.GetCongestion(action.target.GetComponent<Interactable_UtilityAI>());
+
+            action.TotalWeight = action.baseWeight
+            - action.distanceSubstraction
+            - action.enemiesAmountSubstraction;
         }
         private void NullifyActivity()
         {
@@ -310,7 +320,8 @@ namespace Sampo.AI
         {
             int remaining = points;
             visiblePowerPoints = points;
-            //TODO : Изменение скорости движения
+
+            //TODO DESIGN : Гармоничное изменение скорости движения
         }
         /// <summary>
         /// Проверка фракции на себя
@@ -339,7 +350,7 @@ namespace Sampo.AI
         /// <returns></returns>
         protected abstract Tool ToolChosingCheck(Transform target);
 
-        /*TODO : Сделать так, чтобы управляющая StateMachine была интегрирована сюда, либо вообще редуцирована...
+        /*TODO dep AI_Factory : Сделать так, чтобы управляющая StateMachine была интегрирована сюда, либо вообще редуцирована...
         * Эти Функции не должны быть публичны, они - только для управляющей StateMachine!
         * Сделать через Event'ы после переделки factory.
         */

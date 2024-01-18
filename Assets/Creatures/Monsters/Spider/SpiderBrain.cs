@@ -45,7 +45,6 @@ public class SpiderBrain : TargetingUtilityAI
     {
         base.Start();
 
-        //TODO : ≈сли вдруг ноги изначально будут поставлены не правильно, то эта штука не сработает.
         initialBodyHeightOffset = transform.position.y - legsHarmony.legs[0].legTarget.position.y;
         initialBodyRotation = transform.rotation;
     }
@@ -182,7 +181,7 @@ public class SpiderBrain : TargetingUtilityAI
 
         int remaining = points;
 
-        //TODO
+        //TODO DESIGN
     }
 
     protected override Tool ToolChosingCheck(Transform target)

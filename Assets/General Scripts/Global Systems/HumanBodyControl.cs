@@ -17,6 +17,7 @@ public class HumanBodyControl : MonoBehaviour
     public Vector3 rightHandOffset = new Vector3(-0.05f,0, 0.12f);
 
     [Header("Constraints")]
+    public MultiAimConstraint HeadLookAt;
     public TwoBoneIKConstraint firstIK;
     public TwoBoneIKConstraint recalculationIK;
     public TwistCorrection shoulders;
@@ -34,13 +35,11 @@ public class HumanBodyControl : MonoBehaviour
     private NavMeshAgent agent;
     private Rigidbody rb;
     private Vector3 lastPos;
-    private int idleHash;
-    private int moveHash;
+    private int idleAnimationHash;
+    private int moveAnimationHash;
     private bool firstPassInIdle = true;
     private bool lastFrameWasJump = false;
 
-    private Vector3 nullLook;
-    private Vector3 nullRightHand;
     private Quaternion initialShoulders;
     private Quaternion initialRightShoulder;
 
@@ -55,13 +54,11 @@ public class HumanBodyControl : MonoBehaviour
     private void Start()
     {
         lastPos = transform.position;
-        idleHash = Animator.StringToHash("BasicMotions@Idle01");
-        moveHash = Animator.StringToHash("Moving");
+        idleAnimationHash = Animator.StringToHash("BasicMotions@Idle01");
+        moveAnimationHash = Animator.StringToHash("Moving");
 
         initialShoulders = shouldersTarget.localRotation;
         initialRightShoulder = rightShoulder.localRotation;
-        nullLook = lookTarget.position - transform.position;
-        nullRightHand = rightHandTarget.position - transform.position;
     }
 
     private void Update()
@@ -84,7 +81,7 @@ public class HumanBodyControl : MonoBehaviour
         if (lookTo != Vector3.zero)
             lookTarget.position = lookTo;
         else
-            lookTarget.position = transform.position + transform.rotation * nullLook;//TODO : Поменять на смену weight на ноль.
+            HeadLookAt.weight = 0;
     }
 
     private void RightHandControl() 
@@ -110,7 +107,10 @@ public class HumanBodyControl : MonoBehaviour
             rightHandTarget.rotation = rHandRot;
         }
         else
-            rightHandTarget.position = transform.position + transform.rotation * nullRightHand; // TODO : Поменять на смену weight на ноль.
+        {
+            firstIK.weight = 0;
+            recalculationIK.weight = 0;
+        }
     }
 
     private void ShouldersControl() 
@@ -183,7 +183,7 @@ public class HumanBodyControl : MonoBehaviour
 
         if (Utilities.ValueInArea(_speedToPass, Vector3.zero, 0.01f) && !firstPassInIdle && _airAnimationProgress <= 0)
         {
-            controlled.Play(idleHash);
+            controlled.Play(idleAnimationHash);
             firstPassInIdle = true;
         }
         else if (!Utilities.ValueInArea(_speedToPass, Vector3.zero, 0.01f) || _airAnimationProgress > 0)
@@ -195,7 +195,7 @@ public class HumanBodyControl : MonoBehaviour
             controlled.SetFloat("speedMag", _speedToPass.magnitude);
             controlled.SetFloat("airBlend", _airAnimationProgress);
             controlled.SetFloat("jumpBlend", _jumpAnimationProgress);
-            controlled.Play(moveHash);
+            controlled.Play(moveAnimationHash);
         }
 
         lastFrameWasJump = provider.IsInJump();

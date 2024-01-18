@@ -4,8 +4,11 @@ using UnityEngine;
 public class AliveBeing : Interactable_UtilityAI, IDamagable
 {
     public float health = 100;
+    [Tooltip("Коллайдер, которые регистрирует получение урона")]
     public Collider vital;
+    [Tooltip("Этот объект определяет ту часть тела, в которой расположен TargetingUtilityAI (Мозг)")]
     public Transform mainBody;
+    [Tooltip("Этот объект будет удалён, когда здоровье опустится ниже 100")]
     public Transform root;
 
     private void Awake()
@@ -28,7 +31,7 @@ public class AliveBeing : Interactable_UtilityAI, IDamagable
         else if (type == IDamagable.DamageType.thermal)
             health -= harm;
 
-        Utilities.CreateFlowText(Mathf.RoundToInt(harm).ToString(), 5, transform.position, Color.red);
+        Utilities.CreateFlowText(Mathf.RoundToInt(harm).ToString(), 5, transform.position, new Color(0.3f,0,0,0.3f));
 
         if (health < 0)
         {

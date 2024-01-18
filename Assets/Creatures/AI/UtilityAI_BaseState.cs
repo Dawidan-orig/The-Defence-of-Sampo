@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,8 +7,6 @@ namespace Sampo.AI
     {
         protected TargetingUtilityAI _ctx { get; private set; }
         protected UtilityAI_Factory _factory { get; private set; }
-        protected UtilityAI_BaseState _currentSubState;
-        protected UtilityAI_BaseState _currentSuperState;
 
         protected NavMeshPath path;
         protected Vector3 moveTargetPos { get; private set; }
@@ -24,38 +19,26 @@ namespace Sampo.AI
             _factory = factory;
         }
 
-        public virtual void EnterState() 
+        public virtual void EnterState()
         {
             CheckRepath();
         }
+
+        public virtual void ExitState() { }
 
         public abstract void UpdateState();
 
         public abstract void FixedUpdateState();
 
-        public abstract void ExitState();
-
         public abstract bool CheckSwitchStates();
 
         public abstract void InitializeSubState();
-
 
         protected void SwitchStates(UtilityAI_BaseState newState)
         {
             ExitState();
             newState.EnterState();
             _ctx.CurrentState = newState;
-        }
-
-        protected void SetSuperState(UtilityAI_BaseState newSuperState)
-        {
-            _currentSuperState = newSuperState;
-        }
-
-        protected void SetSubState(UtilityAI_BaseState newSubState)
-        {
-            _currentSubState = newSubState;
-            newSubState.SetSuperState(this);
         }
 
         public void ForceDecideState()
@@ -66,7 +49,7 @@ namespace Sampo.AI
         /// <summary>
         /// ѕровер€ет, есть ли смысл перестраивать путь к цели
         /// </summary>
-        protected void CheckRepath() 
+        protected void CheckRepath()
         {
             if (!Utilities.ValueInArea(repathLastTargetPos, _ctx.CurrentActivity.target.position, RECALC_DIFF))
             {
@@ -88,23 +71,17 @@ namespace Sampo.AI
 
             path = new NavMeshPath();
             NavMesh.CalculatePath(_ctx.navMeshCalcFrom.position, moveTargetPos, NavMesh.AllAreas, path);
+            _ctx.MovingAgent.PassPath(path);
 
-            if (_ctx.NMAgent)
+            if (path.status != NavMeshPathStatus.PathInvalid && path.corners.Length > 1)
             {
-                _ctx.NMAgent.SetPath(path);
+                _ctx.MovingAgent.MoveIteration(path.corners[1]);
             }
-            else if (_ctx.MovingAgent)
+            else
             {
-                if (path.status != NavMeshPathStatus.PathInvalid && path.corners.Length > 1)
-                {
-                    _ctx.MovingAgent.MoveIteration(path.corners[1]);
-                }
-                else
-                {
-                    var closest = NavMeshCalculations.Instance.GetCell(_ctx.navMeshCalcFrom.position);
-                    moveTargetPos = closest.Center();
-                    _ctx.MovingAgent.MoveIteration(moveTargetPos);
-                }
+                var closest = NavMeshCalculations.Instance.GetCell(_ctx.navMeshCalcFrom.position);
+                moveTargetPos = closest.Center();
+                _ctx.MovingAgent.MoveIteration(moveTargetPos);
             }
         }
     }

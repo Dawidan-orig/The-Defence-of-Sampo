@@ -20,16 +20,6 @@ namespace Sampo.AI
             return false;
         }
 
-        public override void EnterState()
-        {
-            base.EnterState();
-        }
-
-        public override void ExitState()
-        {
-
-        }
-
         public override void InitializeSubState()
         {
 
@@ -45,8 +35,7 @@ namespace Sampo.AI
             CheckRepath();
 
             // Отходим назад
-            if (_ctx.MovingAgent)
-            {
+            
                 float weaponRange = _ctx.CurrentActivity.actWith.GetRange();
 
                 float progress = 1 - (Vector3.Distance(_ctx.CurrentActivity.target.position, _ctx.transform.position)
@@ -60,7 +49,7 @@ namespace Sampo.AI
                 {
                     _ctx.MovingAgent.MoveIteration(moveTargetPos, _ctx.CurrentActivity.target.position);
                 }
-            }
+            
 
             _ctx.AttackUpdate(_ctx.CurrentActivity.target);
         }
