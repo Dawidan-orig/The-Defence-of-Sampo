@@ -457,7 +457,6 @@ MonoBehaviour:
   range: 40
   timeBetweenBullets: 0.35
   gunPower: 30
-  forceMode: 2
 --- !u!1001 &2538407679295669753
 PrefabInstance:
   m_ObjectHideFlags: 0
