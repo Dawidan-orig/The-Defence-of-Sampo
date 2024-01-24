@@ -91,7 +91,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -99,31 +99,13 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.15
-      value: 0.5
-      inSlope: -0.05658541
-      outSlope: -0.05658541
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 1
-    - serializedVersion: 3
-      time: 0.35
-      value: 0.5
-      inSlope: -0.003735752
-      outSlope: -0.003735752
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 1
-      outWeight: 0.33333334
-    - serializedVersion: 3
       time: 1
-      value: 0
-      inSlope: -1.3378018
-      outSlope: -1.3378018
+      value: 1
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.14583331
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -155,8 +137,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ai_weight: 1
-  health: 500
-  vital: {fileID: 2397089146008967546}
+  health: 100
+  vital: {fileID: 0}
   mainBody: {fileID: 0}
   root: {fileID: 0}
 --- !u!114 &2397089146008967545
@@ -234,17 +216,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d19ad544bb6e4b418c19c1e4e1f26e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 2
-  runSpeed: 4
-  sprintSpeed: 6
-  maximumReachableSpeed: 10
-  ragdollSpeed: 14
+  walkSpeed: 5
+  runSpeed: 10
+  sprintSpeed: 20
+  maximumReachableSpeed: 25
+  ragdollSpeed: 35
   velociyAngleChangeSpeedEuler: 90
   distToGround: 0.3
-  activeDrag: 5
+  activeDrag: 20
   passiveDragOnGround: 1
-  snapHeight: 0.5
-  snapSpeed: 10
+  snapHeight: 3
+  snapSpeed: 21
   toGroundForce: 5
   dragOffGround: 0.2
   airMultiplier: 0.5
@@ -255,8 +237,8 @@ MonoBehaviour:
   slopeAngle: 65
   ground:
     serializedVersion: 2
-    m_Bits: 9
-  vital: {fileID: 2397089146008967546}
+    m_Bits: 0
+  vital: {fileID: 0}
   _movement: {x: 0, y: 0, z: 0}
   _currentMoveSpeed: 0
   _isGrounded: 1
@@ -280,11 +262,11 @@ MonoBehaviour:
   runToTargetDist: 30
   angularRotatingSpeed: 360
   wallHeight: 1
-  edgeDistance: 1
+  edgeDistance: 2
   edgeDepth: 1
   terrainMask:
     serializedVersion: 2
-    m_Bits: 9
+    m_Bits: 0
 --- !u!114 &6325525520336111847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -350,9 +332,9 @@ MonoBehaviour:
   structures:
     serializedVersion: 2
     m_Bits: 0
-  cooldownBetweenAttacks: 1
+  cooldownBetweenAttacks: 0
   damageMultiplier: 1
-  rightHandHandle: {fileID: 2397089146338771507}
+  rightHandHandle: {fileID: 0}
 --- !u!1 &2397089146641432728
 GameObject:
   m_ObjectHideFlags: 0
@@ -482,9 +464,9 @@ MonoBehaviour:
     m_Bits: 1
   shootPoint: {fileID: 2397089145486354680}
   bulletPrefab: {fileID: 4384517561961518265, guid: e6573e7c6bb6c134197802e0e29f2b89, type: 3}
-  range: 40
-  timeBetweenBullets: 0.35
-  gunPower: 30
+  range: 30
+  timeBetweenBullets: 0.2
+  gunPower: 50
 --- !u!1001 &2538407679295669753
 PrefabInstance:
   m_ObjectHideFlags: 0

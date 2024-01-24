@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:Foldout text="Basic AI Settings" name="General" value="true" style="flex-wrap: nowrap; border-left-color: rgba(128, 128, 128, 255); border-right-color: rgba(128, 128, 128, 255); border-top-color: rgba(128, 128, 128, 255); border-bottom-color: rgba(128, 128, 128, 255); border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-bottom-width: 3px; background-color: rgba(34, 48, 35, 255);">
+        <ui:Foldout text="Setup" name="SetupFoldout" />
+        <ui:Foldout text="Ground" name="GroundFoldout" />
+        <ui:Foldout text="Readonly" name="LookonlyFoldout" value="true" style="opacity: 1;">
+            <ui:VisualElement name="Actions">
+                <ui:Scroller high-value="100" direction="Horizontal" value="0" name="Actions-Scroller" />
+            </ui:VisualElement>
+        </ui:Foldout>
+    </ui:Foldout>
+</ui:UXML>

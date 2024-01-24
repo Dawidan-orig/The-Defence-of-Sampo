@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.AI.Navigation;
-using UnityEditor;
 using UnityEngine;
 
 public class NavMeshRebuildManager : MonoBehaviour
