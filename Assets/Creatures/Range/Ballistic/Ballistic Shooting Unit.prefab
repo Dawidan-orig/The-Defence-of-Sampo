@@ -348,7 +348,12 @@ MonoBehaviour:
     m_Bits: 0
   cooldownBetweenAttacks: 1
   damageMultiplier: 1
+  noDamageTime: 0.5
   rightHandHandle: {fileID: 2397089146338771507}
+  _collision_blade: []
+  _collision_alive: []
+  body: {fileID: 0}
+  audioSource: {fileID: 0}
 --- !u!1 &2397089146641432728
 GameObject:
   m_ObjectHideFlags: 0

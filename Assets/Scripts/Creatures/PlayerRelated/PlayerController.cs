@@ -76,7 +76,7 @@ namespace Sampo.Player
                 }
                 else if (Input.GetMouseButton(1))
                 {
-                    swordControl.Block(CastMouseToSwordSpace(), transform.position + transform.forward * reachLength, transform.forward);
+                    swordControl.Block(CastMouseToSwordSpace(), (transform.position + transform.forward * reachLength), transform.forward);
 
                     _prevMouse = Input.mousePosition;
                 }

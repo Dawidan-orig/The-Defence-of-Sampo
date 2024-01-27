@@ -7,16 +7,10 @@ using UnityEngine;
 public class AttackingLimb : MeleeTool
 {
     public EventHandler<Collision> OnLimbCollisionEnter;
-    private Rigidbody body;
     [SerializeField]
     private bool _isDamaging = true;
-
     public bool IsDamaging { get => _isDamaging; set => _isDamaging = value; }
 
-    private void Awake()
-    {
-        body = GetComponent<Rigidbody>();
-    }
 
     private void OnCollisionEnter(Collision collision)
     {

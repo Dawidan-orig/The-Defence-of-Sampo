@@ -43,6 +43,8 @@ public class PhysicalNMAgent : MonoBehaviour, IMovingAgent
             countFrom = ai.navMeshCalcFrom;
 
         agent.autoRepath = false;
+
+        DisableAgent();
     }
 
     private void Update()

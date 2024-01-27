@@ -97,7 +97,7 @@ namespace Sampo.AI
             }
             else
             {
-                _ctx.Invoke(nameof(Repath),5);
+                //TODO Заставить это работать : _ctx.Invoke(nameof(Repath),5);
 
                 var closest = NavMeshCalculations.Instance.GetCell(_ctx.navMeshCalcFrom.position);
                 moveTargetPos = closest.Center();

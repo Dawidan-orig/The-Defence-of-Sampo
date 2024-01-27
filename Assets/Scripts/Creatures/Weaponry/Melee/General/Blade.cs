@@ -11,29 +11,21 @@ namespace Sampo.Melee
     {
         //TODO DESIGN (Когда будет вариативность Melee) : Добавить сюда понятие рукояти (И основного объекта, контроллирующего всё оружие, как следествие) и угловое движение относительно MeleeFighter.distanceFrom
 
-        [Header("Init-s")]
+        [Header("===Sword===")]
         public Transform upperPoint;
         public Transform downerPoint;
         [SerializeField]
         private Transform handle;
 
         [Header("lookonly")]
-        public Rigidbody body;
         public Vector3 AngularVelocityEuler;
         public Faction faction;
-
-        [Header("Constraints")]
-        public Color predictionColor = Color.red;
-        public int iterations = 1;
-        public float noDamageTime = 0.5f;
+        
 
         [Header("Visuals")]
         public ParticleSystem sparkles;
 
         public Transform Handle { get => handle; private set => handle = value; }
-
-        public event EventHandler<Collision> OnBladeCollision; //Расшариваю здешнюю коллизию в MeleeFighter'a
-        public event EventHandler<Collider> OnBladeTrigger;
 
         public struct Border
         {
@@ -42,9 +34,9 @@ namespace Sampo.Melee
             public Vector3 direction;
         }
 
-        private void Awake()
+        protected override void Awake()
         {
-            body = GetComponent<Rigidbody>();
+            base.Awake();
             faction = GetComponent<Faction>();
         }
 
@@ -105,39 +97,7 @@ namespace Sampo.Melee
         }
 
 
-        private void OnCollisionEnter(Collision collision)
-        {
-            OnBladeCollision?.Invoke(this, collision);
 
-            if (collision.collider.transform.TryGetComponent<IDamagable>(out var damagable))
-            {
-                damagable.Damage(body.velocity.magnitude * body.mass * damageMultiplier, IDamagable.DamageType.sharp);
-                GetComponent<Collider>().isTrigger = true;
-                Invoke(nameof(DisableCollision), noDamageTime);
-            }
-            else if (collision.collider.transform.TryGetComponent<Blade>(out _))
-            {
-                GetComponent<Collider>().isTrigger = true;
-                Invoke(nameof(DisableCollision), noDamageTime);
-
-                if (sparkles)
-                {
-                    Vector3 sparklesSpread = collision.GetContact(0).point;
-                    transform.position = sparklesSpread;
-                    sparkles.Emit((int)sparkles.emission.GetBurst(0).count.constant);
-                }
-            }
-        }
-
-        private void DisableCollision()
-        {
-            GetComponent<Collider>().isTrigger = false;
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            OnBladeTrigger?.Invoke(this, other);
-        }
 
         private void OnDrawGizmosSelected()
         {
