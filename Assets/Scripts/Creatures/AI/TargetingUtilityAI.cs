@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace Sampo.AI
 {
@@ -122,19 +121,14 @@ namespace Sampo.AI
         }
 
         #region Unity
-        protected virtual void Awake()
+
+        protected virtual void Awake() 
         {
             _movingAgent = GetComponent<IMovingAgent>();
             _body = GetComponent<Rigidbody>();
             _factory = new UtilityAI_Factory(this);
             _currentState = _factory.Deciding();
             navMeshCalcFrom = navMeshCalcFrom == null ? transform : navMeshCalcFrom;
-            UtilityAI_Manager.Instance.NewAdded += FetchNewActivityFromManager;
-            UtilityAI_Manager.Instance.NewRemoved += RemoveActivityFromManager;
-
-            _noAction = new AIAction();
-
-            NullifyActivity();
         }
 
         protected virtual void OnEnable()
@@ -143,7 +137,14 @@ namespace Sampo.AI
         }
 
         protected virtual void Start()
-        {
+        {            
+            UtilityAI_Manager.Instance.NewAdded += FetchNewActivityFromManager;
+            UtilityAI_Manager.Instance.NewRemoved += RemoveActivityFromManager;
+
+            _noAction = new AIAction();
+
+            NullifyActivity();
+
             FetchAndAddAllActivities();
         }
 
@@ -324,6 +325,27 @@ namespace Sampo.AI
         public bool DecidingStateRequired()
         {
             return _currentActivity == _noAction;
+        }
+
+        /// <summary>
+        /// Независимая команда вычисления, находящая ближайшую точку для больших объектов
+        /// </summary>
+        /// <param name="ofTarget">Огромная цель, для которой нужно найти ближайшую точку</param>
+        /// <param name="CalculateFrom">От этой позиции находится ближайшая позиция</param>
+        /// <returns>Ближайшая точка</returns>
+        public Vector3 GetClosestPoint(Transform ofTarget, Vector3 CalculateFrom) 
+        {
+            Vector3 closestPointToTarget;
+            if (ofTarget.TryGetComponent<IDamagable>(out var ab))
+                closestPointToTarget = ab.Vital.ClosestPointOnBounds(CalculateFrom);
+            else if (ofTarget.TryGetComponent<Collider>(out var c))
+                closestPointToTarget = c.ClosestPointOnBounds(CalculateFrom);
+            else
+                closestPointToTarget = ofTarget.position;
+
+            //closestPointToTarget = ofTarget.position;
+
+            return closestPointToTarget;
         }
 
         #region virtual functions

@@ -100,16 +100,12 @@ namespace Sampo.Melee
 
         #endregion
 
-        protected override void Awake()
-        {
-            base.Awake();
-            distanceFrom = distanceFrom ? distanceFrom : transform;
-            _catcher = gameObject.GetComponent<AttackCatcher>();
-        }
-
         protected override void Start()
         {
             base.Start();
+
+            distanceFrom = distanceFrom ? distanceFrom : transform;
+            _catcher = gameObject.GetComponent<AttackCatcher>();
 
             if (weapon == null)
             {
@@ -138,18 +134,13 @@ namespace Sampo.Melee
             Invoke(nameof(BecomeReadyToSwing), weapon.cooldownBetweenAttacks);
         }
 
-        public bool MeleeReachable()
+        public bool MeleeReachable(out Vector3 closestPointToTarget)
         {
-            Vector3 closestTo;
             Vector3 calculateFrom = distanceFrom.position;
-            if (_currentActivity.target.TryGetComponent<IDamagable>(out var ab))
-                closestTo = ab.Vital.ClosestPointOnBounds(calculateFrom);
-            else if (_currentActivity.target.TryGetComponent<Collider>(out var c))
-                closestTo = c.ClosestPointOnBounds(calculateFrom);
-            else
-                closestTo = _currentActivity.target.position;
 
-            return Vector3.Distance(calculateFrom, closestTo) < _currentActivity.actWith.additionalMeleeReach + baseReachDistance;
+            closestPointToTarget = GetClosestPoint(_currentActivity.target, calculateFrom);
+
+            return Vector3.Distance(calculateFrom, closestPointToTarget) < _currentActivity.actWith.additionalMeleeReach + baseReachDistance;
         }
 
         public void BecomeReadyToSwing()

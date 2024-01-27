@@ -51,7 +51,7 @@ public class Ascended_Effect : UniversalEffect
     public override void ReverseEffect()
     {
         _affected.drag = _rbDrag;
-        _affected.GetComponent<Movement>().enabled = _movementEnabled;
+        _affected.GetComponent<IMovingAgent>().Component.enabled = _movementEnabled;
     }
 
     public override UniversalEffect MergeSimilar(UniversalEffect similarTypeEffect)

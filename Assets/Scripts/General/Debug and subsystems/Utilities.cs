@@ -222,9 +222,11 @@ public class Utilities
     }
     public static bool GetMouseInWorldCollision(out Vector3 hitPoint)
     {
+        const float FAR_AWAY = 300;
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 200))
+        if (Physics.Raycast(ray, out RaycastHit hit, FAR_AWAY))
         {
             hitPoint = hit.point;
             return true;

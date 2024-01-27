@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class PhysicalNMAgent : MonoBehaviour, IMovingAgent
-    // Синхронизирует NavMeshAgent и Rigidbody
+// Синхронизирует NavMeshAgent и Rigidbody
 {
     [Tooltip("Высота стены, когда её уже следует избегать, чтобы не застрять")]
     public float wallHeight = 1;
@@ -14,6 +14,7 @@ public class PhysicalNMAgent : MonoBehaviour, IMovingAgent
     public float edgeDepth = 1;
     public LayerMask terrainMask;
 
+    Vector3 lookPos;
     Vector3 IMovingAgent.DesireLookDir => desireLookDir;
     Transform IMovingAgent.CountFrom => countFrom;
 
@@ -51,13 +52,24 @@ public class PhysicalNMAgent : MonoBehaviour, IMovingAgent
             agent.SetPath(savedPath);
             savedPath = null;
         }
+
+        if (lookPos != Vector3.zero)
+        {
+            Vector3 lookDir = (lookPos - countFrom.position).normalized;
+            lookDir.y = 0;
+            desireLookDir = lookDir;
+            Quaternion rotation = Quaternion.LookRotation(lookDir);
+            //Да, знаю, что так использовать Lerp не хорошо.
+            // Но в данном случае это очень простой способ, а большего и не нужно от агента.
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, agent.angularSpeed / 360);
+        }
     }
 
     private void FixedUpdate()
     {
-        if(!agent.enabled) 
+        if (!agent.enabled)
         {
-            if(Physics.Raycast(transform.position, Vector3.down, 1, terrainMask)) 
+            if (Physics.Raycast(transform.position, Vector3.down, 1, terrainMask))
             {
                 ResetAgent();
             }
@@ -79,13 +91,13 @@ public class PhysicalNMAgent : MonoBehaviour, IMovingAgent
         DisableAgent();
     }
 
-    void DisableAgent() 
+    void DisableAgent()
     {
         rb.isKinematic = false;
         agent.enabled = false;
     }
 
-    void ResetAgent() 
+    void ResetAgent()
     {
         rb.isKinematic = true;
         agent.enabled = true;
@@ -100,23 +112,21 @@ public class PhysicalNMAgent : MonoBehaviour, IMovingAgent
 
     public void MoveIteration(Vector3 newPos, Vector3 lookPos)
     {
-        Vector3 dir = (newPos - countFrom.position).normalized;
-        dir.y = 0;
+        this.lookPos = lookPos;
 
-        if (lookPos != null)
+        if (agent.hasPath)
         {
-            Vector3 lookDir = (lookPos - countFrom.position).normalized;
-            lookDir.y = 0;
-            desireLookDir = lookDir;
-            Quaternion rotation = Quaternion.LookRotation(lookDir);
-            //Да, знаю, что так использовать Lerp не хорошо.
-            // Но в данном случае это очень простой способ, а большего и не нужно от агента.
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, agent.angularSpeed / 360);
+            if(agent.path.corners.Length > 1)
+                this.lookPos = agent.path.corners[1];
+            return;
         }
 
-        Utilities.DrawArrow(transform.position, newPos,0, Color.blue);
+        Vector3 dir = (newPos - countFrom.position).normalized;
+        dir.y = 0;        
 
-        if(agent.isOnNavMesh)
+        Utilities.DrawArrow(transform.position, newPos, 0, Color.blue);
+
+        if (agent.isOnNavMesh)
             agent.destination = newPos;
     }
 
@@ -124,9 +134,8 @@ public class PhysicalNMAgent : MonoBehaviour, IMovingAgent
     {
         if (agent.isOnNavMesh)
             agent.SetPath(path);
-        else        
+        else
             savedPath = path;
-        
     }
 
     public bool IsNearObstacle(Vector3 desiredMovement, out Vector3 obstacleNormal)

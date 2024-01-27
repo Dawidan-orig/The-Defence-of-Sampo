@@ -1,15 +1,15 @@
 using Cinemachine;
-using Sampo.Player;
 using UnityEngine;
 
 namespace Sampo.Player
 {
-    public class CameraPositioner : MonoBehaviour
+    public class ThirdPersonCameraPositioner : MonoBehaviour
     {
         //TODO : FPS Camera
         public PlayerController player;
         public Transform lockTransform;
         public Transform heightTransform;
+        public CinemachineTargetGroup targetGroup;
         public float heightTransfromDist = 10;
         public Vector2 sensitivity;
         public Vector2 xAngleLimit = new Vector2(-75, 75);
@@ -44,17 +44,16 @@ namespace Sampo.Player
 
             if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
             {
-                if (PenetratingRaycast(transform.position, transform.position + transform.forward * FAR_AWAY, out RaycastHit hit, 1))
+                Ray world_ScreenCenter = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+
+                if (PenetratingRaycast(world_ScreenCenter.origin, world_ScreenCenter.origin + world_ScreenCenter.direction * FAR_AWAY, out RaycastHit hit, 1))
                 {
                     lockTransform.position = hit.point;
-
-                    if (hit.rigidbody && hit.transform != player)
-                    {
+                    if(hit.rigidbody)
                         _currentLockRigidbodyTransfrom = hit.transform;
-                    }
                 }
                 else
-                    lockTransform.position = transform.position + transform.forward * FAR_AWAY;
+                    lockTransform.position = world_ScreenCenter.origin + world_ScreenCenter.direction * FAR_AWAY;
             }
             else if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
             {
@@ -70,25 +69,22 @@ namespace Sampo.Player
                 if (_currentLockRigidbodyTransfrom != null)
                     lockTransform.position = _currentLockRigidbodyTransfrom.position;
 
-                //Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-
-                GameObject go = new GameObject();
+                GameObject go = new();
                 Transform probe = go.transform;
-                probe.position = transform.position;
-                probe.rotation = transform.rotation;
 
-                probe.LookAt(lockTransform.position, Vector3.up);
-
-                _rotation = probe.localEulerAngles;
-
-                if (_rotation.x > 180)
-                    _rotation.x -= 360;
+                probe.position = lockTransform.position;
+                probe.position = new Vector3(probe.transform.position.x, player.transform.position.y, probe.transform.position.z);
+                player.transform.LookAt(probe);
+                _rotation.y = player.transform.rotation.eulerAngles.y;
 
                 Destroy(go);
+
+                //Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
             }
             else
             {
+                _currentLockRigidbodyTransfrom = null;
                 lockTransform.position = transform.position + transform.rotation * _initialLookAt;
 
                 Cursor.lockState = CursorLockMode.Locked;
@@ -101,11 +97,11 @@ namespace Sampo.Player
                 _rotation.y += mouseX;
 
                 _rotation.x = Mathf.Clamp(_rotation.x, xAngleLimit.x, xAngleLimit.y);
+
+                heightTransform.localPosition = Quaternion.Euler(_rotation.x, 0, 0) * Vector3.forward * heightTransfromDist;
+
+                player.transform.rotation = Quaternion.Euler(0, _rotation.y, 0);
             }
-
-            player.transform.rotation = Quaternion.Euler(0, _rotation.y, 0);
-
-            heightTransform.localPosition = Quaternion.Euler(_rotation.x,0,0) * Vector3.forward * heightTransfromDist;
         }
 
         public bool PenetratingRaycast(Vector3 from, Vector3 to, out RaycastHit hit, float duration = 0, Color? color = null)

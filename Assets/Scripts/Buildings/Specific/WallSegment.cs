@@ -30,14 +30,14 @@ namespace Sampo.Building
         private void ArrangeSegment(Vector3 from, Vector3 to) 
         {
             iterations++;
-            const int BREAKPOINT = 50;
+            const int BREAKPOINT = 100;
             if(iterations > BREAKPOINT) 
             {
                 throw new StackOverflowException("Слишком много итераций создания стен");
             }
 
             if (Utilities.ValueInArea(transform.position, to, CLOSE_ENOUGH))
-                return;
+                return;            
 
             to.y = from.y;
 
@@ -122,6 +122,9 @@ namespace Sampo.Building
             to.y = 0;
             Vector3 from = transform.position;
             from.y = 0;
+
+            DestructableStructure sturc = GetComponent<DestructableStructure>();
+            sturc.health *= Vector3.Distance(from, to);
 
             transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y,
                 Vector3.Distance(from, to));

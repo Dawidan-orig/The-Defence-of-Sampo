@@ -32,7 +32,7 @@ namespace Sampo.Building
             }
         }
 
-        private WallPylon _currentWallInFocus;
-        public WallPylon CurrentWallInFocus { get => _currentWallInFocus; set => _currentWallInFocus = value; }
+        private WallPylon _lastPlacedWall;
+        public WallPylon CurrentWallInFocus { get => _lastPlacedWall; set => _lastPlacedWall = value; }
     }
 }

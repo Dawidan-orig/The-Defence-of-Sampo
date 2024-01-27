@@ -44,10 +44,10 @@ public class Faction : MonoBehaviour
             var kvp = new System.Collections.Generic.KeyValuePair<Interactable_UtilityAI, int>(interactable, interactable.ai_weight);
 
             UtilityAI_Manager.UAIData data = new(interactable, _ftype);
-            UtilityAI_Manager.Instance.NewRemoved.Invoke(this, data);
+            UtilityAI_Manager.Instance.NewRemoved?.Invoke(this, data);
             _ftype = newFactionType;
             data = new(interactable, _ftype);
-            UtilityAI_Manager.Instance.NewAdded.Invoke(this, data);
+            UtilityAI_Manager.Instance.NewAdded?.Invoke(this, data);
         }
         else
             _ftype = newFactionType;

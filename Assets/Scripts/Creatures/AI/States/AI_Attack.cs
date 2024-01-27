@@ -34,22 +34,17 @@ namespace Sampo.AI
 
             CheckRepath();
 
-            // Отходим назад
-            
-                float weaponRange = _ctx.CurrentActivity.actWith.GetRange();
+            float weaponRange = _ctx.CurrentActivity.actWith.GetRange();
 
-                float progress = 1 - (Vector3.Distance(_ctx.CurrentActivity.target.position, _ctx.transform.position)
-                    / weaponRange);
+            Vector3 closest = _ctx.GetClosestPoint(_ctx.CurrentActivity.target, _ctx.transform.position);
 
-                if (progress > 0)
-                {
-                    RetreatReposition(progress);
-                }
-                else
-                {
-                    _ctx.MovingAgent.MoveIteration(moveTargetPos, _ctx.CurrentActivity.target.position);
-                }
-            
+            float progress = 1 - (Vector3.Distance(closest, _ctx.transform.position)
+                / weaponRange);
+
+            if (progress > 0)
+                RetreatReposition(progress);
+            else
+                MoveAlongPath(10);
 
             _ctx.AttackUpdate(_ctx.CurrentActivity.target);
         }

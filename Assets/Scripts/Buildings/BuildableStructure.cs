@@ -18,11 +18,6 @@ namespace Sampo.Building
         protected int _currentProgressToBuild = 0;
         protected readonly LayerMask ground = 8;
 
-        protected virtual void Awake()
-        {
-
-        }
-
         protected virtual void Start()
         {
             const float MAX_DISTANCE = 100;

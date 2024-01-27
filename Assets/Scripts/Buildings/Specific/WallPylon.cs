@@ -8,23 +8,27 @@ namespace Sampo.Building
     {
         [Header("Specific parameters")]
         public GameObject wallSegmentPrefab;
+        public bool shouldFocus = true;
 
-        private List<GameObject> _underControl = new();
+        [Header("Editor Pre-Playmode Only")]
+        public WallPylon wallToConnect;
 
         protected override void Start()
         {
             base.Start();
-            WallPylon otherWall = BuildingSystem.Instance.CurrentWallInFocus;
+            WallPylon otherWall = wallToConnect ? wallToConnect : BuildingSystem.Instance.CurrentWallInFocus;
 
             if (otherWall)
             {
                 var wall = Instantiate(wallSegmentPrefab, transform.position, Quaternion.identity, transform);
                 wall.GetComponent<Faction>().ChangeFactionCompletely(GetComponent<Faction>().FactionType);
-                _underControl.Add(wall);
                 wall.GetComponent<WallSegment>().ArrangeSegment(otherWall.transform.position, wallSegmentPrefab, transform);                
             }
-            
-            BuildingSystem.Instance.CurrentWallInFocus = this;
+
+            if (shouldFocus)
+                BuildingSystem.Instance.CurrentWallInFocus = this;
+            else
+                BuildingSystem.Instance.CurrentWallInFocus = null;
         }
 
         protected override void Build()

@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 6855238967901636762}
   - component: {fileID: 5225495289652867716}
   - component: {fileID: 7995300049902568807}
-  - component: {fileID: 2251485660500263274}
   - component: {fileID: 3180210769476882773}
   m_Layer: 0
   m_Name: Wall Segment
@@ -103,19 +102,6 @@ MonoBehaviour:
   remainsPrefab: {fileID: 0}
   vital: {fileID: 3180210769476882773}
   parentToDestroy: {fileID: 4831676572148590778}
---- !u!114 &2251485660500263274
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1193116036391079041}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ftype: 0
 --- !u!65 &3180210769476882773
 BoxCollider:
   m_ObjectHideFlags: 0

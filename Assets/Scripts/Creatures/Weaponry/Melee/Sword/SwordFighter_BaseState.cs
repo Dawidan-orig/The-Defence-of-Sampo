@@ -54,7 +54,7 @@ namespace Sampo.Melee.Sword
             }
             else
             {
-                _ctx.SetDesires(_ctx.InitialBlade.position, _ctx.InitialBlade.up, _ctx.InitialBlade.forward);
+                _ctx.SetInitialDesires();
                 _ctx.InitiateNewBladeMove();
                 _ctx.CurrentToInitialAwait = _ctx.toInitialAwait;
                 SwitchStates(_factory.Repositioning());

@@ -10,6 +10,7 @@ namespace Sampo.AI
 
         protected NavMeshPath path;
         protected Vector3 moveTargetPos { get; private set; }
+        private Vector3 repathLastUnitPos;
         private Vector3 repathLastTargetPos;
         private const float RECALC_DIFF = 3;
 
@@ -61,24 +62,43 @@ namespace Sampo.AI
         /// </summary>
         private void Repath()
         {
-            moveTargetPos = _ctx.CurrentActivity.target.position;
+            Vector3 closestPos = _ctx.GetClosestPoint(_ctx.CurrentActivity.target, _ctx.navMeshCalcFrom.position);            
+            moveTargetPos = closestPos;
+
             repathLastTargetPos = moveTargetPos;
+            repathLastUnitPos = _ctx.transform.position;
 
             if (_ctx.CurrentActivity.actWith is BaseShooting shooting) // »щем лучшую позицию дл€ стрельбы
             {
                 moveTargetPos = shooting.NavMeshClosestAviableToShoot(_ctx.CurrentActivity.target);
             }
 
+            //TODO : тут не 3 надо, а размер коллайдера текущей цели.
+            if(NavMesh.SamplePosition(moveTargetPos, out var hit, 100, NavMesh.AllAreas))
+                moveTargetPos = hit.position;
+
+            Debug.DrawLine(Vector3.zero, moveTargetPos, Color.black, 5);
+
             path = new NavMeshPath();
             NavMesh.CalculatePath(_ctx.navMeshCalcFrom.position, moveTargetPos, NavMesh.AllAreas, path);
             _ctx.MovingAgent.PassPath(path);
 
+            MoveAlongPath(10);
+        }
+
+        protected void MoveAlongPath(float lookDist) 
+        {
             if (path.status != NavMeshPathStatus.PathInvalid && path.corners.Length > 1)
             {
-                _ctx.MovingAgent.MoveIteration(path.corners[1]);
+                if(Vector3.Distance(_ctx.transform.position, _ctx.CurrentActivity.target.position) > lookDist)
+                    _ctx.MovingAgent.MoveIteration(path.corners[1]);
+                else
+                    _ctx.MovingAgent.MoveIteration(path.corners[1], _ctx.CurrentActivity.target.position);
             }
             else
             {
+                _ctx.Invoke(nameof(Repath),5);
+
                 var closest = NavMeshCalculations.Instance.GetCell(_ctx.navMeshCalcFrom.position);
                 moveTargetPos = closest.Center();
                 _ctx.MovingAgent.MoveIteration(moveTargetPos);

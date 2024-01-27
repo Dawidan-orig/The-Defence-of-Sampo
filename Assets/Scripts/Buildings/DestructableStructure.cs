@@ -12,11 +12,15 @@ public class DestructableStructure : Interactable_UtilityAI, IDamagable
 
     public Collider Vital => vital;
 
-    private void Start()
+    private void Awake()
     {
-        if (GetComponents<Collider>().Length == 1)
-            vital = GetComponent<Collider>();
+        var colliders = GetComponents<Collider>();
+        if (colliders.Length == 1)
+            vital = colliders[0];
+    }
 
+    private void Start()
+    {      
         if (!parentToDestroy)
             parentToDestroy = transform;
     }

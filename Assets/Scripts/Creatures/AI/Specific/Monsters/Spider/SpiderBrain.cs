@@ -36,11 +36,6 @@ public class SpiderBrain : TargetingUtilityAI
         toReturn
     }
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
     protected override void Start()
     {
         base.Start();

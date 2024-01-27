@@ -145,10 +145,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce0fdd3de613edd44957e0931972de6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ai_weight: 1
-  health: 10000
+  ai_weight: 30
+  health: 100
   connectedObjects: []
   remainsPrefab: {fileID: 0}
+  vital: {fileID: 0}
+  parentToDestroy: {fileID: 0}
 --- !u!208 &7733421199362026332
 NavMeshObstacle:
   m_ObjectHideFlags: 0

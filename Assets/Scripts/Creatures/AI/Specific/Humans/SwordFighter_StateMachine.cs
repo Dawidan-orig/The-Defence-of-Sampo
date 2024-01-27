@@ -50,9 +50,10 @@ namespace Sampo.Melee.Sword
         private string currentState;
 
         #region Unity
-        protected override void Awake()
+
+        protected override void Start()
         {
-            base.Awake();
+            base.Start();
 
             _catcher.AddIgnoredObject(_blade.body);
 
@@ -63,11 +64,6 @@ namespace Sampo.Melee.Sword
             _currentSwordState.EnterState();
 
             _blade.GetComponent<Tool>().SetHost(transform);
-        }
-
-        protected override void Start()
-        {
-            base.Start();
 
             if (_bladeContainer == null)
                 _bladeContainer = transform;
@@ -91,7 +87,7 @@ namespace Sampo.Melee.Sword
                 _moveFrom = moveFromGo.transform;
             }
 
-            SetDesires(_initialBlade.position, _initialBlade.up, _initialBlade.forward);
+            SetInitialDesires();
             InitiateNewBladeMove();
             _moveProgress = 1;
             _AnimatedMoveProgress = 1;
@@ -283,7 +279,7 @@ namespace Sampo.Melee.Sword
             if (!_swingReady || CurrentCombo.Count > 0)
                 return;
 
-            if (MeleeReachable())
+            if (MeleeReachable(out _))
             {
                 //TODO DESIGN : Тут ещё можем выбирать конкретную комбинацию из библиотеки комбо.
 
@@ -370,6 +366,7 @@ namespace Sampo.Melee.Sword
 
         public void SetDesires(Vector3 pos, Vector3 up, Vector3 forward)
         {
+            //TODO : Перевести всю логику на localPosition'ы, так будет гораздо проще контроллировать всё
             _desireBlade.position = pos;
             _desireBlade.LookAt(pos + up, pos + forward);
             _desireBlade.RotateAround(_desireBlade.position, _desireBlade.right, 90);
@@ -398,6 +395,12 @@ namespace Sampo.Melee.Sword
                 && Quaternion.Angle(_bladeHandle.rotation, _desireBlade.rotation) < angle_enough;
         }
         #endregion
+
+        public void SetInitialDesires() 
+        {
+            SetDesires(_initialBlade.position,_initialBlade.up, _initialBlade.forward);
+        }
+
         public void InitiateNewBladeMove()
         {
             _moveFrom.position = BladeHandle.position;

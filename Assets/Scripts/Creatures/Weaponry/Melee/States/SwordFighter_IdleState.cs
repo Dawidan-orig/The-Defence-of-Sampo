@@ -19,7 +19,7 @@ namespace Sampo.Melee.Sword
                 if (_ctx.InitialBlade.position != _ctx.DesireBlade.position
                     && _ctx.InitialBlade.up != _ctx.DesireBlade.up)
                 {
-                    _ctx.SetDesires(_ctx.InitialBlade.position, _ctx.InitialBlade.up, _ctx.InitialBlade.forward);
+                    _ctx.SetInitialDesires();
                     _ctx.InitiateNewBladeMove();
                     _ctx.CurrentToInitialAwait = _ctx.toInitialAwait;
 
