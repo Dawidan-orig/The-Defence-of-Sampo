@@ -117,9 +117,6 @@ MonoBehaviour:
   _currentActivity:
     target: {fileID: 0}
     name: 
-    baseWeight: 0
-    distanceSubstraction: 0
-    enemiesAmountSubstraction: 0
     actWith: {fileID: 0}
   _possibleActions: []
   visiblePowerPoints: 100

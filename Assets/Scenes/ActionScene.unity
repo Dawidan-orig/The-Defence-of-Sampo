@@ -2373,7 +2373,6 @@ GameObject:
   - component: {fileID: 539551344}
   - component: {fileID: 539551343}
   - component: {fileID: 539551350}
-  - component: {fileID: 539551351}
   m_Layer: 0
   m_Name: Sampo
   m_TagString: Untagged
@@ -2390,11 +2389,11 @@ Transform:
   m_GameObject: {fileID: 539551341}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 13.13, z: 0}
+  m_LocalPosition: {x: 0, y: 15, z: 0}
   m_LocalScale: {x: 10, y: 30, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1068420054}
+  m_Father: {fileID: 1536837848}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &539551343
 BoxCollider:
@@ -2484,7 +2483,7 @@ MonoBehaviour:
   connectedObjects: []
   remainsPrefab: {fileID: 0}
   vital: {fileID: 0}
-  parentToDestroy: {fileID: 0}
+  parentToDestroy: {fileID: 1536837848}
 --- !u!114 &539551348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2514,22 +2513,6 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
---- !u!114 &539551351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 539551341}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3df7b4be63ac4324fb7822fbf66a613a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerRespawnTime: 10
-  playerPrefab: {fileID: 2037187594968764801, guid: 1b8bad2a41496294dbf9340ff9219d51, type: 3}
-  playerContainer: {fileID: 0}
-  connectedPlayer: {fileID: 8495609853315885545}
 --- !u!1 &541264031
 GameObject:
   m_ObjectHideFlags: 0
@@ -3562,37 +3545,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1226281759}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &717490945
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 717490946}
-  m_Layer: 0
-  m_Name: Cells positions
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &717490946
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 717490945}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 927423864}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &718991488
 GameObject:
   m_ObjectHideFlags: 0
@@ -4533,7 +4485,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 717490946}
+  - {fileID: 1312749086}
   m_Father: {fileID: 508289544}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &927423865
@@ -4555,14 +4507,14 @@ MonoBehaviour:
     m_Center: {x: 0, y: -1, z: 0}
     m_Extent: {x: 250, y: 250, z: 250}
   octreeCells:
-    rid: 6262489089898184712
+    rid: 6262489089898184724
   _clusters: []
-  _cellTransformContainer: {fileID: 717490945}
+  _cellTransformContainer: {fileID: 1312749085}
   drawOctTree: 0
   references:
     version: 2
     RefIds:
-    - rid: 6262489089898184712
+    - rid: 6262489089898184724
       type: {class: OctTree, ns: , asm: SampoCore}
       data: 
 --- !u!1 &943199173
@@ -5398,7 +5350,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 539551342}
+  - {fileID: 1536837848}
   m_Father: {fileID: 818318803}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1080616725
@@ -6318,6 +6270,37 @@ Terrain:
   m_EnableHeightmapRayTracing: 1
   m_EnableTreesAndDetailsRayTracing: 0
   m_TreeMotionVectorModeOverride: 3
+--- !u!1 &1312749085
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1312749086}
+  m_Layer: 0
+  m_Name: Cells positions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1312749086
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1312749085}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 927423864}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1322579622
 GameObject:
   m_ObjectHideFlags: 0
@@ -7243,6 +7226,55 @@ Terrain:
   m_EnableHeightmapRayTracing: 1
   m_EnableTreesAndDetailsRayTracing: 0
   m_TreeMotionVectorModeOverride: 3
+--- !u!1 &1536837847
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1536837848}
+  - component: {fileID: 1536837849}
+  m_Layer: 0
+  m_Name: SampoPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1536837848
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1536837847}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 539551342}
+  m_Father: {fileID: 1068420054}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1536837849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1536837847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3df7b4be63ac4324fb7822fbf66a613a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerRespawnTime: 10
+  playerPrefab: {fileID: 2037187594968764801, guid: 1b8bad2a41496294dbf9340ff9219d51, type: 3}
+  playerContainer: {fileID: 0}
+  connectedPlayer: {fileID: 8495609853315885545}
 --- !u!1 &1594402669
 GameObject:
   m_ObjectHideFlags: 0
@@ -8732,32 +8764,15 @@ Terrain:
   m_EnableHeightmapRayTracing: 1
   m_EnableTreesAndDetailsRayTracing: 0
   m_TreeMotionVectorModeOverride: 3
---- !u!1 &2060671410 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8449317016140375705, guid: 1b8bad2a41496294dbf9340ff9219d51, type: 3}
-  m_PrefabInstance: {fileID: 8758427324279928637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2060671412 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8743272396019332982, guid: 1b8bad2a41496294dbf9340ff9219d51, type: 3}
   m_PrefabInstance: {fileID: 8758427324279928637}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2060671410}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2060671413
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2060671410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7abca89dd2d33441833f4ac60380807, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2075733498
@@ -9028,10 +9043,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8449317016140375705, guid: 1b8bad2a41496294dbf9340ff9219d51, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2060671413}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b8bad2a41496294dbf9340ff9219d51, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

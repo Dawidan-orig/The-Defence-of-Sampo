@@ -46,7 +46,7 @@ namespace Sampo.AI
             }
         }
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             if (EditorApplication.isPlaying && !EditorApplication.isPaused)
                 Utilities.CreateTextInWorld(health.ToString(), transform, position: transform.position + GetComponent<Collider>().bounds.size.y / 2 * Vector3.up, color: Color.green);

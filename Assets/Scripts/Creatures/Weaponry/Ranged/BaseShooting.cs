@@ -126,7 +126,7 @@ public class BaseShooting : Tool
         if (res == Vector3.zero)
         {
             res = host.transform.position;            
-            AIUser.DecidingStateRequired();
+            AIUser.IsDecidingStateRequired();
         }
 
         return res;

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Sampo.Melee
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class Blade : MeleeTool
+    public class Blade : MeleeTool, IDamageDealer
     {
         //TODO DESIGN (Когда будет вариативность Melee) : Добавить сюда понятие рукояти (И основного объекта, контроллирующего всё оружие, как следествие) и угловое движение относительно MeleeFighter.distanceFrom
 
@@ -26,6 +26,8 @@ namespace Sampo.Melee
         public ParticleSystem sparkles;
 
         public Transform Handle { get => handle; private set => handle = value; }
+
+        public Transform DamageFrom => host;
 
         public struct Border
         {

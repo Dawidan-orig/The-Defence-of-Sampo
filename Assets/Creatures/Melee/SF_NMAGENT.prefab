@@ -274,10 +274,8 @@ MonoBehaviour:
   _currentActivity:
     target: {fileID: 0}
     name: 
-    baseWeight: 0
-    distanceSubstraction: 0
-    enemiesAmountSubstraction: 0
     actWith: {fileID: 0}
+    forEditor_Weight: 0
   _possibleActions: []
   visiblePowerPoints: 100
   weapon: {fileID: 6184862296936070201}
@@ -557,7 +555,7 @@ NavMeshAgent:
   m_Height: 2
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 0
+  m_ObstacleAvoidanceType: 2
 --- !u!1001 &3648173132419940187
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -11,7 +11,7 @@ namespace Sampo.AI
 
         public override bool CheckSwitchStates()
         {
-            if (_ctx.DecidingStateRequired() || _ctx.CurrentActivity.target == null)
+            if (_ctx.IsDecidingStateRequired() || _ctx.CurrentActivity.target == null)
             {
                 SwitchStates(_factory.Deciding());
                 return true;

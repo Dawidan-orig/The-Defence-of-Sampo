@@ -1,3 +1,4 @@
+using Sampo.AI.Conditions;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -45,46 +46,86 @@ namespace Sampo.AI
         protected UtilityAI_BaseState _currentState;
 
         public UtilityAI_BaseState CurrentState { get => _currentState; set => _currentState = value; }
-        public AIAction CurrentActivity { get => _currentActivity; }        
+        public AIAction CurrentActivity { get => _currentActivity; }
         public Rigidbody Body { get => _body; set => _body = value; }
         public IMovingAgent MovingAgent { get => _movingAgent; set => _movingAgent = value; }
 
         [Serializable]
         public class AIAction
         {
+            private TargetingUtilityAI actionOf;
+
             public Transform target;
-            public string name;
-            private int totalWeight;
-            public int baseWeight;
-            public int distanceSubstraction;
-            public int enemiesAmountSubstraction;
+            public string name;            
+            private int baseWeight;
+            private int distanceSubstraction;
+            private int enemiesAmountSubstraction;            
+            private List<BaseAICondition> _conditions;
             public Tool actWith;
             public UtilityAI_BaseState whatDoWhenClose;
 
-            public int TotalWeight { get => totalWeight; set => totalWeight = value; }
+            [SerializeField]
+            private float forEditor_Weight;
 
-            public AIAction()
+            public int TotalWeight
             {
+                get
+                {
+                    var res = baseWeight - distanceSubstraction - enemiesAmountSubstraction;
+                    foreach (var c in _conditions)
+                        res += c.WeightInfluence;
+                    forEditor_Weight = res;
+                    return res;
+                }
+            }
+            public void Update() 
+            {
+                _conditions.RemoveAll(item => item == null || !item.IsConditionAlive);
+
+                distanceSubstraction =
+                        Mathf.RoundToInt(Vector3.Distance(actionOf.transform.position, target.position) * actionOf.distanceWeightMultiplier);
+                enemiesAmountSubstraction =
+                    UtilityAI_Manager.Instance.GetCongestion(target.GetComponent<Interactable_UtilityAI>());
+
+                foreach (var c in _conditions)
+                    c.Update();
+            }
+            public void Modify(BaseAICondition condition) 
+            {              
+                _conditions.Add(condition);
+            }
+
+            #region constructors
+            public AIAction(TargetingUtilityAI actionOf)
+            {
+                this.actionOf = actionOf;
+
                 target = default;
                 name = default;
-                totalWeight = default;
                 baseWeight = default;
                 distanceSubstraction = default;
                 actWith = default;
                 whatDoWhenClose = default;
+
+                _conditions = new();
             }
 
-            public AIAction(Transform target, string name, int weight, Tool actWith, UtilityAI_BaseState alignedState)
+            public AIAction(TargetingUtilityAI actionOf, Transform target, string name, int weight, Tool actWith, UtilityAI_BaseState alignedState)
             {
+                this.actionOf = actionOf;
+
                 this.target = target;
                 this.name = name;
                 this.baseWeight = weight;
                 this.actWith = actWith;
                 whatDoWhenClose = alignedState;
-                totalWeight = weight;
                 distanceSubstraction = 0;
-            }
 
+                _conditions = new();
+            }
+            #endregion
+
+            #region overrides
             public override bool Equals(object obj)
             {
                 if (!(obj is AIAction))
@@ -118,11 +159,12 @@ namespace Sampo.AI
 
                 return (c1.target != c2.target) || (c1.name != c2.name) || (c1.actWith != c2.actWith);
             }
+            #endregion
         }
 
         #region Unity
 
-        protected virtual void Awake() 
+        protected virtual void Awake()
         {
             _movingAgent = GetComponent<IMovingAgent>();
             _body = GetComponent<Rigidbody>();
@@ -137,11 +179,11 @@ namespace Sampo.AI
         }
 
         protected virtual void Start()
-        {            
+        {
             UtilityAI_Manager.Instance.NewAdded += FetchNewActivityFromManager;
             UtilityAI_Manager.Instance.NewRemoved += RemoveActivityFromManager;
 
-            _noAction = new AIAction();
+            _noAction = new AIAction(this);
 
             NullifyActivity();
 
@@ -168,6 +210,14 @@ namespace Sampo.AI
             _currentState.FixedUpdateState();
         }
 
+        protected virtual void OnCollisionEnter(Collision collision)
+        {
+            const float TIME_OF_BEING_ANGRY = 20;
+
+            if (collision.gameObject.TryGetComponent<IDamageDealer>(out var dDealer))
+                ModifyActionOf(dDealer.DamageFrom, new RespondToAttackCondition(TIME_OF_BEING_ANGRY));
+        }
+
         protected virtual void OnDisable()
         {
             UtilityAI_Manager.Instance.NewAdded -= FetchNewActivityFromManager;
@@ -177,28 +227,13 @@ namespace Sampo.AI
             NullifyActivity();
             _AIActive = false;
         }
-
-        protected virtual void OnDrawGizmosSelected()
-        {
-            if (EditorApplication.isPlaying && !EditorApplication.isPaused)
-            {
-                NormilizeActions();
-                foreach (AIAction action in _possibleActions)
-                {
-                    Utilities.CreateTextInWorld(action.baseWeight.ToString(), action.target, position: action.target.position + Vector3.up * 2);
-                    Utilities.CreateTextInWorld(action.distanceSubstraction.ToString(), action.target, position: action.target.position + Vector3.up * 2.5f, color: Color.blue);
-                    Utilities.CreateTextInWorld(action.enemiesAmountSubstraction.ToString(), action.target, position: action.target.position + Vector3.up * 3f, color: Color.yellow);
-                }
-            }
-        }
-
         #endregion
 
         #region actions
-        private void FetchAndAddAllActivities() 
+        private void FetchAndAddAllActivities()
         {
             var dict = UtilityAI_Manager.Instance.GetAllInteractions(GetComponent<Faction>().FactionType);
-            foreach(var kvp in dict) 
+            foreach (var kvp in dict)
             {
                 Interactable_UtilityAI target = kvp.Key;
                 int weight = kvp.Value;
@@ -226,17 +261,15 @@ namespace Sampo.AI
             Tool toolUsed = ToolChosingCheck(target.transform);
 
             //TODO DESIGN : _factory.Attack() - не обязательно он, надо выбирать из фабрики нужное
-            AIAction action = new AIAction(target.transform, name, weight, toolUsed, _factory.Attack());
-            NormilizeAction(action);
+            AIAction action = new AIAction(this, target.transform, name, weight, toolUsed, _factory.Attack());
+
             AddNewPossibleAction(action);
-            if (action.TotalWeight > CurrentActivity.TotalWeight)
-                ChangeAction(action);
         }
-        private void RemoveActivityFromManager(object sender, UtilityAI_Manager.UAIData e) 
+        private void RemoveActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
         {
             AIAction similar = _possibleActions.Find(item => item.target == e.newInteractable.Key.transform);
 
-            if (_possibleActions.Contains(similar)) 
+            if (_possibleActions.Contains(similar))
             {
                 _possibleActions.Remove(similar);
 
@@ -244,7 +277,6 @@ namespace Sampo.AI
                     NullifyActivity();
             }
         }
-
         private void AddNewPossibleAction(AIAction action)
         {
             if (_possibleActions.Contains(action))
@@ -253,15 +285,18 @@ namespace Sampo.AI
                 return;
             }
 
+            NormilizeAction(action);
+
+            if (action.TotalWeight > CurrentActivity.TotalWeight)
+                ChangeAction(action);
+
             _possibleActions.Add(action);
         }
         private void AddNewPossibleAction(Transform target, int weight, string name, Tool actWith, UtilityAI_BaseState treatment)
         {
-            AIAction action = new AIAction(target, name, weight, actWith, treatment);
+            AIAction action = new AIAction(this, target, name, weight, actWith, treatment);
 
             AddNewPossibleAction(action);
-
-            _possibleActions.Add(action);
         }
         private void ChangeAction(AIAction to)
         {
@@ -271,11 +306,11 @@ namespace Sampo.AI
             UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), visiblePowerPoints);
         }
         public UtilityAI_BaseState SelectBestActivity()
-        {          
-            if (_possibleActions.Count == 0)            
-                return null;            
+        {
+            if (_possibleActions.Count == 0)
+                return null;
 
-            NormilizeActions();
+            NormilizeActions(); //TODO : Проверить и убрать, если в этом нет смысла. Но его наличие создаёт надёжность.
 
             if (_possibleActions.Count == 0)
                 return null;
@@ -297,7 +332,7 @@ namespace Sampo.AI
                 {
                     NormilizeAction(action);
                 }
-                else 
+                else
                 {
                     _possibleActions.RemoveAt(i);
                     i--;
@@ -306,14 +341,7 @@ namespace Sampo.AI
         }
         private void NormilizeAction(AIAction action)
         {
-            action.distanceSubstraction =
-                        Mathf.RoundToInt(Vector3.Distance(transform.position, action.target.position) * distanceWeightMultiplier);
-            action.enemiesAmountSubstraction =
-                UtilityAI_Manager.Instance.GetCongestion(action.target.GetComponent<Interactable_UtilityAI>());
-
-            action.TotalWeight = action.baseWeight
-            - action.distanceSubstraction
-            - action.enemiesAmountSubstraction;
+            action.Update();
         }
         private void NullifyActivity()
         {
@@ -322,7 +350,34 @@ namespace Sampo.AI
         public bool IsNoActionCurrently() => _currentActivity == _noAction;
         #endregion
 
-        public bool DecidingStateRequired()
+        /// <summary>
+        /// Обновление всех связанных с целью задач
+        /// </summary>
+        /// <param name="withCondition">Динамическое условие, что применяется на все задачи</param>
+        public void ModifyActionOf(Transform target, BaseAICondition withCondition) 
+        {
+            AIAction best = null;
+            foreach(var action in _possibleActions) 
+            {
+                if (best == null)
+                    best = action;
+
+                if (action.target == target)
+                {
+                    action.Modify(withCondition);
+                    if (action.TotalWeight > best.TotalWeight)
+                        best = action;
+                }
+            }
+            if (best.TotalWeight > CurrentActivity.TotalWeight)
+                ChangeAction(best);
+        }
+
+        /// <summary>
+        /// Проверка, что в данный момент требуется выбрать новое состояние
+        /// </summary>
+        /// <returns></returns>
+        public bool IsDecidingStateRequired()
         {
             return _currentActivity == _noAction;
         }
@@ -333,7 +388,7 @@ namespace Sampo.AI
         /// <param name="ofTarget">Огромная цель, для которой нужно найти ближайшую точку</param>
         /// <param name="CalculateFrom">От этой позиции находится ближайшая позиция</param>
         /// <returns>Ближайшая точка</returns>
-        public Vector3 GetClosestPoint(Transform ofTarget, Vector3 CalculateFrom) 
+        public Vector3 GetClosestPoint(Transform ofTarget, Vector3 CalculateFrom)
         {
             Vector3 closestPointToTarget;
             if (ofTarget.TryGetComponent<IDamagable>(out var ab))
@@ -347,8 +402,8 @@ namespace Sampo.AI
 
             return closestPointToTarget;
         }
-
         #region virtual functions
+
         /// <summary>
         /// Присваивание очков и изменение параметров
         /// </summary>
@@ -381,10 +436,10 @@ namespace Sampo.AI
             return res;
         }
         /// <summary>
-        /// Выбор оружия
+        /// Выбор оружия исходя из внутренних условий
         /// </summary>
         /// <param name="target">Относительно этой цели</param>
-        /// <returns></returns>
+        /// <returns>Выбранное оружие</returns>
         protected abstract Tool ToolChosingCheck(Transform target);
 
         /*TODO dep AI_Factory : Сделать так, чтобы управляющая StateMachine была интегрирована сюда, либо вообще редуцирована...
@@ -426,7 +481,7 @@ namespace Sampo.AI
         /// Нужно для анимации тела
         /// </summary>
         /// <returns>Точка, куда будет направлена рука</returns>
-        public virtual Transform GetRightHandTarget() {  return null; }
+        public virtual Transform GetRightHandTarget() { return null; }
         #endregion
 
         private void OnDrawGizmos()

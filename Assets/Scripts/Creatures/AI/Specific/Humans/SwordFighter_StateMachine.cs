@@ -130,10 +130,8 @@ namespace Sampo.Melee.Sword
             }
         }
 
-        protected override void OnDrawGizmosSelected()
+        protected void OnDrawGizmosSelected()
         {
-            base.OnDrawGizmosSelected();
-
             if (_desireBlade != null)
             {
                 Gizmos.color = _currentSwordState is SwordFighter_SwingingState ? Color.red : Color.black;
