@@ -55,7 +55,7 @@ public class PhysicalNMAgent : MonoBehaviour, IMovingAgent
             savedPath = null;
         }
 
-        if (lookPos != Vector3.zero)
+        if (lookPos != Vector3.zero && !Utilities.ValueInArea(lookPos, countFrom.position, 0.01f))
         {
             Vector3 lookDir = (lookPos - countFrom.position).normalized;
             lookDir.y = 0;

@@ -77,8 +77,6 @@ namespace Sampo.AI
             if(NavMesh.SamplePosition(moveTargetPos, out var hit, 100, NavMesh.AllAreas))
                 moveTargetPos = hit.position;
 
-            Debug.DrawLine(Vector3.zero, moveTargetPos, Color.black, 5);
-
             path = new NavMeshPath();
             NavMesh.CalculatePath(_ctx.navMeshCalcFrom.position, moveTargetPos, NavMesh.AllAreas, path);
             _ctx.MovingAgent.PassPath(path);

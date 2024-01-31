@@ -14,6 +14,19 @@ namespace Sampo.Player {
 
         private CinemachineVirtualCamera[] cameras;
         private bool _buildMode = false;
+
+        private static CameraController _instance;
+        public static CameraController Instance {
+            get {
+                return _instance;
+            }
+        }
+        private void Awake()
+        {
+            if(_instance == null)
+                _instance = this;
+        }
+
         private void Start()
         {
             cameras = new CinemachineVirtualCamera[] { FPS, ThirdPerson, Building };
