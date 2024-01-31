@@ -156,6 +156,11 @@ public class BaseShooting : Tool
                 (to - from).magnitude,
                 alive + structures, duration: duration, color: color, visualise: DRAW);
 
+        if(Utilities.ValueInArea(from, to, 0.075f)) 
+        {
+            return;
+        }
+
         if (hit.collider)
             if (hit.collider.isTrigger)
                 PenetratingRaycast(hit.point + dir*0.05f, to, out hit, duration, color);

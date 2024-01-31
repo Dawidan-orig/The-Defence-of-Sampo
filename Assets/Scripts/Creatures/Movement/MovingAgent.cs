@@ -73,7 +73,7 @@ public class MovingAgent : MonoBehaviour, IMovingAgent
     /// <param name="path">Передаваемый путь</param>
     public void PassPath(NavMeshPath path)
     {
-        //TODO DESIGN : функционал оптимизации пути. Для тех же летающих.
+        //TODO DESIGN : функционал оптимизации пути. Для тех же летающих. Либо же использование 3D NavMeshVolume, есть там такое.
     }
 
     public void MoveIteration(Vector3 newPos) 

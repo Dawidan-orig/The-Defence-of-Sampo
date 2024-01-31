@@ -37,7 +37,7 @@ namespace Sampo.AI
                 return false;
             }
 
-            //TODO? : Выглядит мерзковато
+            //TODO? : Выглядит мерзковато, слишком сильная привязка к разделению между Дальним боем и Ближним.
             if (_ctx.CurrentActivity.actWith.GetRange() + (_ctx is MeleeFighter fighter ? fighter.baseReachDistance : 0) >
                 Vector3.Distance(_ctx.transform.position, _ctx.CurrentActivity.target.position))
             {

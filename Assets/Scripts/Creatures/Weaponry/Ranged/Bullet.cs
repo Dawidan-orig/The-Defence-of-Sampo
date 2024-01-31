@@ -5,6 +5,7 @@ public class Bullet : MonoBehaviour, IDamageDealer
     public Vector3 startPoint;
     public float possibleDistance = 1000;
     public float remainingTime = 300;
+    public float damageMultyplier = 1;
 
     private Transform _damageSource; 
     public Transform DamageFrom { get => _damageSource; }
@@ -19,7 +20,7 @@ public class Bullet : MonoBehaviour, IDamageDealer
         if (collision.collider.transform.TryGetComponent<IDamagable>(out var c))
         {
             Rigidbody r = GetComponent<Rigidbody>();
-            c.Damage(r.mass * r.velocity.magnitude, IDamagable.DamageType.blunt);
+            c.Damage(r.mass * r.velocity.magnitude * damageMultyplier, IDamagable.DamageType.blunt);
         }
 
         Destroy(gameObject);

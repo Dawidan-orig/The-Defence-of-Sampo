@@ -73,8 +73,9 @@ namespace Sampo.AI
                 moveTargetPos = shooting.NavMeshClosestAviableToShoot(_ctx.CurrentActivity.target);
             }
 
-            //TODO : тут не 3 надо, а размер коллайдера текущей цели.
-            if(NavMesh.SamplePosition(moveTargetPos, out var hit, 100, NavMesh.AllAreas))
+            const float SEARCH_RADIUS = 100;
+
+            if(NavMesh.SamplePosition(moveTargetPos, out var hit, SEARCH_RADIUS, NavMesh.AllAreas))
                 moveTargetPos = hit.position;
 
             path = new NavMeshPath();

@@ -10,6 +10,7 @@ namespace Sampo.Core
         public GameObject playerPrefab;
         public Transform playerContainer;
         public PlayerController connectedPlayer;
+        public Collider sizingCollider;
 
         private bool playerSpawnInvoked = false;
 
@@ -29,7 +30,7 @@ namespace Sampo.Core
             const float FORWARD = 3;
             const float UPWARD = 1;
 
-            Vector3 spawnPos = transform.position + transform.up * UPWARD + transform.forward * FORWARD + transform.position + GetComponent<Collider>().bounds.extents;
+            Vector3 spawnPos = transform.position + transform.up * UPWARD + transform.forward * FORWARD + transform.position + sizingCollider.bounds.extents;
             GameObject player = Instantiate(playerPrefab, spawnPos, Quaternion.identity, playerContainer);
             connectedPlayer = player.GetComponent<PlayerController>();
             CameraController.Instance.ThirdPerson = player.GetComponentInChildren<ThirdPersonCameraPositioner>().gameObject.GetComponent<CinemachineVirtualCamera>();

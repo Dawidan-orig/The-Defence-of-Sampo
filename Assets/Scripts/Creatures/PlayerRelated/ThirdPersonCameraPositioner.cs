@@ -5,7 +5,6 @@ namespace Sampo.Player
 {
     public class ThirdPersonCameraPositioner : MonoBehaviour
     {
-        //TODO : FPS Camera
         public PlayerController player;
         public Transform lockTransform;
         public Transform heightTransform;
