@@ -97,7 +97,7 @@ namespace Sampo.Player
         private Vector3 CastMouseToSwordSpace(Vector3 screenPos)
         {
             Vector3 centralize = (screenPos - new Vector3(Screen.width / 2, Screen.height / 2)) / castToWeaponSpaceK;
-            Vector3 flatCast = transform.position + Camera.main.transform.forward * reachLength + transform.rotation * centralize;
+            Vector3 flatCast = transform.position + UnityEngine.Camera.main.transform.forward * reachLength + transform.rotation * centralize;
 
             Vector3 res = usedMainHand.position + reachLength * (flatCast - usedMainHand.position).normalized;
 
@@ -106,7 +106,7 @@ namespace Sampo.Player
 
         public Vector3 GetLookTarget()
         {
-            Physics.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Camera.main.transform.forward, out var res, 100, LayerMask.NameToLayer("Default"));
+            Physics.Raycast(UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition), UnityEngine.Camera.main.transform.forward, out var res, 100, LayerMask.NameToLayer("Default"));
             return res.point;
         }
 

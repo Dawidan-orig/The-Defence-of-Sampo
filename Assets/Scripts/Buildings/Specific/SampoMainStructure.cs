@@ -1,5 +1,6 @@
 using Cinemachine;
 using Sampo.Player;
+using Sampo.Player.CameraControls;
 using UnityEngine;
 
 namespace Sampo.Core

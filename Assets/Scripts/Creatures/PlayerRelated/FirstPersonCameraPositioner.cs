@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.Player
+namespace Sampo.Player.CameraControls
 {
     public class FirstPersonCameraPositioner : MonoBehaviour
     {

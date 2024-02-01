@@ -2820,7 +2820,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2869770348597850908}
   - component: {fileID: 1383640939173714252}
-  m_Layer: 6
+  m_Layer: 2
   m_Name: SixthSense
   m_TagString: Untagged
   m_Icon: {fileID: 0}

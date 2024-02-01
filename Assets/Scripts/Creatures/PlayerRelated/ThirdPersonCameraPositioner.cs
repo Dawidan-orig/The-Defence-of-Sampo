@@ -1,7 +1,7 @@
 using Cinemachine;
 using UnityEngine;
 
-namespace Sampo.Player
+namespace Sampo.Player.CameraControls
 {
     public class ThirdPersonCameraPositioner : MonoBehaviour
     {
@@ -43,7 +43,7 @@ namespace Sampo.Player
 
             if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
             {
-                Ray world_ScreenCenter = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+                Ray world_ScreenCenter = UnityEngine.Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
 
                 if (PenetratingRaycast(world_ScreenCenter.origin, world_ScreenCenter.origin + world_ScreenCenter.direction * FAR_AWAY, out RaycastHit hit, 1))
                 {
@@ -119,6 +119,16 @@ namespace Sampo.Player
             if (hit.collider)
                 if (hit.collider.isTrigger) // Пропускаем все trigger-collider'ы
                 {
+                    if(hit.transform.gameObject.layer == 8 || hit.transform.gameObject.layer == 6) //Camera Layer OR Alive layer
+                    {
+                        PlayerCameraLockTarget locker = hit.transform.GetComponent<PlayerCameraLockTarget>();
+                        if (!locker)
+                            hit.transform.GetComponentInChildren<PlayerCameraLockTarget>();
+
+                        _currentLockRigidbodyTransfrom = locker?.AlignedLock.transform;
+                        return true;
+                    }
+
                     return PenetratingRaycast(hit.point + dirAddition,
                         to,
                         out hit, duration, color);
