@@ -1,3 +1,4 @@
+using Sampo.AI.Conditions;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -96,7 +97,7 @@ namespace Sampo.AI
             }
             else
             {
-                //TODO Заставить это работать : _ctx.Invoke(nameof(Repath),5);
+                _ctx.ModifyActionOf(_ctx.CurrentActivity.target, new NoPathCondition(10));                
 
                 var closest = NavMeshCalculations.Instance.GetCell(_ctx.navMeshCalcFrom.position);
                 moveTargetPos = closest.Center();

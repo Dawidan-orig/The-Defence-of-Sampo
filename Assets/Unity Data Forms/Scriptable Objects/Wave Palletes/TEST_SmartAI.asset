@@ -20,16 +20,16 @@ MonoBehaviour:
       index: 0
       wasModified: 0
     - left: 0.5
-      right: 0.8685
+      right: 0.608
       obj: {fileID: 2397089146008967548, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
       index: 1
       wasModified: 0
-    - left: 0.8685
-      right: 0.98
+    - left: 0.608
+      right: 0.719
       obj: {fileID: 2397089146008967548, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
       index: 2
       wasModified: 0
-    - left: 0.98
+    - left: 0.719
       right: 1
       obj: {fileID: 2875792448630465248, guid: ac256d9e416a53d49ab826947c8cc177, type: 3}
       index: 3

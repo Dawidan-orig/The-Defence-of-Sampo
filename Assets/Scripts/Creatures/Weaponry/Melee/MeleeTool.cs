@@ -32,11 +32,20 @@ public class MeleeTool : Tool
 
     public override float GetRange()
     {
-        return base.GetRange() + host.GetComponent<MeleeFighter>().baseReachDistance;
+        float addition = 0;
+
+        if(host.TryGetComponent<MeleeFighter>(out var m))        
+            addition += m.baseReachDistance;
+        
+
+        return base.GetRange() + addition;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (!gameObject)
+            return;
+
         OnBladeCollision?.Invoke(this, collision);
 
         if (collision.collider.transform.TryGetComponent<IDamagable>(out var damagable))
@@ -45,18 +54,24 @@ public class MeleeTool : Tool
             GetComponent<Collider>().isTrigger = true;
             Invoke(nameof(DisableCollision), noDamageTime);
 
-            audioSource.pitch = UnityEngine.Random.Range(0.5f, 0.8f);
-            audioSource.clip = _collision_alive[UnityEngine.Random.Range(0, _collision_alive.Length)];
-            audioSource.Play();
+            if (audioSource) //Коллизия происходит после удаление Audio Source, из-за чего он null может быть
+            {
+                audioSource.pitch = UnityEngine.Random.Range(0.5f, 0.8f);
+                audioSource.clip = _collision_alive[UnityEngine.Random.Range(0, _collision_alive.Length)];
+                audioSource.Play();
+            }
         }
         else if (collision.collider.transform.TryGetComponent<Blade>(out _))
         {
             GetComponent<Collider>().isTrigger = true;
             Invoke(nameof(DisableCollision), noDamageTime);
 
-            audioSource.pitch = UnityEngine.Random.Range(0.5f, 0.8f);
-            audioSource.clip = _collision_blade[UnityEngine.Random.Range(0, _collision_blade.Length)];
-            audioSource.Play();
+            if (audioSource)
+            {
+                audioSource.pitch = UnityEngine.Random.Range(0.5f, 0.8f);
+                audioSource.clip = _collision_blade[UnityEngine.Random.Range(0, _collision_blade.Length)];
+                audioSource.Play();
+            }
 
             /*
             if (sparkles)

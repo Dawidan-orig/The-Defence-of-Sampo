@@ -48,7 +48,7 @@ namespace Sampo.Player.CameraControls
                 if (PenetratingRaycast(world_ScreenCenter.origin, world_ScreenCenter.origin + world_ScreenCenter.direction * FAR_AWAY, out RaycastHit hit, 1))
                 {
                     lockTransform.position = hit.point;
-                    if(hit.rigidbody)
+                    if (hit.rigidbody)
                         _currentLockRigidbodyTransfrom = hit.transform;
                 }
                 else
@@ -105,6 +105,8 @@ namespace Sampo.Player.CameraControls
 
         public bool PenetratingRaycast(Vector3 from, Vector3 to, out RaycastHit hit, float duration = 0, Color? color = null)
         {
+            LayerMask CameraLock = 256;
+
             if (color == null)
                 color = Color.white;
 
@@ -112,20 +114,21 @@ namespace Sampo.Player.CameraControls
                     (to - from).normalized,
                     out hit,
                     (to - from).magnitude,
-                    alive + structures, duration: duration, color: color);
+                    alive + structures + CameraLock, duration: duration, color: color);
 
             Vector3 dirAddition = (to - from).normalized * 0.05f; //Чтобы реально пробивать коллайдеры, особенно кривые
 
             if (hit.collider)
                 if (hit.collider.isTrigger) // Пропускаем все trigger-collider'ы
                 {
-                    if(hit.transform.gameObject.layer == 8 || hit.transform.gameObject.layer == 6) //Camera Layer OR Alive layer
-                    {
-                        PlayerCameraLockTarget locker = hit.transform.GetComponent<PlayerCameraLockTarget>();
-                        if (!locker)
-                            hit.transform.GetComponentInChildren<PlayerCameraLockTarget>();
 
-                        _currentLockRigidbodyTransfrom = locker?.AlignedLock.transform;
+                    PlayerCameraLockTarget locker = hit.transform.GetComponent<PlayerCameraLockTarget>();
+                    if (!locker)
+                        locker = hit.transform.GetComponentInChildren<PlayerCameraLockTarget>();
+
+                    if (locker)
+                    {
+                        _currentLockRigidbodyTransfrom = locker.AlignedLock.transform;
                         return true;
                     }
 

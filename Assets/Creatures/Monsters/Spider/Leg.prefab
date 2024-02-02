@@ -549,7 +549,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   host: {fileID: 0}
-  additionalMeleeReach: 0
+  additionalMeleeReach: 20
   alive:
     serializedVersion: 2
     m_Bits: 64

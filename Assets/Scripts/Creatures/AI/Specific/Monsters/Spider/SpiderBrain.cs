@@ -1,191 +1,193 @@
-using Sampo.AI;
 using UnityEngine;
 
-[SelectionBase]
-public class SpiderBrain : TargetingUtilityAI
+namespace Sampo.AI.Monsters
 {
-    //TODO : Преобразовать в StateMachine от Git-Amend.
-    [Header("Spider")]
-    public float attackSpeed = 1;
-    public LegsHarmoniser legsHarmony;
-    public SpiderLegControl attackingLeg;    
-    public float legRaiseHeight = 2;
-    public float rotationInfluence = 2;
-    public float heightControlMultiplyer = 5;
-
-    public AnimationCurve prepare;
-    public AnimationCurve attack;
-    public AnimationCurve returning;
-    
-    public LayerMask terrain;
-
-    private Vector3 _wholeInitial;
-    private Vector3 _stateInitial;
-    private Vector3 _legDesire;
-    private float _stateProgress = 1;
-    private SpiderState _spiderState = SpiderState.nothing;
-    private float desireBodyHeight;
-    private Quaternion initialBodyRotation;
-    private float initialBodyHeightOffset;
-
-    private enum SpiderState
+    [SelectionBase]
+    public class SpiderBrain : TargetingUtilityAI
     {
-        nothing,
-        prepare,
-        attack,
-        toReturn
-    }
+        //TODO : Преобразовать в StateMachine от Git-Amend.
+        [Header("Spider")]
+        public float attackSpeed = 1;
+        public LegsHarmoniser legsHarmony;
+        public SpiderLegControl attackingLeg;
+        public float legRaiseHeight = 2;
+        public float rotationInfluence = 2;
+        public float heightControlMultiplyer = 5;
 
-    protected override void Start()
-    {
-        base.Start();
+        public AnimationCurve prepare;
+        public AnimationCurve attack;
+        public AnimationCurve returning;
 
-        initialBodyHeightOffset = transform.position.y - legsHarmony.legs[0].legTarget.position.y;
-        initialBodyRotation = transform.rotation;
-    }
+        public LayerMask terrain;
 
-    protected override void Update()
-    {
-        base.Update();
-        if (Physics.Raycast(transform.position, Vector3.down, out var hit, legsHarmony.legsLength, terrain))
-            navMeshCalcFrom.position = hit.point;
-    }
+        private Vector3 _wholeInitial;
+        private Vector3 _stateInitial;
+        private Vector3 _legDesire;
+        private float _stateProgress = 1;
+        private SpiderState _spiderState = SpiderState.nothing;
+        private float desireBodyHeight;
+        private Quaternion initialBodyRotation;
+        private float initialBodyHeightOffset;
 
-    protected override void FixedUpdate()
-    {
-        base.FixedUpdate();        
-
-        float average = 0;
-        foreach(SpiderLegControl leg in legsHarmony.legs) 
-            if(leg != attackingLeg && leg != null)
-                average += leg.legTarget.position.y; 
-
-        average /= legsHarmony.legs.Count;
-
-        desireBodyHeight = average + initialBodyHeightOffset;
-
-        const float CLOSE_ENOUGH = 0.5f;
-        if (!Utilities.ValueInArea(desireBodyHeight, transform.position.y, CLOSE_ENOUGH))
+        private enum SpiderState
         {
-            Vector3 force = (desireBodyHeight- transform.position.y) * heightControlMultiplyer * Time.fixedDeltaTime * Vector3.up;
-            Utilities.DrawLineWithDistance(transform.position, transform.position + force, color : Color.black);
-            Body.AddForce(force, ForceMode.VelocityChange);   
+            nothing,
+            prepare,
+            attack,
+            toReturn
         }
 
-        foreach (LegsHarmoniser.LegsPair pair in legsHarmony.legPairs) 
+        protected override void Start()
         {
-            if (pair.left == null || pair.right == null)
-                continue;
+            base.Start();
 
-            float initialEulerY = initialBodyRotation.y;
-            float diff = pair.left.legTarget.position.y - pair.right.legTarget.position.y;
-            //IDEA : Если поставить -diff, то получится хоррор.
-            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x,transform.rotation.eulerAngles.y, diff * rotationInfluence + initialEulerY);
+            initialBodyHeightOffset = transform.position.y - legsHarmony.legs[0].legTarget.position.y;
+            initialBodyRotation = transform.rotation;
         }
 
-        if(_currentState != _factory.Attack() && _spiderState != SpiderState.nothing && attackingLeg != null) 
+        protected override void Update()
         {
-            if (_spiderState != SpiderState.toReturn)
+            base.Update();
+            if (Physics.Raycast(transform.position, Vector3.down, out var hit, legsHarmony.legsLength, terrain))
+                navMeshCalcFrom.position = hit.point;
+        }
+
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+
+            float average = 0;
+            foreach (SpiderLegControl leg in legsHarmony.legs)
+                if (leg != attackingLeg && leg != null)
+                    average += leg.legTarget.position.y;
+
+            average /= legsHarmony.legs.Count;
+
+            desireBodyHeight = average + initialBodyHeightOffset;
+
+            const float CLOSE_ENOUGH = 0.5f;
+            if (!Utilities.ValueInArea(desireBodyHeight, transform.position.y, CLOSE_ENOUGH))
             {
-                _spiderState = SpiderState.toReturn;
-                _stateInitial = attackingLeg.limb.transform.position;
-                _legDesire = _wholeInitial;
+                Vector3 force = (desireBodyHeight - transform.position.y) * heightControlMultiplyer * Time.fixedDeltaTime * Vector3.up;
+                Utilities.DrawLineWithDistance(transform.position, transform.position + force, color: Color.black);
+                Body.AddForce(force, ForceMode.VelocityChange);
+            }
+
+            foreach (LegsHarmoniser.LegsPair pair in legsHarmony.legPairs)
+            {
+                if (pair.left == null || pair.right == null)
+                    continue;
+
+                float initialEulerY = initialBodyRotation.y;
+                float diff = pair.left.legTarget.position.y - pair.right.legTarget.position.y;
+                //IDEA : Если поставить -diff, то получится хоррор.
+                transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, diff * rotationInfluence + initialEulerY);
+            }
+
+            if (_currentState != _factory.Attack() && _spiderState != SpiderState.nothing && attackingLeg != null)
+            {
+                if (_spiderState != SpiderState.toReturn)
+                {
+                    _spiderState = SpiderState.toReturn;
+                    _stateInitial = attackingLeg.limb.transform.position;
+                    _legDesire = _wholeInitial;
+                    _stateProgress = 0;
+                    attackingLeg.limb.IsDamaging = false;
+                }
+
+                if (_stateProgress <= 1)
+                    _stateProgress += Time.fixedDeltaTime * attackSpeed;
+
+                ReturnProcess();
+            }
+        }
+
+        public override void AttackUpdate(Transform target)
+        {
+            if (attackingLeg == null)
+            {
+                legsHarmony.legs.RemoveAll(item => item == null);
+
+                if (legsHarmony.legs.Count == 0)
+                    return;
+
+                attackingLeg = legsHarmony.legs[Random.Range(0, legsHarmony.legs.Count)];
+                attackingLeg.enabled = false;
+
+                _spiderState = SpiderState.prepare;
                 _stateProgress = 0;
-                attackingLeg.limb.IsDamaging = false;
+                _wholeInitial = attackingLeg.legTarget.position;
+                _stateInitial = _wholeInitial;
+                _legDesire = _wholeInitial + Vector3.up * legRaiseHeight;
             }
 
             if (_stateProgress <= 1)
-                _stateProgress += Time.fixedDeltaTime * attackSpeed;
+                _stateProgress += Time.deltaTime * attackSpeed;
 
-            ReturnProcess();
+            if (_spiderState == SpiderState.prepare)
+                PrepareProcess(target);
+            else if (_spiderState == SpiderState.attack)
+                AttackProcess();
+            else if (_spiderState == SpiderState.toReturn)
+                ReturnProcess();
         }
-    }
 
-    public override void AttackUpdate(Transform target)
-    {
-        if (attackingLeg == null)
+        private void PrepareProcess(Transform target)
         {
-            legsHarmony.legs.RemoveAll(item => item == null);
+            attackingLeg.legTarget.position = Vector3.LerpUnclamped(_stateInitial, _legDesire, prepare.Evaluate(_stateProgress));
 
-            if (legsHarmony.legs.Count == 0)
-                return;
-
-            attackingLeg = legsHarmony.legs[Random.Range(0, legsHarmony.legs.Count)];
-            attackingLeg.enabled = false;
-
-            _spiderState = SpiderState.prepare;
-            _stateProgress = 0;
-            _wholeInitial = attackingLeg.legTarget.position;
-            _stateInitial = _wholeInitial;
-            _legDesire = _wholeInitial + Vector3.up * legRaiseHeight;
+            if (_stateProgress > 1)
+            {
+                _stateInitial = _legDesire;
+                _legDesire = target.position;
+                _stateProgress = 0;
+                _spiderState = SpiderState.attack;
+                attackingLeg.limb.IsDamaging = true;
+            }
         }
 
-        if (_stateProgress <= 1)
-            _stateProgress += Time.deltaTime * attackSpeed;
-
-        if (_spiderState == SpiderState.prepare)
-            PrepareProcess(target);
-        else if (_spiderState == SpiderState.attack)
-            AttackProcess();
-        else if (_spiderState == SpiderState.toReturn)
-            ReturnProcess();
-    }
-
-    private void PrepareProcess(Transform target)
-    {
-        attackingLeg.legTarget.position = Vector3.LerpUnclamped(_stateInitial, _legDesire, prepare.Evaluate(_stateProgress));
-
-        if (_stateProgress > 1)
+        private void AttackProcess()
         {
-            _stateInitial = _legDesire;
-            _legDesire = target.position;
-            _stateProgress = 0;
-            _spiderState = SpiderState.attack;
-            attackingLeg.limb.IsDamaging = true;
+            attackingLeg.legTarget.position = Vector3.LerpUnclamped(_stateInitial, _legDesire, attack.Evaluate(_stateProgress));
+
+            if (_stateProgress > 1)
+            {
+                _stateInitial = _legDesire;
+                _legDesire = _wholeInitial;
+                _stateProgress = 0;
+                _spiderState = SpiderState.toReturn;
+                attackingLeg.limb.IsDamaging = false;
+            }
         }
-    }
 
-    private void AttackProcess()
-    {
-        attackingLeg.legTarget.position = Vector3.LerpUnclamped(_stateInitial, _legDesire, attack.Evaluate(_stateProgress));
-
-        if (_stateProgress > 1)
+        private void ReturnProcess()
         {
-            _stateInitial = _legDesire;
-            _legDesire = _wholeInitial;
-            _stateProgress = 0;
-            _spiderState = SpiderState.toReturn;
-            attackingLeg.limb.IsDamaging = false;
+            attackingLeg.legTarget.position = Vector3.LerpUnclamped(_stateInitial, _legDesire, returning.Evaluate(_stateProgress));
+
+            if (_stateProgress > 1)
+            {
+                attackingLeg.enabled = true;
+                attackingLeg = null;
+            }
         }
-    }
 
-    private void ReturnProcess()
-    {
-        attackingLeg.legTarget.position = Vector3.LerpUnclamped(_stateInitial, _legDesire, returning.Evaluate(_stateProgress));
-
-        if (_stateProgress > 1)
+        public override void AssignPoints(int points)
         {
-            attackingLeg.enabled = true;
-            attackingLeg = null;
+            base.AssignPoints(points);
+
+            int remaining = points;
+
+            //TODO DESIGN
         }
-    }
 
-    public override void AssignPoints(int points)
-    {
-        base.AssignPoints(points);
+        protected override Tool ToolChosingCheck(Transform target)
+        {
+            return attackingLeg.limb;
+        }
 
-        int remaining = points;
-
-        //TODO DESIGN
-    }
-
-    protected override Tool ToolChosingCheck(Transform target)
-    {
-        return attackingLeg.limb;
-    }
-
-    public override void ActionUpdate(Transform target)
-    {
-        throw new System.NotImplementedException();
+        public override void ActionUpdate(Transform target)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
