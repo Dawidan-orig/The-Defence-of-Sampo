@@ -33,7 +33,7 @@ namespace Sampo.Core
 
             Vector3 spawnPos = transform.position + transform.up * UPWARD + transform.forward * FORWARD + transform.position + sizingCollider.bounds.extents;
             GameObject player = Instantiate(playerPrefab, spawnPos, Quaternion.identity, playerContainer);
-            connectedPlayer = player.GetComponent<PlayerController>();
+            connectedPlayer = player.GetComponentInChildren<PlayerController>();
             CameraController.Instance.ThirdPerson = player.GetComponentInChildren<ThirdPersonCameraPositioner>().gameObject.GetComponent<CinemachineVirtualCamera>();
             CameraController.Instance.ThirdPerson = player.GetComponentInChildren<FirstPersonCameraPositioner>().gameObject.GetComponent<CinemachineVirtualCamera>();
         }

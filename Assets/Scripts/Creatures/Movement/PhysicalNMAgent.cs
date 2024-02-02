@@ -12,6 +12,8 @@ public class PhysicalNMAgent : MonoBehaviour, IMovingAgent
     public float edgeDistance = 2;
     [Tooltip("Глубина вниз от края, когда его следует избегать")]
     public float edgeDepth = 1;
+    [Tooltip("Отвечает за высоту, при которой начнёт работать NavMesh")]
+    public float toGroundHeight = 1;
     public LayerMask terrainMask;
 
     Vector3 lookPos;
@@ -71,7 +73,7 @@ public class PhysicalNMAgent : MonoBehaviour, IMovingAgent
     {
         if (!agent.enabled)
         {
-            if (Physics.Raycast(transform.position, Vector3.down, 1, terrainMask))
+            if (Physics.Raycast(countFrom.position, Vector3.down, toGroundHeight, terrainMask))
             {
                 ResetAgent();
             }

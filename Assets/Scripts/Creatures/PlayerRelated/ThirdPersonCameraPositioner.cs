@@ -128,6 +128,9 @@ namespace Sampo.Player.CameraControls
 
                     if (locker)
                     {
+                        //TODO : Не менять, если уже есть lock-объект.
+                        //TODO : Если пропал lock-объект, сделать проверку области, чтобы найти и переключится на ближайшую цель.
+                        // Тогда управление будет - просто конфетка.
                         _currentLockRigidbodyTransfrom = locker.AlignedLock.transform;
                         return true;
                     }

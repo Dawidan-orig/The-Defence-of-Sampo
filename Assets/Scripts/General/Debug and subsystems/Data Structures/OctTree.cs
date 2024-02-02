@@ -32,7 +32,7 @@ public class OctTree
         byte _activeNodes = 0;
 
         // –азмер минимального куба.
-        const int MIN_SIZE = 5;
+        const int MIN_SIZE = 20;
 
         int _maxLifespan = 8; // масимальное врем€ жизни листа в кадрах. ѕри переиспользовании это врем€ удваиваетс€ вплоть до 64-х.
         int _curLife = -1; // —колько времени осталось до удалени€ листа?

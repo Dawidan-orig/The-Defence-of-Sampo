@@ -10,22 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f9ab12d299b4d2b42a9cb6ac4f31cef3, type: 3}
-  m_Name: TEST_SmartAI
+  m_Name: TEST_Monsters
   m_EditorClassIdentifier: 
   enemies:
     objectsSummary:
     - left: 0
-      right: 0.695
-      obj: {fileID: 6166585230114025203, guid: 294f994b9ce14f5468bcf0d6a2a63c2c, type: 3}
-      index: 0
-      wasModified: 0
-    - left: 0.695
-      right: 0.832
-      obj: {fileID: 2397089146008967548, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
-      index: 1
-      wasModified: 0
-    - left: 0.832
       right: 1
-      obj: {fileID: 2397089146008967548, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
-      index: 2
+      obj: {fileID: 2875792448630465248, guid: ac256d9e416a53d49ab826947c8cc177, type: 3}
+      index: 0
       wasModified: 0
