@@ -77,7 +77,7 @@ namespace Sampo.AI
                     forEditor_Weight = res;
                     return res;
                 }
-            } //TODO!!! : Очень много вызовов, безумно дорого!
+            } //TODO!!!!! : Очень много вызовов, безумно дорого! Кэшировать, сделать что угодно - но не вызывать так!
             public void Update() 
             {
                 _conditions.RemoveAll(item => item == null || !item.IsConditionAlive);

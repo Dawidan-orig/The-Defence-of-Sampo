@@ -5,11 +5,16 @@ namespace Sampo.Player.CameraControls
 {
     public class ThirdPersonCameraPositioner : MonoBehaviour
     {
+        [Tooltip("Связанный с камерой игрок")]
         public PlayerController player;
+        [Tooltip("Transform, положение которого будет меняться в зависимости от захвата камеры")]
         public Transform lockTransform;
+        [Tooltip("Отвечает за поворот камеры вверх и вниз")]
         public Transform heightTransform;
-        public CinemachineTargetGroup targetGroup;
+        [Tooltip("Чем больше это расстояние - тем сильнее и выше можно поднять голову")]
         public float heightTransfromDist = 10;
+        [Tooltip("Расстояние до новой цели после того, как текущая уничтожилась")]
+        public float newLockDist = 10;
         public Vector2 sensitivity;
         public Vector2 xAngleLimit = new Vector2(-75, 75);
         public LayerMask alive;
@@ -21,6 +26,7 @@ namespace Sampo.Player.CameraControls
         private Vector3 _initialLookAt;
         [SerializeField]
         private Transform _currentLockRigidbodyTransfrom;
+        private Vector3 _lastLockRigidbodyPos = Vector3.zero;
         [SerializeField]
         private CinemachineVirtualCamera virtualCamera;
 
@@ -49,7 +55,10 @@ namespace Sampo.Player.CameraControls
                 {
                     lockTransform.position = hit.point;
                     if (hit.rigidbody)
+                    {
                         _currentLockRigidbodyTransfrom = hit.transform;
+                        _lastLockRigidbodyPos = hit.transform.position;
+                    }
                 }
                 else
                     lockTransform.position = world_ScreenCenter.origin + world_ScreenCenter.direction * FAR_AWAY;
@@ -66,7 +75,20 @@ namespace Sampo.Player.CameraControls
                 }
 
                 if (_currentLockRigidbodyTransfrom != null)
+                {
                     lockTransform.position = _currentLockRigidbodyTransfrom.position;
+                    _lastLockRigidbodyPos = lockTransform.position;
+                }
+                else 
+                {
+                    if(_lastLockRigidbodyPos != Vector3.zero) 
+                    {
+                        var colliders = Physics.OverlapSphere(_lastLockRigidbodyPos, newLockDist);
+                        if (colliders.Length > 0)
+                            _currentLockRigidbodyTransfrom = colliders[0].transform;
+                    }
+                    _lastLockRigidbodyPos = Vector3.zero;
+                }
 
                 GameObject go = new();
                 Transform probe = go.transform;
@@ -126,10 +148,8 @@ namespace Sampo.Player.CameraControls
                     if (!locker)
                         locker = hit.transform.GetComponentInChildren<PlayerCameraLockTarget>();
 
-                    if (locker)
+                    if (locker && !_currentLockRigidbodyTransfrom)
                     {
-                        //TODO : Не менять, если уже есть lock-объект.
-                        //TODO : Если пропал lock-объект, сделать проверку области, чтобы найти и переключится на ближайшую цель.
                         // Тогда управление будет - просто конфетка.
                         _currentLockRigidbodyTransfrom = locker.AlignedLock.transform;
                         return true;
