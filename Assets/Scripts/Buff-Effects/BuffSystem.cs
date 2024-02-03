@@ -10,13 +10,12 @@ public class BuffSystem : MonoBehaviour
 
     void Update()
     {
-        List<UniversalEffect> updatedEffects = new(effects);
-        foreach(UniversalEffect effect in effects) 
+        if (effects.Count > 0)
+            foreach (UniversalEffect effect in effects) 
         {
             if (effect.Depretiated)
             {
                 effect.ReverseEffect();
-                updatedEffects.Remove(effect);
             }
             else 
             {
@@ -24,11 +23,12 @@ public class BuffSystem : MonoBehaviour
             }
         }
 
-        effects = updatedEffects;
+        effects.RemoveAll(item => item.Depretiated);
     }
 
     private void FixedUpdate()
     {
+        if(effects.Count > 0)
         foreach(UniversalEffect effect in effects) 
         {
             if (!effect.Depretiated)

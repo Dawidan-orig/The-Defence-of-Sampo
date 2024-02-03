@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class DirectHandle : MonoBehaviour
     // Контроль за Rigidbody; Континуальное перемещение объектов.
+    //TODO OPTIMIZATION : 6% от всего при нужном количестве юнитов
 {
     public Transform bladeHandle;
     public Rigidbody bladeTarget;

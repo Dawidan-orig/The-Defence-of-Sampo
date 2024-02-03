@@ -62,6 +62,7 @@ namespace Sampo.Melee.Sword
         }
 
         private void MoveSword()
+            //TODO OPTIMIZATION : 10% от всего при нужном количестве юнитов
         {
             frameMoved = true;
             float heightFrom = _ctx.MoveFrom.position.y;

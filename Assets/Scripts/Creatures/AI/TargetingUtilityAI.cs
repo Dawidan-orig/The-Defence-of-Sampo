@@ -51,7 +51,7 @@ namespace Sampo.AI
         public IMovingAgent MovingAgent { get => _movingAgent; set => _movingAgent = value; }
 
         [Serializable]
-        public class AIAction
+        public struct AIAction
         {
             private TargetingUtilityAI actionOf;
 
@@ -65,20 +65,13 @@ namespace Sampo.AI
             public UtilityAI_BaseState whatDoWhenClose;
 
             [SerializeField]
-            private float forEditor_Weight;
+            private int _totalWeight;
 
             public int TotalWeight
             {
-                get
-                {
-                    var res = baseWeight - distanceSubstraction - enemiesAmountSubstraction;
-                    foreach (var c in _conditions)
-                        res += c.WeightInfluence;
-                    forEditor_Weight = res;
-                    return res;
-                }
-            } //TODO!!!!! : Очень много вызовов, безумно дорого! Кэшировать, сделать что угодно - но не вызывать так!
-            public void Update() 
+                get => _totalWeight;
+            }
+            public void Update()
             {
                 _conditions.RemoveAll(item => item == null || !item.IsConditionAlive);
 
@@ -87,8 +80,13 @@ namespace Sampo.AI
                 enemiesAmountSubstraction =
                     UtilityAI_Manager.Instance.GetCongestion(target.GetComponent<Interactable_UtilityAI>());
 
+                _totalWeight = baseWeight - distanceSubstraction - enemiesAmountSubstraction;
+
                 foreach (var c in _conditions)
+                {
                     c.Update();
+                    _totalWeight += c.WeightInfluence;
+                } 
             }
             public void Modify(BaseAICondition condition) 
             {              
@@ -107,6 +105,9 @@ namespace Sampo.AI
                 actWith = default;
                 whatDoWhenClose = default;
 
+                enemiesAmountSubstraction = 0;
+                _totalWeight = 0;
+
                 _conditions = new();
             }
 
@@ -120,6 +121,9 @@ namespace Sampo.AI
                 this.actWith = actWith;
                 whatDoWhenClose = alignedState;
                 distanceSubstraction = 0;
+
+                enemiesAmountSubstraction = 0;
+                _totalWeight = 0;
 
                 _conditions = new();
             }
@@ -143,19 +147,23 @@ namespace Sampo.AI
 
             public static bool operator ==(AIAction c1, AIAction c2)
             {
+                /*
                 if (c1 is null && c2 is null)
                     return true;
                 else if (c1 is null && c2 is not null || c1 is not null && c2 is null)
                     return false;
+                */
 
                 return (c1.target == c2.target) && (c1.whatDoWhenClose == c2.whatDoWhenClose) && (c1.actWith == c2.actWith);
             }
             public static bool operator !=(AIAction c1, AIAction c2)
             {
+                /*
                 if (c1 is null && c2 is null)
                     return true;
                 else if (c1 is null && c2 is not null || c1 is not null && c2 is null)
                     return false;
+                */
 
                 return (c1.target != c2.target) || (c1.name != c2.name) || (c1.actWith != c2.actWith);
             }
@@ -356,7 +364,7 @@ namespace Sampo.AI
         /// <param name="withCondition">Динамическое условие, что применяется на все задачи</param>
         public void ModifyActionOf(Transform target, BaseAICondition withCondition) 
         {
-            AIAction best = null;
+            AIAction? best = null;
             foreach(var action in _possibleActions) 
             {
                 if (best == null)
@@ -365,12 +373,12 @@ namespace Sampo.AI
                 if (action.target == target)
                 {
                     action.Modify(withCondition);
-                    if (action.TotalWeight > best.TotalWeight)
+                    if (action.TotalWeight > best.Value.TotalWeight)
                         best = action;
                 }
             }
-            if (best.TotalWeight > CurrentActivity.TotalWeight)
-                ChangeAction(best);
+            if (best?.TotalWeight > CurrentActivity.TotalWeight)
+                ChangeAction(best.Value);
         }
 
         /// <summary>

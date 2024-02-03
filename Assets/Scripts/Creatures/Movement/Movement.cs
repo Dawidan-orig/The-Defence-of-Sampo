@@ -5,7 +5,8 @@ using UnityEngine.AI;
 
 public class Movement : MonoBehaviour
 {
-    //TODO DESIGN : Придумать разные типы движения на основе одного базого. Летающие, наследующие от наземных, теряя огромный пласт функционала - это параша.
+    //TODO OPTIMIZATION : Полностью перейти на PhysicalNMAgent, этот - дорогой, для частых юнитов не подходит из-за большого количества Ray- и boxcast'ов
+    //TODO DESIGN : Придумать разные типы движения на основе одного базого. Летающие, наследующие от наземных, теряя огромный пласт функционала - это мусор.
     #region variables
     [Header("constraints")]
     [Header("On ground")]
