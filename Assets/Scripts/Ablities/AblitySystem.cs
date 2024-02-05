@@ -1,50 +1,55 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AblitySystem : MonoBehaviour
+namespace Sampo.Abilities
 {
-    public GameObject slashPrefab;
-    //TODO DESIGN : У нас тут компонент, который лишь позволяет работать с какими угодно способностями.
-    // Способности знают всё сами о себе, этот компонент их - активирует
-    // SlashPrefab тут - лишний.
-    //TODO DESIGN :  Кроме того, надо добавить систему, при которой эти способности отсюда можно легко добавлять-удалять в runtime.
-    // Пока что всё в Hardcode
-    public Ability[] abilities;
-    public LayerMask Collidables;
-
-    private void Awake()
+    public class AblitySystem : MonoBehaviour
     {
-        abilities = new Ability[4];
+        //TODO dep. Player : добавление новых способностей hardcoded в Awake, а через внешнюю систему. Сделать это, когда будет готова система классов игрока
+        public List<Ability> abilities;
+        public LayerMask Collidables;
 
-        abilities[0] = new ProceedingSlash(transform, slashPrefab);
-        ((ProceedingSlash)abilities[0]).layers = Collidables;
-        abilities[1] = new Blow(transform);
-        abilities[2] = new WindSlide(transform);
-        abilities[3] = new FixedAscention(transform);
-    }
+        private void Awake()
+        {
+            abilities = new List<Ability>();
 
-    private void Start()
-    {
-        foreach (var ability in abilities) { ability.Enable(); }
-    }
+            ProceedingSlash slash = new ProceedingSlash(transform);
+            Blow blow = new Blow(transform);
+            WindSlide slide = new WindSlide(transform);
+            FixedAscention ult_Ascension = new FixedAscention(transform);
 
-    private void Update()
-    {
-        foreach(var ability in abilities) { ability.Update(); }
+            AddNewAbility(slash);
+            AddNewAbility(blow);
+            AddNewAbility(slide);
+            AddNewAbility(ult_Ascension);
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            abilities[0].Activate();
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-            abilities[1].Activate();
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-            abilities[2].Activate();
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-            abilities[3].Activate();
-    }
+            slash.layers = Collidables;
+        }
 
-    private void FixedUpdate()
-    {
-        foreach (var ability in abilities) { ability.FixedUpdate(); }
+        private void Start()
+        {
+            foreach (var ability in abilities) { ability.Enable(); }
+        }
+
+        private void Update()
+        {
+            foreach (var ability in abilities) { ability.Update(); }
+
+            int inputAbility = (int)KeyCode.Alpha1;
+
+            for (int i = 0; i < abilities.Count; i++)
+                if (Input.GetKeyDown((KeyCode)(i + inputAbility)))
+                    abilities[i].Activate();
+        }
+
+        private void FixedUpdate()
+        {
+            foreach (var ability in abilities) { ability.FixedUpdate(); }
+        }
+
+        public void AddNewAbility(Ability a) 
+        {
+            abilities.Add(a);
+        }
     }
 }
