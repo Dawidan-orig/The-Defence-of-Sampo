@@ -8,6 +8,7 @@ namespace Sampo.Player
     {
         //TODO DESIGN :  Продумать систему, при которой можно будет использовать разное оружие, а не только ближний бой
         Movement movement;
+        public Canvas UICanvas;
 
         public Transform usedMainHand;
         [Header("Weaponry")]
@@ -26,6 +27,7 @@ namespace Sampo.Player
         private void Awake()
         {
             movement = GetComponent<Movement>();
+
         }
 
         private void Update()

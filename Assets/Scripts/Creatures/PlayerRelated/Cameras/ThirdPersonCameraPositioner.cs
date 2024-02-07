@@ -1,4 +1,5 @@
 using Cinemachine;
+using Sampo.Core;
 using UnityEngine;
 
 namespace Sampo.Player.CameraControls
@@ -143,16 +144,21 @@ namespace Sampo.Player.CameraControls
             if (hit.collider)
                 if (hit.collider.isTrigger) // Пропускаем все trigger-collider'ы
                 {
-
                     PlayerCameraLockTarget locker = hit.transform.GetComponent<PlayerCameraLockTarget>();
                     if (!locker)
                         locker = hit.transform.GetComponentInChildren<PlayerCameraLockTarget>();
 
-                    if (locker && !_currentLockRigidbodyTransfrom)
+                    if (locker)
                     {
-                        // Тогда управление будет - просто конфетка.
-                        _currentLockRigidbodyTransfrom = locker.AlignedLock.transform;
-                        return true;
+                        if (locker.gameObject.TryGetComponent<IInteractable>(out var interactable))
+                            interactable.Interact(player.transform);
+
+                        if (!_currentLockRigidbodyTransfrom)
+                        {
+                            _currentLockRigidbodyTransfrom = locker.AlignedLock;
+
+                            return true;
+                        }
                     }
 
                     return PenetratingRaycast(hit.point + dirAddition,

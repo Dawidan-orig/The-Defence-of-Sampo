@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Sampo.Player {
     public class CameraController : MonoBehaviour
     {
-        public CinemachineVirtualCamera FPS;
+        public CinemachineVirtualCamera FirstPerson;
         public CinemachineVirtualCamera ThirdPerson;
         public CinemachineVirtualCamera Building;
 
@@ -29,7 +29,7 @@ namespace Sampo.Player {
 
         private void Start()
         {
-            cameras = new CinemachineVirtualCamera[] { FPS, ThirdPerson, Building };
+            cameras = new CinemachineVirtualCamera[] { FirstPerson, ThirdPerson, Building };
         }
 
         private void Update()

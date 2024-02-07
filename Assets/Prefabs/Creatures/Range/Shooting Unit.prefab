@@ -119,7 +119,7 @@ MonoBehaviour:
     target: {fileID: 0}
     name: 
     actWith: {fileID: 0}
-    forEditor_Weight: 0
+    _totalWeight: 0
   _possibleActions: []
   visiblePowerPoints: 100
   weapon: {fileID: 2397089146641432726}

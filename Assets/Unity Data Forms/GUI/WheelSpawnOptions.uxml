@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Unity%20Data%20Forms/GUI/Styles/Text.uss?fileID=7433441132597879392&amp;guid=a74289f61f004604fb47dfd2e4984d19&amp;type=3#Text" />
+    <ui:ListView focusable="true" name="spawnables" virtualization-method="DynamicHeight" />
+</ui:UXML>
