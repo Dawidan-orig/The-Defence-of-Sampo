@@ -1,0 +1,18 @@
+{
+    "name": "SampoBuildingSystem",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6c48c94ad58ed104fa5e4052898e5fab",
+        "GUID:1b27c6fcd9ad47042b93b09a26a82d4d",
+        "GUID:4307f53044263cf4b835bd812fc161a4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

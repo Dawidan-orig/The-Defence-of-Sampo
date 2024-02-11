@@ -1,0 +1,18 @@
+{
+    "name": "SampoAbilities",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6c48c94ad58ed104fa5e4052898e5fab",
+        "GUID:1b27c6fcd9ad47042b93b09a26a82d4d",
+        "GUID:942ea97f72f06dd4f82d2e8e847944cb"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
