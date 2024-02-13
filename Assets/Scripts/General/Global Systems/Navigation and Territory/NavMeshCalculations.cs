@@ -649,7 +649,7 @@ public class NavMeshCalculations : MonoBehaviour
 
         _cells = cellsList.ToArray();
     }
-
+    
     public Cell GetCell(Vector3 pointNear)
     {
         return FindByOctTree(pointNear);
@@ -753,11 +753,6 @@ public class NavMeshCalculations : MonoBehaviour
         return res;
     }
 
-    /// <summary>
-    /// Находит ближайшую к данной точке клетку через NavMesh.CalculatePath()
-    /// </summary>
-    /// <param name="pointNear"></param>
-    /// <returns></returns>
 
     public void DrawCells()
     {

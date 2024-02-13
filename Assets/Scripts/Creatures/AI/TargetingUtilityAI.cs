@@ -126,6 +126,8 @@ namespace Sampo.AI
                 _totalWeight = 0;
 
                 _conditions = new();
+
+                Update();
             }
             #endregion
 

@@ -55,7 +55,7 @@ namespace Sampo.Player {
 
         private void EqualizePriorities() 
         {
-            foreach(var cam in cameras) 
+            foreach(var cam in cameras)
             {
                 cam.Priority = 10;
             }
