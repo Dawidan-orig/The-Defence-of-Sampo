@@ -5,7 +5,7 @@
   "showAttachments": false,
   "hideUnresolved": false,
   "showOrphans": true,
-  "collapse-color-groups": true,
+  "collapse-color-groups": false,
   "colorGroups": [
     {
       "query": "path:Утилитарное",
@@ -26,6 +26,13 @@
       "color": {
         "a": 1,
         "rgb": 16711680
+      }
+    },
+    {
+      "query": "path:\"Калевала и её интерпретация в игру/Сюжет\"  ",
+      "color": {
+        "a": 1,
+        "rgb": 16741120
       }
     },
     {
@@ -74,6 +81,6 @@
   "repelStrength": 10.9147609147609,
   "linkStrength": 1,
   "linkDistance": 30,
-  "scale": 0.9769769439777374,
+  "scale": 0.9769769439777369,
   "close": false
 }

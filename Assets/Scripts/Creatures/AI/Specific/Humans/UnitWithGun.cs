@@ -39,6 +39,11 @@ public class UnitWithGun : TargetingUtilityAI
 
     public override void ActionUpdate(Transform target)
     {
+        //TODO : Сделать медленное радиальное отсутпление как у скелетов в майне, изменить Targeting Utility AI для этого
+    }
 
+    public override Vector3 RelativeRetreatMovement()
+    {
+        throw new System.NotImplementedException();
     }
 }

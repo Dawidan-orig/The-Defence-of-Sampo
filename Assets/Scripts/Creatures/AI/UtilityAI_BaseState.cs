@@ -1,4 +1,5 @@
 using Sampo.AI.Conditions;
+using Sampo.Core;
 using UnityEngine;
 using UnityEngine.AI;
 

@@ -1,4 +1,5 @@
 using Sampo.AI.Conditions;
+using Sampo.Core;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -49,6 +50,7 @@ namespace Sampo.AI
         public AIAction CurrentActivity { get => _currentActivity; }
         public Rigidbody Body { get => _body; set => _body = value; }
         public IMovingAgent MovingAgent { get => _movingAgent; set => _movingAgent = value; }
+        public int VisiblePowerPoints { get => visiblePowerPoints; set => visiblePowerPoints = value; }
 
         [Serializable]
         public struct AIAction
@@ -91,6 +93,7 @@ namespace Sampo.AI
             public void Modify(BaseAICondition condition) 
             {              
                 _conditions.Add(condition);
+                Update();
             }
 
             #region constructors
@@ -376,7 +379,9 @@ namespace Sampo.AI
                 {
                     action.Modify(withCondition);
                     if (action.TotalWeight > best.Value.TotalWeight)
+                    {                        
                         best = action;
+                    }
                 }
             }
             if (best?.TotalWeight > CurrentActivity.TotalWeight)
@@ -451,6 +456,11 @@ namespace Sampo.AI
         /// <param name="target">Относительно этой цели</param>
         /// <returns>Выбранное оружие</returns>
         protected abstract Tool ToolChosingCheck(Transform target);
+        /// <summary>
+        /// Определяет точку, куда следует отступать
+        /// </summary>
+        /// <returns>Точка относительно ИИ, длина вектора указывает силу отсупления</returns>
+        public abstract Vector3 RelativeRetreatMovement();
 
         /*TODO dep AI_Factory : Сделать так, чтобы управляющая StateMachine была интегрирована сюда, либо вообще редуцирована...
         * Эти Функции не должны быть публичны, они - только для управляющей StateMachine!
@@ -461,7 +471,6 @@ namespace Sampo.AI
         /// </summary>
         /// <param name="target"></param>
         public abstract void AttackUpdate(Transform target);
-
 
         /// <summary>
         /// Обычный Update, но когда юнит действует

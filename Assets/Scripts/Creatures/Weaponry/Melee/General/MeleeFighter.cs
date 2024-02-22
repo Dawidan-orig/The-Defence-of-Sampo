@@ -100,6 +100,22 @@ namespace Sampo.Melee
 
         #endregion
 
+        public enum ActionType
+        {
+            Swing,
+            Reposition
+        }
+
+        [System.Serializable]
+        public struct ActionJoint
+        {
+            public Vector3 relativeDesireFrom;
+            public Quaternion rotationFrom;
+            public Vector3 nextRelativeDesire;
+            public Quaternion nextRotation;
+            public ActionType currentActionType;
+        }
+
         protected override void Start()
         {
             base.Start();

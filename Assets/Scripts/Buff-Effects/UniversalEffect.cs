@@ -4,7 +4,7 @@ using UnityEngine;
 [Serializable] // Надо сделать абстрактным классом, так как так будет логичнее и лучше.
 public class UniversalEffect
 {
-    public LayerMask raycastMask;
+    public LayerMask raycastGroundMask;
 
     [SerializeField]
     protected Rigidbody _affected;
@@ -25,7 +25,7 @@ public class UniversalEffect
     public float EffectDuration { get => _effectDuration; set => _effectDuration = value; }
 
     //TODO DESIGN : И ещё переменная-спрайт-шейдер для эффекта-классификации.
-    //- Какая-нибудь красная оконтовка для дебаффа;
+    //- Какая-нибудь красная оконтовка для иконки дебаффа;
     //- Жёлтая яркая для командных положительных баффов...
 
     public UniversalEffect(Rigidbody affected, string name, string description, float effectDuration)
@@ -36,7 +36,7 @@ public class UniversalEffect
         _description = description;
         _currentTimeLeft = effectDuration;
 
-        raycastMask = LayerMask.NameToLayer("default");
+        raycastGroundMask = LayerMask.NameToLayer("default");
     }
 
     public virtual void Update()

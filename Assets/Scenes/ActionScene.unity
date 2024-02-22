@@ -6183,6 +6183,37 @@ Terrain:
   m_EnableHeightmapRayTracing: 1
   m_EnableTreesAndDetailsRayTracing: 0
   m_TreeMotionVectorModeOverride: 3
+--- !u!1 &366220008
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 366220009}
+  m_Layer: 0
+  m_Name: Cells positions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &366220009
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 366220008}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 927423864}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &367979399
 GameObject:
   m_ObjectHideFlags: 0
@@ -6919,37 +6950,6 @@ Terrain:
   m_EnableHeightmapRayTracing: 1
   m_EnableTreesAndDetailsRayTracing: 0
   m_TreeMotionVectorModeOverride: 3
---- !u!1 &410032359
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 410032360}
-  m_Layer: 0
-  m_Name: Cells positions
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &410032360
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 410032359}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 927423864}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &410511156
 GameObject:
   m_ObjectHideFlags: 0
@@ -15877,7 +15877,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 410032360}
+  - {fileID: 366220009}
   m_Father: {fileID: 508289544}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &927423865
@@ -15899,14 +15899,14 @@ MonoBehaviour:
     m_Center: {x: 0, y: -1, z: 0}
     m_Extent: {x: 600, y: 250, z: 600}
   octreeCells:
-    rid: 6907433616220618760
+    rid: 8770425327081226250
   _clusters: []
-  _cellTransformContainer: {fileID: 410032359}
+  _cellTransformContainer: {fileID: 366220008}
   drawOctTree: 1
   references:
     version: 2
     RefIds:
-    - rid: 6907433616220618760
+    - rid: 8770425327081226250
       type: {class: OctTree, ns: , asm: SampoCore}
       data: 
 --- !u!1 &943121018
@@ -24194,7 +24194,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1526482222200477036, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: m_Name
-      value: SPAWNED SAMPO SF
+      value: SPAWNED SF
       objectReference: {fileID: 0}
     - target: {fileID: 1526482222200477036, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: m_IsActive
@@ -24218,7 +24218,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6974210331038364376, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: _ftype
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6974210331038364376, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
       propertyPath: f_type
@@ -38237,6 +38237,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1772259989580656039, guid: 1b8bad2a41496294dbf9340ff9219d51, type: 3}
+      propertyPath: reachLength
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2037187594968764801, guid: 1b8bad2a41496294dbf9340ff9219d51, type: 3}
       propertyPath: m_Name
       value: PlayerContainer
