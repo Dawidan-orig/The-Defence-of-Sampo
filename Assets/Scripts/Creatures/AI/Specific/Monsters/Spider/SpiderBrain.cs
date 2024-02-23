@@ -203,5 +203,10 @@ namespace Sampo.AI.Monsters
         {
             throw new System.NotImplementedException();
         }
+
+        public override Vector3 RelativeRetreatMovement()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
