@@ -469,8 +469,8 @@ MonoBehaviour:
   shootPoint: {fileID: 2397089145486354680}
   bulletPrefab: {fileID: 4384517561961518265, guid: e6573e7c6bb6c134197802e0e29f2b89, type: 3}
   range: 30
-  timeBetweenBullets: 0.2
-  gunPower: 50
+  timeBetweenBullets: 1
+  gunPower: 40
 --- !u!1001 &666792822963999985
 PrefabInstance:
   m_ObjectHideFlags: 0
