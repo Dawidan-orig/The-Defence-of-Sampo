@@ -28,7 +28,7 @@ public class BaseShooting : Tool
 
         GameObject bullet = Instantiate(bulletPrefab);
         bullet.transform.position = shootPoint.position;
-        bullet.transform.rotation = shootPoint.rotation;
+        bullet.transform.rotation = transform.rotation;
         bullet.GetComponent<Rigidbody>().AddForce(shootPoint.forward * gunPower, ForceMode.VelocityChange);
 
         Faction BFac;
