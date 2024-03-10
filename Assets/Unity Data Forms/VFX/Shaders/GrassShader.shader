@@ -4,6 +4,7 @@ Shader "Grass/DefaultGrass"
     {
         _BottomColor ("Base Color", Color) = (1,1,1,1)
         _TipColor ("Tip Color", Color) = (1,1,1,1)
+        _Color ("Instance Color", Color) = (0,0,0,0)
     }
     SubShader
     {
@@ -42,25 +43,27 @@ Shader "Grass/DefaultGrass"
             
             float4 _BottomColor;
             float4 _TipColor;
+            
+            StructuredBuffer<float3> _offsets;
 
             //#define PI 3.14159f
 
             float3x3 AngleAxis3x3(float angle, float3 axis) //TODO : Сделать helper-функцию для таких вещей
-{
-    float c, s;
-    sincos(angle, s, c);
+            {
+                float c, s;
+                sincos(angle, s, c);
 
-    float t = 1 - c;
-    float x = axis.x;
-    float y = axis.y;
-    float z = axis.z;
+                float t = 1 - c;
+                float x = axis.x;
+                float y = axis.y;
+                float z = axis.z;
 
-    return float3x3(
-        t * x * x + c, t * x * y - s * z, t * x * z + s * y,
-        t * x * y + s * z, t * y * y + c, t * y * z - s * x,
-        t * x * z - s * y, t * y * z + s * x, t * z * z + c
-    );
-}
+                return float3x3(
+                t * x * x + c, t * x * y - s * z, t * x * z + s * y,
+                t * x * y + s * z, t * y * y + c, t * y * z - s * x,
+                t * x * z - s * y, t * y * z + s * x, t * z * z + c
+                );
+            }
 
             float3 adjustNormal(float3 normal, float3 viewDir)
             {
@@ -83,6 +86,7 @@ Shader "Grass/DefaultGrass"
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
                 float3 normal : NORMAL;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct v2f
@@ -94,11 +98,13 @@ Shader "Grass/DefaultGrass"
                 float4 vertex : SV_POSITION;
             };
 
-            v2f vert (appdata v)
+            v2f vert (appdata v, uint instanceID : SV_InstanceID)
             {
+                UNITY_SETUP_INSTANCE_ID(v);
+
                 v2f o;
                 VertexPositionInputs posIn = GetVertexPositionInputs(v.vertex.xyz);
-                o.vertex = posIn.positionCS;// UnityObjectToClipPos(v.vertex);
+                o.vertex = posIn.positionCS;
                 o.positionWS = posIn.positionWS;
                 o.uv = v.uv;
                 float3 vertNormal = GetVertexNormalInputs(v.normal).normalWS;
@@ -129,7 +135,7 @@ Shader "Grass/DefaultGrass"
                 float viewSpaceThickenFactor = easeOut(viewDotNormal);
                 viewSpaceThickenFactor *= smoothstep(-0.2, 0.2, viewDotNormal)/2;
                 o.vertex.x += viewSpaceThickenFactor * xDirectionOS * grassWidth;
-                
+
                 return o;
             }
 

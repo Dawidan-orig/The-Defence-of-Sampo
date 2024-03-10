@@ -25,7 +25,6 @@ namespace Sampo.Core.Shaderworks
         [Header("Lookonly")]
         [SerializeField]
         private int dispatchSize;
-
         [SerializeField]
         protected int bladesAmount;
         [SerializeField]
@@ -41,7 +40,7 @@ namespace Sampo.Core.Shaderworks
         protected const int INT_FLOAT_STRIDE = sizeof(float);
         protected const int VERTEX_STRIDE = VECTOR_STRIDE * 2 + INT_FLOAT_STRIDE * 2;
 
-        protected const int MAX_VERTS_BUFFER = 4096;
+        protected const int MAX_VERTS_BUFFER_LENGTH = 4096;
 
         [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
         protected struct GeneratedVertex
@@ -55,20 +54,23 @@ namespace Sampo.Core.Shaderworks
         {
             bladesAmount = grassAmount.x * grassAmount.y;
             int vertsAmount = bladesAmount * (segmentCount * 2 + 1);
-            dispatchAmount = Mathf.CeilToInt((float)vertsAmount / MAX_VERTS_BUFFER);
+            dispatchAmount = Mathf.CeilToInt((float)vertsAmount / MAX_VERTS_BUFFER_LENGTH);
             limitedBladesAmount = bladesAmount;
             if (dispatchAmount > 1)
-                limitedBladesAmount = Mathf.CeilToInt((float)MAX_VERTS_BUFFER / (segmentCount*2+1));
+                limitedBladesAmount = Mathf.CeilToInt((float)MAX_VERTS_BUFFER_LENGTH / (segmentCount*2+1));
 
             limitedVertsAmount = limitedBladesAmount * (segmentCount * 2 + 1);
             indicesLimitedSize = limitedBladesAmount * (segmentCount * 2 - 1) * 3;
+
+            OnDisable();
+            OnEnable();
         }
 
         public virtual void OnEnable()
         {
             if (grassCompute)
             {
-                SetupConstraintsBuffers();
+                SetupConstraintsAndBuffers();
                 DisplaceGrass();
             }
             else
@@ -83,7 +85,13 @@ namespace Sampo.Core.Shaderworks
                 indicesBuffer.Release();
         }
 
-        protected void SetupConstraintsBuffers() 
+        private void LateUpdate()
+        {
+            if(EditorApplication.isPlaying)
+                DisplaceGrass();
+        }
+
+        protected virtual void SetupConstraintsAndBuffers() 
         {
             vertsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Append, limitedVertsAmount, VERTEX_STRIDE);
             indicesBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Append, indicesLimitedSize, INT_FLOAT_STRIDE);
@@ -123,89 +131,74 @@ namespace Sampo.Core.Shaderworks
                 }
             }
 
-            Vector2Int limitedGrassAmount = grassAmount;
-            limitedGrassAmount.y = Mathf.CeilToInt(limitedBladesAmount / limitedGrassAmount.x);
+            int limitedSquareSideSize = Mathf.FloorToInt(Mathf.Sqrt(limitedBladesAmount));
+            Vector2Int dispatches = new (Mathf.CeilToInt(grassAmount.x / limitedSquareSideSize),
+                                         Mathf.CeilToInt(grassAmount.y / limitedSquareSideSize));
 
             Vector2 step = new(patchSize.x / (grassAmount.x), patchSize.y / (grassAmount.y));
+            Matrix4x4[] resultMatrices = new Matrix4x4[dispatches.x * dispatches.y];
 
-            Vector2 localPatchSize = new(step.x * limitedGrassAmount.x, step.y * limitedGrassAmount.y);
+            Vector2 localPatchSize = new(step.x * limitedSquareSideSize, step.y * limitedSquareSideSize);
+            Vector2Int localGrassAmount = new(limitedSquareSideSize, limitedSquareSideSize);
 
-            for (int currentDispatch = 0; currentDispatch < dispatchAmount; currentDispatch++)
+            //TODO : Вернуть создание GameObject'ов, не получится обойтись без этого.
+            // Итак, проблемы которые надо бы сочетать друг с другом.
+            // 1: GPU Instance. Его очень желательно использовать.
+            // 2: Высота через Terrain, получение через Compute Shader.
+            // 1 и 2 не сочетаются при кластерной работе. Надо разбивать на травинки.
+            // Допустим, я сделал травинку тут, в CPU.
+            // Тогда в ComputeShader бросаются данные Terrain'а. Там делается SamplePosition.
+            // ComputeShader же возвращает позиции и повороты для каждой травинки.
+            // Здесь в CPU оно рендерится.
+            // 3: LOD. NMG сделал его в ComputeShader. Это делает каждую травинку уникальной, что не сочетается с 1 СОВЕРШЕННО.
+            // Есть вариант просто не использовать GPU Instancing: https://docs.unity3d.com/Manual/GPUInstancing.html
+            // И тупо не париться обо всех проблемах. Так и поступлю, пожалуй.
+            for (int clusterX = 0; clusterX < dispatches.x; clusterX++) 
             {
-                //TODO : Смещение PatchSize, так как послений кусочек не влезает ровно
-                //TODO : Поправка PatchSize
-                int remainingBlades = bladesAmount - currentDispatch * limitedBladesAmount;
-
-                float usedPatchLength = localPatchSize.y;
-                // Для последнего крайнего кусочка
-                if (remainingBlades < limitedBladesAmount)
+                for(int clusterY = 0; clusterY < dispatches.y; clusterY++) 
                 {
-                    limitedGrassAmount.y = remainingBlades / limitedGrassAmount.x + 1;
-                    usedPatchLength = step.y * limitedGrassAmount.y; 
+                    int currentDispatch = clusterX * dispatches.x + clusterY;
+
+                    Vector3 resPos = transform.TransformPoint(Vector3.forward * clusterX * (localPatchSize.x))
+                                   + transform.TransformPoint(Vector3.right * clusterY * (localPatchSize.y));
+
+                    resultMatrices[currentDispatch] = new Matrix4x4();
+                    resultMatrices[currentDispatch].SetTRS(resPos, Quaternion.identity, Vector3.one);
                 }
-
-                grassCompute.SetVector("_patchSize", new Vector2(localPatchSize.x, usedPatchLength/dispatchAmount));
-                Vector2 toPass = new Vector2(limitedGrassAmount.x, limitedGrassAmount.y);
-                grassCompute.SetVector("_bladesAmount", toPass);
-
-                dispatchSize = Mathf.CeilToInt((float)limitedBladesAmount / numThreads);
-                grassCompute.Dispatch(kernelId, dispatchSize, 1, 1);
-
-                GeneratedVertex[] generatedVertices = new GeneratedVertex[limitedVertsAmount];
-                int[] generatedIndices = new int[indicesLimitedSize];
-                vertsBuffer.GetData(generatedVertices);
-                indicesBuffer.GetData(generatedIndices);
-
-                Vector3[] generatedPoints = new Vector3[limitedVertsAmount];
-                Vector3[] normals = new Vector3[limitedVertsAmount];
-                Vector2[] UVs = new Vector2[limitedVertsAmount];
-
-                for (int i = 0; i < limitedVertsAmount; i++)
-                {
-                    var v = generatedVertices[i];
-                    generatedPoints[i] = v.positionOS; //OffsetToCenter()
-                    normals[i] = v.normalOS;
-                    UVs[i] = v.uv;
-                }
-                grassSourceMesh = new Mesh();
-                grassSourceMesh.SetVertices(generatedPoints);
-                grassSourceMesh.SetUVs(0, UVs);
-                grassSourceMesh.SetNormals(normals);
-                grassSourceMesh.SetIndices(generatedIndices, MeshTopology.Triangles, 0, true);
-                grassSourceMesh.Optimize();
-
-                Transform correlatedChild =
-                    transform.childCount-1 < currentDispatch ?
-                    null : transform.GetChild(currentDispatch);
-
-                MeshFilter meshFilter;
-                if (!correlatedChild)
-                {
-                    GameObject grassMeshHolder = new();
-                    grassMeshHolder.transform.parent = transform;
-                    grassMeshHolder.name = "dispatch#" + currentDispatch + " grass";
-                    meshFilter = grassMeshHolder.AddComponent<MeshFilter>();
-                    MeshRenderer renderer = grassMeshHolder.AddComponent<MeshRenderer>();
-                    renderer.sharedMaterial = grassMaterial;
-                }
-                else 
-                {
-                    meshFilter = correlatedChild.GetComponent<MeshFilter>();
-                }
-
-                meshFilter.transform.position = transform.TransformPoint(Vector3.forward * currentDispatch * localPatchSize.y);
-                meshFilter.mesh = grassSourceMesh;
             }
-        }
 
-        Vector3 OffsetToCenter(Vector3 pointToOffset)
-        {
-            return pointToOffset - new Vector3(patchSize.x, 0, patchSize.y) / 2;
-        }
+            grassCompute.SetVector("_patchSize", new Vector2(localPatchSize.x, localPatchSize.y));
+            Vector2 toPass = new Vector2(localGrassAmount.x, localGrassAmount.y);
+            grassCompute.SetVector("_bladesAmount", toPass);
+            grassCompute.SetInt("_clusterID", 1);
 
-        Vector3 ConvertToWorldspace(Vector3 objectspace)
-        {
-            return transform.position + OffsetToCenter(objectspace);
+            dispatchSize = Mathf.CeilToInt((float)limitedBladesAmount / numThreads);
+            grassCompute.Dispatch(kernelId, dispatchSize, 1, 1);
+
+            GeneratedVertex[] generatedVertices = new GeneratedVertex[limitedVertsAmount];
+            int[] generatedIndices = new int[indicesLimitedSize];
+            vertsBuffer.GetData(generatedVertices);
+            indicesBuffer.GetData(generatedIndices);
+
+            Vector3[] generatedPoints = new Vector3[limitedVertsAmount];
+            Vector3[] normals = new Vector3[limitedVertsAmount];
+            Vector2[] UVs = new Vector2[limitedVertsAmount];
+
+            for (int i = 0; i < limitedVertsAmount; i++)
+            {
+                var v = generatedVertices[i];
+                generatedPoints[i] = v.positionOS;
+                normals[i] = v.normalOS;
+                UVs[i] = v.uv;
+            }
+            grassSourceMesh = new Mesh();
+            grassSourceMesh.SetVertices(generatedPoints);
+            grassSourceMesh.SetUVs(0, UVs);
+            grassSourceMesh.SetNormals(normals);
+            grassSourceMesh.SetIndices(generatedIndices, MeshTopology.Triangles, 0, true);
+            grassSourceMesh.Optimize();
+
+            Graphics.DrawMeshInstanced(grassSourceMesh, 0, grassMaterial, resultMatrices);
         }
     }
 }

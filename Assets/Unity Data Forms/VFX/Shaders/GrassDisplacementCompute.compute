@@ -23,6 +23,8 @@ float _curvature;
 float _maxBendAngleRad;
 int _segmentCount;
 
+int _clusterID;
+
 StructuredBuffer<float3> _offsets;
 
 RWStructuredBuffer<GeneratedVertex> _resVerts;
@@ -88,23 +90,22 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     uint indexX = (id.x % _bladesAmount.x);
     uint indexY = (id.x - indexX)/_bladesAmount.y;
 
-    //TODO : Дву-осевая работа
+    //TODO : Дву-осевая работа (Ref Acerola)
     //TODO : Референс от видео Acerola про положение, там стабильнее. Плюс он Terrain использует
-    //TODO : Разбиения на GameObject'ы не в линию, но по квадратам в сетку
-    //TODO : Рандомизация по данному ID кластера (currentDispatch)
-    //TODO : NMG: LOD и ComputeShaderInstancing,  и повторить ещё Graphics.DrawMeshIndirect для GPU Inctancing. Почти любой ценой!
+    //DONE : Разбиения на GameObject'ы не в линию, но по квадратам в сетку
+    //DONE : Рандомизация по данному ID кластера (currentDispatch)
+    //DONE : NMG: LOD и ComputeShaderInstancing,  и повторить ещё Graphics.DrawMeshIndirect для GPU Inctancing. Почти любой ценой!
     // Код и идеи NMG у меня сейчас идут как единственный доступный фундамент.
     // Только у него описано чёткое и прикладное применение всех шейдерных штук в Unity.
     // У остальных - чистые идеи, оторванные от low-end.
-    //TODO : SimonDev: Код смещения травинок и красивый LOD
+    //TODO : SimonDev: Код смещения угла травинок и красивый LOD
     // У меня всё в тему, осталось собрать в кучу.
 
     float2 step = float2(0,0);
     step.x = _patchSize.x / (_bladesAmount.x);
     step.y = _patchSize.y / (_bladesAmount.y);
     
-    float3 res = float3(indexX * step.x, 0, indexY * step.y) + _offsets[id.x]; // Перемножение индексов тут не прокатит,
-                                                                               // Потому ставить их сюда бесполезно.
+    float3 res = float3((indexX + 1) * step.x, 0, (indexY + 1) * step.y) + _offsets[id.x];
     
     //if(indexY> 108) {
     //    res += float3(0,10,0);
@@ -115,7 +116,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     points[1] = float3(_width/2, 0, 0);
     points[2] = float3(0, _height, 0);
     
-    float random = nrand(float2(id.x * _Time * 16.7,indexX * indexY/7 * _Time * 16716.7));
+    float random = nrand(float2(id.x * 7 * _clusterID * 16.7f, id.x * 11 * _clusterID));
     
     //Случайный поворот всей травинки
     float3 center = lerp(points[0], points[1], 0.5f);
@@ -124,9 +125,9 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     float3 normal = GetTriangleNormal(points[0], points[1], points[2]);
     //Случайное смещение
-    float3 randPoint = float3((nrand(float2(id.x, id.x)) - step.x*2 * 167) % step.x,
+    float3 randPoint = float3((nrand(float2(id.x, id.x)) - step.x*2 * 167 + 1) % step.x,
                                0,
-                              (nrand(float2(id.x, id.x) + step.x*step.y * 167167) - step.y*2) % step.y);
+                              (nrand(float2(id.x, id.x) + step.x*step.y * 167167) - step.y*2 + 1) % step.y);
 
     //Матрица и угол изгиба, работает по формуле степени.
     float bendAngle = _maxBendAngleRad;
