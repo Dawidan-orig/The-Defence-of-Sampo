@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Sampo.Core.Shaderworks
 {
     [ExecuteAlways]
+    [SelectionBase]
     public class GrassTile : MonoBehaviour
     {
         public Vector2 patchSize = Vector2.one;
@@ -14,10 +15,10 @@ namespace Sampo.Core.Shaderworks
         public float grassHeight = 0.6f;
         public float grassWidth = 0.05f;
         public float maxBendAngle = Mathf.PI / 4;
-        public float grassCurvature = 0.2f;
+        public float grassCurvature = 0.45f;
         public int segmentCount = 5;
-
-        private Mesh grassSourceMesh;
+        public string meshSavingPath = "Assets/Unity Data Forms/VFX/Meshes/grass/";
+        public string assetName = "new grass Mesh";
 
         private GraphicsBuffer vertsBuffer;
         private GraphicsBuffer indicesBuffer;
@@ -35,6 +36,8 @@ namespace Sampo.Core.Shaderworks
         int limitedVertsAmount;
         [SerializeField]
         int indicesLimitedSize;
+        [SerializeField]
+        protected ComputeShader _computeInstance;
 
         protected const int VECTOR_STRIDE = sizeof(float) * 3; //3 раза по размеру float - это вектор трёх измерений.
         protected const int INT_FLOAT_STRIDE = sizeof(float);
@@ -57,18 +60,17 @@ namespace Sampo.Core.Shaderworks
             dispatchAmount = Mathf.CeilToInt((float)vertsAmount / MAX_VERTS_BUFFER_LENGTH);
             limitedBladesAmount = bladesAmount;
             if (dispatchAmount > 1)
-                limitedBladesAmount = Mathf.CeilToInt((float)MAX_VERTS_BUFFER_LENGTH / (segmentCount*2+1));
+                limitedBladesAmount = Mathf.CeilToInt((float)MAX_VERTS_BUFFER_LENGTH / (segmentCount * 2 + 1));
 
             limitedVertsAmount = limitedBladesAmount * (segmentCount * 2 + 1);
             indicesLimitedSize = limitedBladesAmount * (segmentCount * 2 - 1) * 3;
-
-            OnDisable();
-            OnEnable();
         }
 
         public virtual void OnEnable()
         {
-            if (grassCompute)
+            _computeInstance = Instantiate(grassCompute);
+
+            if (_computeInstance)
             {
                 SetupConstraintsAndBuffers();
                 DisplaceGrass();
@@ -79,104 +81,71 @@ namespace Sampo.Core.Shaderworks
 
         public virtual void OnDisable()
         {
-            if (vertsBuffer != null)
-                vertsBuffer.Release();
-            if(indicesBuffer != null)
-                indicesBuffer.Release();
+            vertsBuffer?.Release();
+            indicesBuffer?.Release();
+            DestroyImmediate(_computeInstance);
         }
 
-        private void LateUpdate()
-        {
-            if(EditorApplication.isPlaying)
-                DisplaceGrass();
-        }
-
-        protected virtual void SetupConstraintsAndBuffers() 
+        protected virtual void SetupConstraintsAndBuffers()
         {
             vertsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Append, limitedVertsAmount, VERTEX_STRIDE);
             indicesBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Append, indicesLimitedSize, INT_FLOAT_STRIDE);
 
-            kernelId = grassCompute.FindKernel("CSMain");
+            Vector3 grassSize = new Vector3(patchSize.x,grassHeight/2,patchSize.y);
+            //TODO : Instance для шейдера
+            //TODO : Установка Instance этого шейдера во все элементы LODGroup
+            // Такой шейдер должен быть один на все патчи этого gameObject!
+            // _localPatchAmount _localPatchPos - тоже по одному для всего этого gameObject
+            // В сущности, в туда передаётся напрямую просто patchSize и grassAmount
 
-            grassCompute.SetBuffer(kernelId, "_offsets", new GraphicsBuffer(GraphicsBuffer.Target.Structured, 1, VECTOR_STRIDE));
-            grassCompute.SetBuffer(kernelId, "_resVerts", vertsBuffer);
-            grassCompute.SetBuffer(kernelId, "_resIndices", indicesBuffer);
+            kernelId = _computeInstance.FindKernel("CSMain");
 
-            float time;
-            if (EditorApplication.isPlaying)
-                time = Shader.GetGlobalVector("_Time").w;
-            else
-                time = (float)EditorApplication.timeSinceStartup;
-            grassCompute.SetFloat("_Time", time);
+            _computeInstance.SetBuffer(kernelId, "_resVerts", vertsBuffer);
+            _computeInstance.SetBuffer(kernelId, "_resIndices", indicesBuffer);
 
-            grassCompute.SetFloat("_width", grassWidth);
-            grassCompute.SetFloat("_height", grassHeight);
-            grassCompute.SetFloat("_curvature", grassCurvature);
-            grassCompute.SetFloat("_maxBendAngleRad", maxBendAngle);
-            grassCompute.SetInt("_segmentCount", segmentCount);
+            _computeInstance.SetFloat("_width", grassWidth);
+            _computeInstance.SetFloat("_height", grassHeight);
+            _computeInstance.SetFloat("_curvature", grassCurvature);
+            _computeInstance.SetFloat("_maxBendAngleRad", maxBendAngle);
+            _computeInstance.SetInt("_segmentCount", segmentCount);
         }
 
         protected virtual void DisplaceGrass()
         {
-            grassCompute.GetKernelThreadGroupSizes(kernelId, out uint numThreads, out _, out _);
+            // TODO : Размещение LOD-патчей травинок через OnEnabled.
+            // Сделать банальным instantiate
+            // Размеры определять через Bounds Mesh'а и стараться разместить как можно более равномерно
+        }
 
-            if(transform.childCount > dispatchAmount) 
-            {
-                for (int i = transform.childCount - 1; i >= dispatchAmount; i--)
-                {
-                    if(!EditorApplication.isPlaying)
-                        DestroyImmediate(transform.GetChild(i).gameObject);
-                    else
-                        Destroy(transform.GetChild(i).gameObject);
-                }
-            }
+        public void SaveMeshFromComputeShader()
+        {
+            _computeInstance.GetKernelThreadGroupSizes(kernelId, out uint numThreads, out _, out _);
 
+            // TODO : Это всё лишнее, надо просто определить максимальый patch для Mesh'а
+            // Сделать Mesh по этому максимальному размеру
+            // И влепить его везде.
+            // Дальше пусть шейдер сам определяет высоты по текстуре как есть.
             int limitedSquareSideSize = Mathf.FloorToInt(Mathf.Sqrt(limitedBladesAmount));
-            Vector2Int dispatches = new (Mathf.CeilToInt(grassAmount.x / limitedSquareSideSize),
+            Vector2Int dispatches = new(Mathf.CeilToInt(grassAmount.x / limitedSquareSideSize),
                                          Mathf.CeilToInt(grassAmount.y / limitedSquareSideSize));
 
             Vector2 step = new(patchSize.x / (grassAmount.x), patchSize.y / (grassAmount.y));
-            Matrix4x4[] resultMatrices = new Matrix4x4[dispatches.x * dispatches.y];
 
             Vector2 localPatchSize = new(step.x * limitedSquareSideSize, step.y * limitedSquareSideSize);
             Vector2Int localGrassAmount = new(limitedSquareSideSize, limitedSquareSideSize);
 
-            //TODO : Вернуть создание GameObject'ов, не получится обойтись без этого.
-            // Итак, проблемы которые надо бы сочетать друг с другом.
-            // 1: GPU Instance. Его очень желательно использовать.
-            // 2: Высота через Terrain, получение через Compute Shader.
-            // 1 и 2 не сочетаются при кластерной работе. Надо разбивать на травинки.
-            // Допустим, я сделал травинку тут, в CPU.
-            // Тогда в ComputeShader бросаются данные Terrain'а. Там делается SamplePosition.
-            // ComputeShader же возвращает позиции и повороты для каждой травинки.
-            // Здесь в CPU оно рендерится.
-            // 3: LOD. NMG сделал его в ComputeShader. Это делает каждую травинку уникальной, что не сочетается с 1 СОВЕРШЕННО.
-            // Есть вариант просто не использовать GPU Instancing: https://docs.unity3d.com/Manual/GPUInstancing.html
-            // И тупо не париться обо всех проблемах. Так и поступлю, пожалуй.
-            for (int clusterX = 0; clusterX < dispatches.x; clusterX++) 
-            {
-                for(int clusterY = 0; clusterY < dispatches.y; clusterY++) 
-                {
-                    int currentDispatch = clusterX * dispatches.x + clusterY;
-
-                    Vector3 resPos = transform.TransformPoint(Vector3.forward * clusterX * (localPatchSize.x))
-                                   + transform.TransformPoint(Vector3.right * clusterY * (localPatchSize.y));
-
-                    resultMatrices[currentDispatch] = new Matrix4x4();
-                    resultMatrices[currentDispatch].SetTRS(resPos, Quaternion.identity, Vector3.one);
-                }
-            }
-
-            grassCompute.SetVector("_patchSize", new Vector2(localPatchSize.x, localPatchSize.y));
+            _computeInstance.SetVector("_patchSize", new Vector2(patchSize.x, patchSize.y));
             Vector2 toPass = new Vector2(localGrassAmount.x, localGrassAmount.y);
-            grassCompute.SetVector("_bladesAmount", toPass);
-            grassCompute.SetInt("_clusterID", 1);
+            _computeInstance.SetVector("_bladesAmount", toPass);
+            _computeInstance.SetVector("_patchPos", Vector3.zero);
+            _computeInstance.SetInt("_clusterID", 1);
 
             dispatchSize = Mathf.CeilToInt((float)limitedBladesAmount / numThreads);
-            grassCompute.Dispatch(kernelId, dispatchSize, 1, 1);
+            _computeInstance.Dispatch(kernelId, dispatchSize, 1, 1);
 
             GeneratedVertex[] generatedVertices = new GeneratedVertex[limitedVertsAmount];
             int[] generatedIndices = new int[indicesLimitedSize];
+
             vertsBuffer.GetData(generatedVertices);
             indicesBuffer.GetData(generatedIndices);
 
@@ -191,14 +160,30 @@ namespace Sampo.Core.Shaderworks
                 normals[i] = v.normalOS;
                 UVs[i] = v.uv;
             }
-            grassSourceMesh = new Mesh();
+
+            Mesh initialMesh = (Mesh) AssetDatabase.LoadAssetAtPath(meshSavingPath, typeof(Mesh));
+            Mesh grassSourceMesh;
+
+            grassSourceMesh =
+                initialMesh == null ? new Mesh() : initialMesh;
+
             grassSourceMesh.SetVertices(generatedPoints);
             grassSourceMesh.SetUVs(0, UVs);
             grassSourceMesh.SetNormals(normals);
             grassSourceMesh.SetIndices(generatedIndices, MeshTopology.Triangles, 0, true);
             grassSourceMesh.Optimize();
 
-            Graphics.DrawMeshInstanced(grassSourceMesh, 0, grassMaterial, resultMatrices);
+            const string ASSET = ".asset";
+
+            if (initialMesh != null)
+            {
+                initialMesh.Clear();
+                EditorUtility.CopySerialized(grassSourceMesh, initialMesh);
+            }
+            else
+                AssetDatabase.CreateAsset(grassSourceMesh, meshSavingPath + assetName + ASSET);
+            
+            AssetDatabase.SaveAssets();
         }
     }
 }

@@ -1,4 +1,4 @@
-using Sampo.AI.Conditions;
+п»їusing Sampo.AI.Conditions;
 using Sampo.Core;
 using System;
 using System.Collections.Generic;
@@ -7,26 +7,29 @@ using UnityEngine;
 
 namespace Sampo.AI
 {
+    //TODO : Р”РѕР±Р°РІРёС‚СЊ Logger РёР»Рё РґСЂСѓРіСѓСЋ СЃРёСЃС‚РµРјСѓ Р»РѕРіРёСЂРѕРІР°РЅРёСЏ.
+    // РќР°РґРѕ РїРѕРЅРёРјР°С‚СЊ, С‡С‚Рѕ РїСЂРѕРёСЃС…РѕРґРёС‚ СЃ РєР°Р¶РґС‹Рј СЋРЅРёС‚РѕРј РІ РїРµСЂРµРґРµР»Р°С… Editor'Р°.
+
     [SelectionBase]
     [RequireComponent(typeof(IMovingAgent))]
     [RequireComponent(typeof(Faction))]
     public abstract class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDistribution
-    // ИИ, ставящий приоритеты выполнения действий
-    // Использует StateMachine в качестве исполнителя
+    // РР, СЃС‚Р°РІСЏС‰РёР№ РїСЂРёРѕСЂРёС‚РµС‚С‹ РІС‹РїРѕР»РЅРµРЅРёСЏ РґРµР№СЃС‚РІРёР№
+    // РСЃРїРѕР»СЊР·СѓРµС‚ StateMachine РІ РєР°С‡РµСЃС‚РІРµ РёСЃРїРѕР»РЅРёС‚РµР»СЏ
     {
         public bool _AIActive = true;
 
         [Header("Setup")]
-        [Tooltip("Кривая от 0 до 1, определяющая то," +
-            "с какой интенсивностью в зависимости от дальности оружия ИИ будет отдоходить от цели")]
+        [Tooltip("РљСЂРёРІР°СЏ РѕС‚ 0 РґРѕ 1, РѕРїСЂРµРґРµР»СЏСЋС‰Р°СЏ С‚Рѕ," +
+            "СЃ РєР°РєРѕР№ РёРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊСЋ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РґР°Р»СЊРЅРѕСЃС‚Рё РѕСЂСѓР¶РёСЏ РР Р±СѓРґРµС‚ РѕС‚РґРѕС…РѕРґРёС‚СЊ РѕС‚ С†РµР»Рё")]
         public AnimationCurve retreatInfluence;
-        [Tooltip("Влияние дистанции на выбор этого ИИ")]
+        [Tooltip("Р’Р»РёСЏРЅРёРµ РґРёСЃС‚Р°РЅС†РёРё РЅР° РІС‹Р±РѕСЂ СЌС‚РѕРіРѕ РР")]
         public float distanceWeightMultiplier = 1;
 
         [Header("Ground for animation and movement")]
         public Collider vital;
         public float toGroundDist = 0.3f;
-        [Tooltip("Точка отсчёта для NavMeshAgent")]
+        [Tooltip("РўРѕС‡РєР° РѕС‚СЃС‡С‘С‚Р° РґР»СЏ NavMeshAgent")]
         public Transform navMeshCalcFrom;
 
         [Header("lookonly")]
@@ -35,9 +38,9 @@ namespace Sampo.AI
         [SerializeField]
         protected List<AIAction> _possibleActions = new();
         [SerializeField]
-        [Tooltip(@"Это очки внешней опасности, по котором ИИ определяет, насколько этот противник опасен.
-            Может менять визуальную составляющую.
-            Изначально устанавливается при процедурной инициализации, но может меняться в ходе игры.")]
+        [Tooltip(@"Р­С‚Рѕ РѕС‡РєРё РІРЅРµС€РЅРµР№ РѕРїР°СЃРЅРѕСЃС‚Рё, РїРѕ РєРѕС‚РѕСЂРѕРј РР РѕРїСЂРµРґРµР»СЏРµС‚, РЅР°СЃРєРѕР»СЊРєРѕ СЌС‚РѕС‚ РїСЂРѕС‚РёРІРЅРёРє РѕРїР°СЃРµРЅ.
+            РњРѕР¶РµС‚ РјРµРЅСЏС‚СЊ РІРёР·СѓР°Р»СЊРЅСѓСЋ СЃРѕСЃС‚Р°РІР»СЏСЋС‰СѓСЋ.
+            РР·РЅР°С‡Р°Р»СЊРЅРѕ СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ РїСЂРё РїСЂРѕС†РµРґСѓСЂРЅРѕР№ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё, РЅРѕ РјРѕР¶РµС‚ РјРµРЅСЏС‚СЊСЃСЏ РІ С…РѕРґРµ РёРіСЂС‹.")]
         protected int visiblePowerPoints = 100;
 
         IMovingAgent _movingAgent;
@@ -273,7 +276,7 @@ namespace Sampo.AI
 
             Tool toolUsed = ToolChosingCheck(target.transform);
 
-            //TODO DESIGN : _factory.Attack() - не обязательно он, надо выбирать из фабрики нужное
+            //TODO DESIGN : _factory.Attack() - РЅРµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РѕРЅ, РЅР°РґРѕ РІС‹Р±РёСЂР°С‚СЊ РёР· С„Р°Р±СЂРёРєРё РЅСѓР¶РЅРѕРµ
             AIAction action = new AIAction(this, target.transform, name, weight, toolUsed, _factory.Attack());
 
             AddNewPossibleAction(action);
@@ -294,7 +297,7 @@ namespace Sampo.AI
         {
             if (_possibleActions.Contains(action))
             {
-                Debug.LogWarning("Уже был добавлен " + name, transform);
+                Debug.LogWarning("РЈР¶Рµ Р±С‹Р» РґРѕР±Р°РІР»РµРЅ " + name, transform);
                 return;
             }
 
@@ -313,7 +316,7 @@ namespace Sampo.AI
         }
         private void ChangeAction(AIAction to)
         {
-            if (!IsNoActionCurrently() && _currentActivity.target) //Убираем влияние текущей цели
+            if (!IsNoActionCurrently() && _currentActivity.target) //РЈР±РёСЂР°РµРј РІР»РёСЏРЅРёРµ С‚РµРєСѓС‰РµР№ С†РµР»Рё
                 UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), -visiblePowerPoints);
             _currentActivity = to;
             UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), visiblePowerPoints);
@@ -323,7 +326,7 @@ namespace Sampo.AI
             if (_possibleActions.Count == 0)
                 return null;
 
-            NormilizeActions(); //TODO : Проверить и убрать, если в этом нет смысла. Но его наличие создаёт надёжность.
+            NormilizeActions(); //TODO : РџСЂРѕРІРµСЂРёС‚СЊ Рё СѓР±СЂР°С‚СЊ, РµСЃР»Рё РІ СЌС‚РѕРј РЅРµС‚ СЃРјС‹СЃР»Р°. РќРѕ РµРіРѕ РЅР°Р»РёС‡РёРµ СЃРѕР·РґР°С‘С‚ РЅР°РґС‘Р¶РЅРѕСЃС‚СЊ.
 
             if (_possibleActions.Count == 0)
                 return null;
@@ -358,15 +361,15 @@ namespace Sampo.AI
         }
         private void NullifyActivity()
         {
-            _currentActivity = _noAction; // Нужно, чтобы StateMachine перебросилась в состояние Decide и не ловила nullReference
+            _currentActivity = _noAction; // РќСѓР¶РЅРѕ, С‡С‚РѕР±С‹ StateMachine РїРµСЂРµР±СЂРѕСЃРёР»Р°СЃСЊ РІ СЃРѕСЃС‚РѕСЏРЅРёРµ Decide Рё РЅРµ Р»РѕРІРёР»Р° nullReference
         }
         public bool IsNoActionCurrently() => _currentActivity == _noAction;
         #endregion
 
         /// <summary>
-        /// Обновление всех связанных с целью задач
+        /// РћР±РЅРѕРІР»РµРЅРёРµ РІСЃРµС… СЃРІСЏР·Р°РЅРЅС‹С… СЃ С†РµР»СЊСЋ Р·Р°РґР°С‡
         /// </summary>
-        /// <param name="withCondition">Динамическое условие, что применяется на все задачи</param>
+        /// <param name="withCondition">Р”РёРЅР°РјРёС‡РµСЃРєРѕРµ СѓСЃР»РѕРІРёРµ, С‡С‚Рѕ РїСЂРёРјРµРЅСЏРµС‚СЃСЏ РЅР° РІСЃРµ Р·Р°РґР°С‡Рё</param>
         public void ModifyActionOf(Transform target, BaseAICondition withCondition) 
         {
             AIAction? best = null;
@@ -389,7 +392,7 @@ namespace Sampo.AI
         }
 
         /// <summary>
-        /// Проверка, что в данный момент требуется выбрать новое состояние
+        /// РџСЂРѕРІРµСЂРєР°, С‡С‚Рѕ РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ С‚СЂРµР±СѓРµС‚СЃСЏ РІС‹Р±СЂР°С‚СЊ РЅРѕРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
         /// </summary>
         /// <returns></returns>
         public bool IsDecidingStateRequired()
@@ -398,11 +401,11 @@ namespace Sampo.AI
         }
 
         /// <summary>
-        /// Независимая команда вычисления, находящая ближайшую точку для больших объектов
+        /// РќРµР·Р°РІРёСЃРёРјР°СЏ РєРѕРјР°РЅРґР° РІС‹С‡РёСЃР»РµРЅРёСЏ, РЅР°С…РѕРґСЏС‰Р°СЏ Р±Р»РёР¶Р°Р№С€СѓСЋ С‚РѕС‡РєСѓ РґР»СЏ Р±РѕР»СЊС€РёС… РѕР±СЉРµРєС‚РѕРІ
         /// </summary>
-        /// <param name="ofTarget">Огромная цель, для которой нужно найти ближайшую точку</param>
-        /// <param name="CalculateFrom">От этой позиции находится ближайшая позиция</param>
-        /// <returns>Ближайшая точка</returns>
+        /// <param name="ofTarget">РћРіСЂРѕРјРЅР°СЏ С†РµР»СЊ, РґР»СЏ РєРѕС‚РѕСЂРѕР№ РЅСѓР¶РЅРѕ РЅР°Р№С‚Рё Р±Р»РёР¶Р°Р№С€СѓСЋ С‚РѕС‡РєСѓ</param>
+        /// <param name="CalculateFrom">РћС‚ СЌС‚РѕР№ РїРѕР·РёС†РёРё РЅР°С…РѕРґРёС‚СЃСЏ Р±Р»РёР¶Р°Р№С€Р°СЏ РїРѕР·РёС†РёСЏ</param>
+        /// <returns>Р‘Р»РёР¶Р°Р№С€Р°СЏ С‚РѕС‡РєР°</returns>
         public Vector3 GetClosestPoint(Transform ofTarget, Vector3 CalculateFrom)
         {
             Vector3 closestPointToTarget;
@@ -420,21 +423,21 @@ namespace Sampo.AI
         #region virtual functions
 
         /// <summary>
-        /// Присваивание очков и изменение параметров
+        /// РџСЂРёСЃРІР°РёРІР°РЅРёРµ РѕС‡РєРѕРІ Рё РёР·РјРµРЅРµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ
         /// </summary>
-        /// <param name="points">Присваиваемые очки</param>
+        /// <param name="points">РџСЂРёСЃРІР°РёРІР°РµРјС‹Рµ РѕС‡РєРё</param>
         public virtual void AssignPoints(int points)
         {
             int remaining = points;
             visiblePowerPoints = points;
 
-            //TODO DESIGN : Гармоничное изменение скорости движения
+            //TODO DESIGN : Р“Р°СЂРјРѕРЅРёС‡РЅРѕРµ РёР·РјРµРЅРµРЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё РґРІРёР¶РµРЅРёСЏ
         }
         /// <summary>
-        /// Проверка фракции на себя
+        /// РџСЂРѕРІРµСЂРєР° С„СЂР°РєС†РёРё РЅР° СЃРµР±СЏ
         /// </summary>
-        /// <param name="target">Относительно этой цели</param>
-        /// <returns>true, если цель подходит</returns>
+        /// <param name="target">РћС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЌС‚РѕР№ С†РµР»Рё</param>
+        /// <returns>true, РµСЃР»Рё С†РµР»СЊ РїРѕРґС…РѕРґРёС‚</returns>
         protected virtual bool IsEnemyPassing(Transform target)
         {
             bool res = true;
@@ -451,29 +454,29 @@ namespace Sampo.AI
             return res;
         }
         /// <summary>
-        /// Выбор оружия исходя из внутренних условий
+        /// Р’С‹Р±РѕСЂ РѕСЂСѓР¶РёСЏ РёСЃС…РѕРґСЏ РёР· РІРЅСѓС‚СЂРµРЅРЅРёС… СѓСЃР»РѕРІРёР№
         /// </summary>
-        /// <param name="target">Относительно этой цели</param>
-        /// <returns>Выбранное оружие</returns>
+        /// <param name="target">РћС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЌС‚РѕР№ С†РµР»Рё</param>
+        /// <returns>Р’С‹Р±СЂР°РЅРЅРѕРµ РѕСЂСѓР¶РёРµ</returns>
         protected abstract Tool ToolChosingCheck(Transform target);
         /// <summary>
-        /// Определяет точку, куда следует отступать
+        /// РћРїСЂРµРґРµР»СЏРµС‚ С‚РѕС‡РєСѓ, РєСѓРґР° СЃР»РµРґСѓРµС‚ РѕС‚СЃС‚СѓРїР°С‚СЊ
         /// </summary>
-        /// <returns>Точка относительно ИИ, длина вектора указывает силу отсупления</returns>
+        /// <returns>РўРѕС‡РєР° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РР, РґР»РёРЅР° РІРµРєС‚РѕСЂР° СѓРєР°Р·С‹РІР°РµС‚ СЃРёР»Сѓ РѕС‚СЃСѓРїР»РµРЅРёСЏ</returns>
         public abstract Vector3 RelativeRetreatMovement();
 
-        /*TODO dep AI_Factory : Сделать так, чтобы управляющая StateMachine была интегрирована сюда, либо вообще редуцирована...
-        * Эти Функции не должны быть публичны, они - только для управляющей StateMachine!
-        * Сделать через Event'ы после переделки factory.
+        /*TODO dep AI_Factory : РЎРґРµР»Р°С‚СЊ С‚Р°Рє, С‡С‚РѕР±С‹ СѓРїСЂР°РІР»СЏСЋС‰Р°СЏ StateMachine Р±С‹Р»Р° РёРЅС‚РµРіСЂРёСЂРѕРІР°РЅР° СЃСЋРґР°, Р»РёР±Рѕ РІРѕРѕР±С‰Рµ СЂРµРґСѓС†РёСЂРѕРІР°РЅР°...
+        * Р­С‚Рё Р¤СѓРЅРєС†РёРё РЅРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РїСѓР±Р»РёС‡РЅС‹, РѕРЅРё - С‚РѕР»СЊРєРѕ РґР»СЏ СѓРїСЂР°РІР»СЏСЋС‰РµР№ StateMachine!
+        * РЎРґРµР»Р°С‚СЊ С‡РµСЂРµР· Event'С‹ РїРѕСЃР»Рµ РїРµСЂРµРґРµР»РєРё factory.
         */
         /// <summary>
-        /// Обычный Update, но вызываемый в состоянии, когда юнит атакует.
+        /// РћР±С‹С‡РЅС‹Р№ Update, РЅРѕ РІС‹Р·С‹РІР°РµРјС‹Р№ РІ СЃРѕСЃС‚РѕСЏРЅРёРё, РєРѕРіРґР° СЋРЅРёС‚ Р°С‚Р°РєСѓРµС‚.
         /// </summary>
         /// <param name="target"></param>
         public abstract void AttackUpdate(Transform target);
 
         /// <summary>
-        /// Обычный Update, но когда юнит действует
+        /// РћР±С‹С‡РЅС‹Р№ Update, РЅРѕ РєРѕРіРґР° СЋРЅРёС‚ РґРµР№СЃС‚РІСѓРµС‚
         /// </summary>
         /// <param name="target"></param>
         public abstract void ActionUpdate(Transform target);
@@ -493,13 +496,13 @@ namespace Sampo.AI
 
         public bool IsInJump()
         {
-            //TODO DESIGN : ИИ Никогда не бывают в прыжке. Что, вообще-то, надо бы исправить.
+            //TODO DESIGN : РР РќРёРєРѕРіРґР° РЅРµ Р±С‹РІР°СЋС‚ РІ РїСЂС‹Р¶РєРµ. Р§С‚Рѕ, РІРѕРѕР±С‰Рµ-С‚Рѕ, РЅР°РґРѕ Р±С‹ РёСЃРїСЂР°РІРёС‚СЊ.
             return false;
         }
         /// <summary>
-        /// Нужно для анимации тела
+        /// РќСѓР¶РЅРѕ РґР»СЏ Р°РЅРёРјР°С†РёРё С‚РµР»Р°
         /// </summary>
-        /// <returns>Точка, куда будет направлена рука</returns>
+        /// <returns>РўРѕС‡РєР°, РєСѓРґР° Р±СѓРґРµС‚ РЅР°РїСЂР°РІР»РµРЅР° СЂСѓРєР°</returns>
         public virtual Transform GetRightHandTarget() { return null; }
         #endregion
 

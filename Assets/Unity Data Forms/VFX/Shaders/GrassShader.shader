@@ -40,13 +40,12 @@ Shader "Grass/DefaultGrass"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             //#include "UnityCG.cginc"
 
+            sampler2D _localOffsetMap;
+            int2 _localPatchAmount;
+            float3 _localPatchPos;
             
             float4 _BottomColor;
             float4 _TipColor;
-            
-            StructuredBuffer<float3> _offsets;
-
-            //#define PI 3.14159f
 
             float3x3 AngleAxis3x3(float angle, float3 axis) //TODO : Сделать helper-функцию для таких вещей
             {
@@ -103,9 +102,18 @@ Shader "Grass/DefaultGrass"
                 UNITY_SETUP_INSTANCE_ID(v);
 
                 v2f o;
+
                 VertexPositionInputs posIn = GetVertexPositionInputs(v.vertex.xyz);
                 o.vertex = posIn.positionCS;
                 o.positionWS = posIn.positionWS;
+
+                float2 textureConverted = float2(
+                o.positionWS.x / _localPatchAmount.x - _localPatchPos.x,
+                o.positionWS.z / _localPatchAmount.y - _localPatchPos.z);
+
+                o.positionWS += float3(0,1,0) * tex2Dlod(_localOffsetMap,
+                float4(textureConverted.x, textureConverted.y ,0.0f,0.0f));
+
                 o.uv = v.uv;
                 float3 vertNormal = GetVertexNormalInputs(v.normal).normalWS;
 
@@ -161,18 +169,15 @@ Shader "Grass/DefaultGrass"
 
                 InputData lightingInput = (InputData) 0;
                 lightingInput.positionWS = i.positionWS;
+                //lightingInput.positionOS = i.vertex;
                 lightingInput.normalWS = resultNormal;
-                lightingInput.viewDirectionWS =viewDir;
+                lightingInput.viewDirectionWS = viewDir;
 
                 SurfaceData surfaceInput = (SurfaceData) 0;            
                 surfaceInput.albedo = col.rgb;
                 surfaceInput.alpha = col.a;
                 surfaceInput.specular = 0;
                 surfaceInput.smoothness = 0;
-
-                //TODO : По другую сторону, если света нет, всё окрасится в чёрный. Это не очень хорошо.
-                // В идеале сделать тот же свет, что и на более освещённой стороне, но просто менее яркий
-                // Либо можно просто создать второй источник света для имитации этого эффекта. Это имеет смысл.
 
                 return UniversalFragmentBlinnPhong(lightingInput, surfaceInput);
             }
