@@ -1,7 +1,9 @@
 using Cinemachine;
+using Sampo.AI;
 using Sampo.GUI;
 using Sampo.Player;
 using Sampo.Player.CameraControls;
+using Sampo.Player.Economy;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -54,7 +56,7 @@ namespace Sampo.Core
                 VisualElement result = panel.Pick(pointerUI);
 
                 GameObject prefab = menu.ConnectUIToObject(result);
-                if (prefab)
+                if (prefab && EconomySystem.Instance.Spend(prefab.GetComponent<TargetingUtilityAI>().VisiblePowerPoints))
                     SpawnGameObject(prefab);
 
                 Cursor.lockState = CursorLockMode.Locked;
@@ -95,6 +97,7 @@ namespace Sampo.Core
         {
             if (interactor.gameObject.TryGetComponent<PlayerController>(out var player))
             {
+                //TODO : ћеню по€вл€етс€ даже тогда, когда взаимодействие происходит не правой кнопкой мыши. Ёто надо убрать.
                 menu = new SpawnMenuController();
                 menu.InitializeCharacterList(menuDocument.rootVisualElement, spawnOption, spawnables);
 

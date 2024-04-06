@@ -6,9 +6,7 @@ namespace Sampo.Player
     [RequireComponent(typeof(Movement))]
     public class PlayerController : MonoBehaviour, IAnimationProvider
     {
-        //TODO DESIGN :  Продумать систему, при которой можно будет использовать разное оружие, а не только ближний бой
         Movement movement;
-        public Canvas UICanvas;
 
         public Transform usedMainHand;
         [Header("Weaponry")]
@@ -56,6 +54,7 @@ namespace Sampo.Player
             movement.PassInputDirect(input, type, Input.GetKeyDown(KeyCode.Space) && movement.IsGrounded && movement.JumpReady);
 
             #region sword fighting
+            //TODO DESIGN :  Продумать систему, при которой можно будет использовать разное оружие, а не только ближний бой
             if (swordControl)
             {
                 // Простое перемещение оружия
@@ -78,7 +77,11 @@ namespace Sampo.Player
                 }
                 else if (Input.GetMouseButton(1))
                 {
-                    swordControl.Block(CastMouseToSwordSpace(), (transform.position + transform.forward * reachLength), transform.forward);
+                    Vector3 start = CastMouseToSwordSpace();
+                    Vector3 controlCenter = transform.position + transform.forward * reachLength;
+                    Vector3 relativeEnd = (controlCenter - start).normalized * swordControl.blade.additionalMeleeReach/2;
+                    Vector3 end = start + relativeEnd;
+                    swordControl.Block(start, end, transform.forward);
 
                     _prevMouse = Input.mousePosition;
                 }

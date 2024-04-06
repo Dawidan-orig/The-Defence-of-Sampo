@@ -10,21 +10,6 @@ namespace Sampo.Melee.Sword
     {
         public SwordFighter_BaseState CurrentSwordState { get { return _currentSwordState; } set { _currentSwordState = value; } }
 
-        public enum ActionType
-        {
-            Swing,
-            Reposition
-        }
-        [System.Serializable]
-        public struct ActionJoint
-        {
-            public Vector3 relativeDesireFrom;
-            public Quaternion rotationFrom;
-            public Vector3 nextRelativeDesire;
-            public Quaternion nextRotation;
-            public ActionType currentActionType;
-        }
-
         SwordFighter_BaseState _currentSwordState;
         SwordFighter_StateFactory _fighter_states;
 
@@ -432,6 +417,11 @@ namespace Sampo.Melee.Sword
         public override void ActionUpdate(Transform target)
         {
 
+        }
+
+        public override Vector3 RelativeRetreatMovement()
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

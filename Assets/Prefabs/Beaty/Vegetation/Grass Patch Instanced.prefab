@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3456628331168074587
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 437369244235883669}
+  - component: {fileID: 5925779092900540750}
+  m_Layer: 0
+  m_Name: Grass Patch Instanced
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &437369244235883669
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3456628331168074587}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5925779092900540750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3456628331168074587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aba8d9518fe65074daf08be0e5b66fd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grassMaterial: {fileID: 2100000, guid: c2f72ceb506601340b6139fd87368d91, type: 2}
+  grassPrefab: {fileID: 2804190713759352639, guid: 62cc266ba6324374aa892a34a09dbd5f, type: 3}
+  patchSize: {x: 50, y: 50}
+  sizingOffset: 0.27
+  grassCompute: {fileID: 7200000, guid: 007b0d6ef3a2613418208aea0483e989, type: 3}
+  grassAmount: {x: 500, y: 500}
+  grassHeight: 0.6
+  grassWidth: 0.05
+  maxBendAngle: 0.7853982
+  grassCurvature: 0.45
+  segmentCount: 5
+  meshSavingPath: Assets/Unity Data Forms/VFX/Meshes/grass/
+  assetName: new grass Mesh
+  dispatchSize: 0
+  bladesAmount: 250000
+  dispatchAmount: 672
+  vertsAmount: 2750000
+  indicesAmount: 6750000
+  _computeInstance: {fileID: 0}

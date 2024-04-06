@@ -1,4 +1,5 @@
 using Sampo.AI;
+using Sampo.Core;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,7 +28,7 @@ public class BaseShooting : Tool
 
         GameObject bullet = Instantiate(bulletPrefab);
         bullet.transform.position = shootPoint.position;
-        bullet.transform.rotation = shootPoint.rotation;
+        bullet.transform.rotation = transform.rotation;
         bullet.GetComponent<Rigidbody>().AddForce(shootPoint.forward * gunPower, ForceMode.VelocityChange);
 
         Faction BFac;
@@ -144,7 +145,7 @@ public class BaseShooting : Tool
 
     protected void PenetratingRaycast(Vector3 from, Vector3 to, out RaycastHit hit, float duration = 0, Color? color = null) 
     {
-        const bool DRAW = false;
+        const bool DRAW = true;
 
         if(color == null)
             color = Color.white;

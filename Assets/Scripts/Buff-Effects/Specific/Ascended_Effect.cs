@@ -27,11 +27,11 @@ public class Ascended_Effect : UniversalEffect
 
     public override void FixedUpdate()
     {
-        const float DRAG = 10;
+        float DRAG = _affected.drag;
 
         float height = _power * DeceasingFunction(LinearTimeK());
-
-        if (Physics.Raycast(_affected.position, Vector3.down, out _, height, raycastMask))
+        //TODO : NavMeshAgent'ы застревают в воздухе после применения этого дебаффа. Скорее всего, проблема где-то в NMPhysicsAgent
+        if (Physics.Raycast(_affected.position, Vector3.down, out _, height, raycastGroundMask))
             _affected.AddForce(Vector3.up * _power * 10, ForceMode.Acceleration);
         else
             _affected.AddForce(Vector3.down * DRAG * 2, ForceMode.Acceleration); // Немножко помогаем гравитации пробить drag        

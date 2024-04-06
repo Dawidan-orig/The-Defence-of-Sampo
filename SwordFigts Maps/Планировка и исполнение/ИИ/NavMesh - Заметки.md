@@ -11,4 +11,4 @@
 ---
 Я установил Ai Navigation, и кое-что теперь надо #Доделать :
 - [ ] Сделать использование NavMeshRegenerate слоя для оптимизированного Build разбитых Terrain'ов.
-- [ ] Логика разбиения земли есть вот тут: https://github.com/kurtdekker/makegeo/blob/a7d34a1702bb804177f16575631e0ea2e0f6b5ab/makegeo/Assets/TerrainStuff/TerrainDamager/TerrainDamager.cs (Не брать код как есть! Использовать сугубо как пример. Мне логику Terrain'ов понять надо.)
+- [ ] Логика изменения земли есть вот тут: https://github.com/kurtdekker/makegeo/blob/a7d34a1702bb804177f16575631e0ea2e0f6b5ab/makegeo/Assets/TerrainStuff/TerrainDamager/TerrainDamager.cs (Не брать код как есть! Использовать сугубо как пример. Мне логику Terrain'ов понять надо.)

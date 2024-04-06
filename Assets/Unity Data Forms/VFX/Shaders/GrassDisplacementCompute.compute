@@ -1,0 +1,184 @@
+﻿//Этот шейдер расставляет поданные позиции для травинок случайным образом
+
+#pragma kernel CSMain
+#include "TerrainShaderReengineered.hlsl"
+
+struct GeneratedVertex
+{
+    float3 positionOS;
+    float3 normalOS;
+    float3 anchorPosOS;
+    float2 uv;
+};
+
+#define MAX_BLADE_SEGMENTS 7
+#define MAX_BLADE_POINTS MAX_BLADE_SEGMENTS*2+1
+#define PI 3.14159f
+
+float2 _patchSize;
+uint2 _bladesAmount;
+float _width;
+float _height;
+float _curvature;
+float _maxBendAngleRad;
+int _segmentCount;
+
+float3 _patchPos;
+int _clusterID;
+
+RWStructuredBuffer<GeneratedVertex> _resVerts;
+RWStructuredBuffer<int> _resIndices;
+
+GeneratedVertex MakeGeneratedPoint(float3 pos, float3 bladePos, float3 normal, float2 uv)
+{
+    GeneratedVertex res = (GeneratedVertex) 0;
+    res.positionOS = pos;
+    res.normalOS = normal;
+    res.anchorPosOS = bladePos;
+    res.uv = uv;
+    return res;
+}
+
+//https://gist.github.com/keijiro/ee7bc388272548396870
+float nrand(float2 uv)
+{
+    return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453);
+}
+
+float3 randomizeRotation(float3 pos, float3 center, float random)
+{  
+    float angle = random * 2 * PI ;
+    float3 res = float3(pos.x,pos.y,pos.z);
+    
+    res.x = cos(angle) * pos.x - sin(angle) * pos.z;
+    res.z = sin(angle) * pos.x + cos(angle) * pos.z;
+    
+    return res;
+}
+
+//https://gist.github.com/keijiro/ee439d5e7388f3aafc5296005c8c3f33
+// Rotation with angle (in radians) and axis
+float3x3 AngleAxis3x3(float angle, float3 axis)
+{
+    float c, s;
+    sincos(angle, s, c);
+
+    float t = 1 - c;
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
+
+    return float3x3(
+        t * x * x + c, t * x * y - s * z, t * x * z + s * y,
+        t * x * y + s * z, t * y * y + c, t * y * z - s * x,
+        t * x * z - s * y, t * y * z + s * x, t * z * z + c
+    );
+}
+
+float3 GetTriangleNormal(float3 a, float3 b, float3 c)
+{
+    return cross(b - a, c - a);
+}
+
+[numthreads(256 ,1,1)] //TODO? : Можно за-двумерить, добавить потоков в Y и использовать id.y
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    uint totalAmount = _bladesAmount.x * _bladesAmount.y;
+    if (id.x > totalAmount)
+          return;
+
+    uint indexX = (id.x % _bladesAmount.x);
+    uint indexY = (id.x - indexX)/_bladesAmount.y;
+
+    float2 step = float2(0,0);
+    step.x = _patchSize.x / (_bladesAmount.x);
+    step.y = _patchSize.y / (_bladesAmount.y);
+    
+    float3 res = float3((indexX + 1) * step.x, 0, (indexY + 1) * step.y);
+
+    float3 points[3];
+    points[0] = float3(-_width/2, 0, 0);
+    points[1] = float3(_width/2, 0, 0);
+    points[2] = float3(0, _height, 0);
+    
+    float random = nrand(float2(indexX * _clusterID % (_bladesAmount.x*10),
+                                indexY* 1.1f * _clusterID % (_bladesAmount.y*10)
+                                ));
+    
+    //Случайный поворот всей травинки
+    float3 center = lerp(points[0], points[1], 0.5f);
+    points[0] = randomizeRotation(points[0], center, random);
+    points[1] = randomizeRotation(points[1], center, random);
+
+    float3 normal = GetTriangleNormal(points[0], points[1], points[2]);
+    //Случайное смещение
+    float3 randPoint = float3((nrand(float2(id.x, id.x)) - step.x*2 * 167 + 1) % step.x,
+                               0,
+                              (nrand(float2(id.x, id.x) + step.x*step.y * 167167) - step.y*2 + 1) % step.y);
+
+    //Матрица и угол изгиба, работает по формуле степени.
+    float bendAngle = _maxBendAngleRad;
+    // для вращения нормали
+    float rotInfluence = _curvature;
+    float3 perpNormal =  -normalize(points[0] - points[1]);
+    float3x3 bendMatrix = AngleAxis3x3(bendAngle*_curvature, perpNormal);
+
+    float3x3 normalMatrix = AngleAxis3x3(bendAngle * rotInfluence, float3(0,0,1));
+    float3 bendNormal = mul(normalMatrix, normal);
+    
+    uint segments = min(MAX_BLADE_SEGMENTS, max(1,_segmentCount));
+    GeneratedVertex vertices[MAX_BLADE_POINTS];
+
+    //Композиция всех данных на основе данной травинки
+    for (uint i = 0; i <     segments; i++)
+    { 
+        //Собираем UV
+        float v = i / (float) segments; // Высота, банально
+        float u = 0.5f - (1 - v) * 0.5f; // Трава - симметрична по центру
+
+        rotInfluence = _curvature*v;// * (1- pow(1-v,3));
+        bendMatrix = AngleAxis3x3(bendAngle * rotInfluence, perpNormal);
+        normalMatrix = AngleAxis3x3(bendAngle * rotInfluence, float3(0,0,1));
+        bendNormal = mul(normalMatrix, normal);
+
+        float3 leftPoint = lerp(points[0], points[1], u)
+                                + mul(bendMatrix,float3(0,lerp(points[0].y, points[2].y, v),0));
+        float3 rightPoint = lerp(points[0], points[1], 1-u)
+                                + mul(bendMatrix,float3(0, lerp(points[1].y, points[2].y, v),0));
+                                
+                                float3 anchorPosOs = res + randPoint;
+
+        vertices[i*2]   = MakeGeneratedPoint(anchorPosOs + leftPoint , anchorPosOs, bendNormal, float2(u  , v));
+        vertices[i*2+1] = MakeGeneratedPoint(anchorPosOs + rightPoint, anchorPosOs, bendNormal, float2(1-u, v));
+    }
+    //Ещё один последний поворот
+    rotInfluence = _curvature;
+    bendMatrix = AngleAxis3x3(bendAngle * rotInfluence, perpNormal);
+    normalMatrix = AngleAxis3x3(bendAngle * rotInfluence, float3(0,0,1));
+    bendNormal = mul(normalMatrix, normal);
+
+    // Фискируем верхнюю точку на нужной позиции
+    points[2] = mul(bendMatrix, points[2]);
+    vertices[segments*2] = MakeGeneratedPoint(res + randPoint + points[2], res + randPoint, bendNormal, float2(0.5f, 1));
+    
+    // Сегмент - это вертикальная трапеция на травинке, состоящая из двух треугольников
+    int numGenVertices = segments * 2 + 1; // Число вершин
+    int numGenTriangles = numGenVertices - 2; // Число треугольников
+    int numGenIndices = numGenTriangles * 3; //Число индексов
+    int genIndexStart = id.x * numGenIndices; // Шаг по индексам
+    int genVertexStart = id.x * numGenVertices; // Шаг по вершинам
+    
+    for (int k = 0; k < numGenVertices; k++)
+    {
+        _resVerts[genVertexStart + k] = vertices[k];
+    }
+    
+    for (int j = 0; j < numGenTriangles; j++)
+    {
+        int genTriangleIndexStart = genIndexStart + j * 3;
+        for (int t = 0; t < 3; t++)
+        {
+            _resIndices[genTriangleIndexStart + t] = genVertexStart + j + t;
+        }
+    }
+}
