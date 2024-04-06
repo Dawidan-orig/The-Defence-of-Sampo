@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace Sampo.AI
 {
-    //TODO : Добавить Logger или другую систему логирования.
-    // Надо понимать, что происходит с каждым юнитом в переделах Editor'а.
+    //TODO!!! : Добавить Logger или другую систему логирования.
+    // Надо понимать, что происходит с каждым юнитом в пределах Editor'а.
 
     [SelectionBase]
     [RequireComponent(typeof(IMovingAgent))]

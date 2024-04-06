@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour, IDamageDealer
 {
+    public GameObject instantiatedOnDestroy;
     public Vector3 startPoint;
     public float possibleDistance = 1000;
     public float remainingTime = 300;
@@ -40,5 +41,11 @@ public class Bullet : MonoBehaviour, IDamageDealer
     public void SetDamageDealer(Transform dealer) 
     {
         _damageSource = dealer;
+    }
+
+    private void OnDestroy()
+    {
+        if (instantiatedOnDestroy)
+            Instantiate(instantiatedOnDestroy,transform.position,transform.rotation, null);
     }
 }

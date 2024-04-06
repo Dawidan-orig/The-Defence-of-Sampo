@@ -96,6 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d93366bc085d8e24ba3c206f751fe964, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  instantiatedOnDestroy: {fileID: 5639832489215776643, guid: 3d2b5744a5a989b47bc9ce31baca208d, type: 3}
   startPoint: {x: 0, y: 0, z: 0}
   possibleDistance: 1000
   remainingTime: 300

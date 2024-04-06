@@ -4,7 +4,9 @@ Shader "Grass/DefaultGrass"
     {
         _BottomColor ("Base Color", Color) = (1,1,1,1)
         _TipColor ("Tip Color", Color) = (1,1,1,1)
-        _Color ("Instance Color", Color) = (0,0,0,0)
+        _localPatchPos("pos", vector) = (0,0,0)
+        _localOffsetMap("texture", 2D) = "" {}
+        //TODO : RandomJitter чтобы уменьшить шаблонность
     }
     SubShader
     {
@@ -20,8 +22,8 @@ Shader "Grass/DefaultGrass"
             //CGPROGRAM
             HLSLPROGRAM
             // Signal this shader requires a compute buffer
-            #pragma prefer_hlslcc gles
-            #pragma exclude_renderers d3d11_9x
+            //#pragma prefer_hlslcc gles
+            //#pragma exclude_renderers d3d11_9x
 
             // Lighting and shadow keywords
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
@@ -84,6 +86,7 @@ Shader "Grass/DefaultGrass"
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 anchorPos : TEXCOORD1;                
                 float3 normal : NORMAL;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
@@ -102,17 +105,28 @@ Shader "Grass/DefaultGrass"
                 UNITY_SETUP_INSTANCE_ID(v);
 
                 v2f o;
+                
+                float3 anchorPosWS = GetVertexPositionInputs(v.anchorPos.xyz).positionWS;                
 
                 VertexPositionInputs posIn = GetVertexPositionInputs(v.vertex.xyz);
                 o.vertex = posIn.positionCS;
                 o.positionWS = posIn.positionWS;
 
                 float2 textureConverted = float2(
-                o.positionWS.x / _localPatchAmount.x - _localPatchPos.x,
-                o.positionWS.z / _localPatchAmount.y - _localPatchPos.z);
+                floor((anchorPosWS.x - _localPatchPos.x)*10),
+                floor((anchorPosWS.z - _localPatchPos.z)*10));
+                //TODO : если разница с соседями слишком велика в высоте - сбросить данные
+                //TODO : refactor кода, ибо он убитый уже
+                //o.positionWS = float3(textureConverted.x, 0, textureConverted.y);
+                int2 resolution = int2(1000,1000);
 
-                o.positionWS += float3(0,1,0) * tex2Dlod(_localOffsetMap,
-                float4(textureConverted.x, textureConverted.y ,0.0f,0.0f));
+                float heightTexOffset = tex2Dlod(_localOffsetMap,
+                float4(textureConverted.y/resolution.y,textureConverted.x/resolution.x, 0.0f, 0.0f));
+                //heightTexOffset.zx = heightTexOffset.xz; //текстура Terrain'а сама по себе смещена, так что это нужно сделать
+
+                //o.positionWS.xyz += heightTexOffset.xyz;
+                float HEIGHT_MULTIPLY_VAL = 10.5f;
+                o.positionWS.y += heightTexOffset * HEIGHT_MULTIPLY_VAL;
 
                 o.uv = v.uv;
                 float3 vertNormal = GetVertexNormalInputs(v.normal).normalWS;
@@ -166,10 +180,10 @@ Shader "Grass/DefaultGrass"
                 
                 //DEBUG
                 //col.rgb = (1+resultNormal)/2;
+                col.rgb = i.positionWS.xyz;
 
                 InputData lightingInput = (InputData) 0;
                 lightingInput.positionWS = i.positionWS;
-                //lightingInput.positionOS = i.vertex;
                 lightingInput.normalWS = resultNormal;
                 lightingInput.viewDirectionWS = viewDir;
 

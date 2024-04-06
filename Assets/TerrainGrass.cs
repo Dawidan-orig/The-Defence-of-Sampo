@@ -19,6 +19,8 @@ namespace Sampo.Core.Shaderworks
         protected override void SetupConstraintsAndBuffers()
         {
             base.SetupConstraintsAndBuffers();
+            _grassShaderInstance.SetVector("_localPatchPos", transform.position);
+            _grassShaderInstance.SetVector("_localPatchAmount", new Vector2(grassAmount.x, grassAmount.y));
             if (_computeInstance)
                 SetTerrainData();
         }
@@ -51,17 +53,15 @@ namespace Sampo.Core.Shaderworks
                     Vector2 scaledIndex = new((float)i/grassAmount.x * data.heightmapResolution,
                         (float)j/grassAmount.y * data.heightmapResolution);
                     // По каким-то причинам надо домножать на это, чтобы terrain нормально сочетался с травой.
-                    float value = heightMap[(int)scaledIndex.x,(int) scaledIndex.y] * 10;
+                    float value = heightMap[(int)scaledIndex.x,(int) scaledIndex.y] * patchSize.x;
                     Color col = new(value, value, value, value);
-                    Debug.DrawRay(transform.position + new Vector3(scaledIndex.x,0,scaledIndex.y), Vector3.up * value * data.heightmapResolution, Color.black, 3);
                     heightMapTexture.SetPixel(i,j, col);
                 }
             }
 
             heightMapTexture.Apply();
-
-            _computeInstance.SetTexture(kernelId, "_texMap", heightMapTexture);
-            _computeInstance.SetBool("_terrainDep", true);
+            //TODO : Получающаяся текстура весит 5 MB. Это очень много! На 100 Terrain'ов уже только это будет половина ГИГАБАЙТА!
+            _grassShaderInstance.SetTexture("_localOffsetMap", heightMapTexture);
         }
     }
 }

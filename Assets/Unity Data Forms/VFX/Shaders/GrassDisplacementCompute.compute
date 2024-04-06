@@ -7,6 +7,7 @@ struct GeneratedVertex
 {
     float3 positionOS;
     float3 normalOS;
+    float3 anchorPosOS;
     float2 uv;
 };
 
@@ -28,11 +29,12 @@ int _clusterID;
 RWStructuredBuffer<GeneratedVertex> _resVerts;
 RWStructuredBuffer<int> _resIndices;
 
-GeneratedVertex MakeGeneratedPoint(float3 pos, float3 normal, float2 uv)
+GeneratedVertex MakeGeneratedPoint(float3 pos, float3 bladePos, float3 normal, float2 uv)
 {
     GeneratedVertex res = (GeneratedVertex) 0;
     res.positionOS = pos;
     res.normalOS = normal;
+    res.anchorPosOS = bladePos;
     res.uv = uv;
     return res;
 }
@@ -143,9 +145,11 @@ void CSMain (uint3 id : SV_DispatchThreadID)
                                 + mul(bendMatrix,float3(0,lerp(points[0].y, points[2].y, v),0));
         float3 rightPoint = lerp(points[0], points[1], 1-u)
                                 + mul(bendMatrix,float3(0, lerp(points[1].y, points[2].y, v),0));
+                                
+                                float3 anchorPosOs = res + randPoint;
 
-        vertices[i*2]   = MakeGeneratedPoint(res + randPoint + leftPoint , bendNormal, float2(u  , v));
-        vertices[i*2+1] = MakeGeneratedPoint(res + randPoint + rightPoint, bendNormal, float2(1-u, v));
+        vertices[i*2]   = MakeGeneratedPoint(anchorPosOs + leftPoint , anchorPosOs, bendNormal, float2(u  , v));
+        vertices[i*2+1] = MakeGeneratedPoint(anchorPosOs + rightPoint, anchorPosOs, bendNormal, float2(1-u, v));
     }
     //Ещё один последний поворот
     rotInfluence = _curvature;
@@ -155,7 +159,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     // Фискируем верхнюю точку на нужной позиции
     points[2] = mul(bendMatrix, points[2]);
-    vertices[segments*2] = MakeGeneratedPoint(res + randPoint + points[2], bendNormal, float2(0.5f, 1));
+    vertices[segments*2] = MakeGeneratedPoint(res + randPoint + points[2], res + randPoint, bendNormal, float2(0.5f, 1));
     
     // Сегмент - это вертикальная трапеция на травинке, состоящая из двух треугольников
     int numGenVertices = segments * 2 + 1; // Число вершин
