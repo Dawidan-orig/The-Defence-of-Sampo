@@ -1,3 +1,6 @@
+using Cinemachine;
+using Sampo.Player.CameraControls;
+using UnityEditor.Networking.PlayerConnection;
 using UnityEngine;
 
 namespace Sampo.Player
@@ -26,6 +29,8 @@ namespace Sampo.Player
         {
             movement = GetComponent<Movement>();
 
+            CameraController.Instance.ThirdPerson = transform.parent.GetComponentInChildren<ThirdPersonCameraPositioner>().gameObject.GetComponent<CinemachineVirtualCamera>();
+            CameraController.Instance.FirstPerson = transform.parent.GetComponentInChildren<FirstPersonCameraPositioner>().gameObject.GetComponent<CinemachineVirtualCamera>();
         }
 
         private void Update()

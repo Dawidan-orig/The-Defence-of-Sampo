@@ -1,7 +1,9 @@
+using Sampo.Core;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using static Dreamteck.Splines.SplineSampleModifier;
 
 [ExecuteInEditMode]
 public class UtilityAI_Manager : MonoBehaviour
@@ -63,15 +65,21 @@ public class UtilityAI_Manager : MonoBehaviour
     }
 
     #region setters-Getters
-    public Dictionary<Interactable_UtilityAI, int> GetAllInteractions(Faction.FType forFaction) 
+    //TODO : Добавить получение взаимодействий только той же фракции
+    public Dictionary<Interactable_UtilityAI, int> GetAllInteractions(Faction forFactionObject) 
     {
         Dictionary<Interactable_UtilityAI, int> res = new();
         foreach (var kvp in faction_IndexMatch) 
         {
-            if (kvp.Key == forFaction)
-                continue;
-            if (kvp.Key == Faction.FType.neutral)
-                continue;
+            //Пропускаем все объекты, которые могут быть использованы этой же фракцией
+            //Либо делаем его доступным ещё и для той же фракции, то-есть не пропускаем ничего
+            if (!forFactionObject.isAvailableForSelfFaction)
+            {
+                if (kvp.Key == forFactionObject.FactionType)
+                    continue;
+                if (kvp.Key == Faction.FType.neutral)
+                    continue;
+            }
 
             foreach(var kvp2 in _factionsData[kvp.Value]) 
             {
@@ -90,9 +98,7 @@ public class UtilityAI_Manager : MonoBehaviour
             UAIData data = new UAIData(interactable, f.FactionType);
             if (faction_IndexMatch.ContainsKey(f.FactionType)) // Если такая фракция уже есть - получаем индекс
             {
-                int resIndex = faction_IndexMatch[f.FactionType];
-                _factionsData[resIndex].Add(interactable, weight);
-                NewAdded?.Invoke(this, data);
+                AddToFaction(f.FactionType, interactable, weight);
             }
             else // Добавляем те фракции, которых ещё нет
             {
@@ -103,17 +109,21 @@ public class UtilityAI_Manager : MonoBehaviour
 
                 NewAdded?.Invoke(this, data);
             }
-
         }
         else // Фракция у объекта отсутствует, значит это объект взаимодействия для всех.
         {
             foreach (var key in faction_IndexMatch.Keys)
             {
-                var dict = _factionsData[faction_IndexMatch[key]];
-                dict.Add(interactable, weight);
-                NewAdded?.Invoke(this, new UAIData(interactable, key));
+                AddToFaction(key, interactable, weight);
             }
         }
+    }
+
+    private void AddToFaction(Faction.FType factionIndex, Interactable_UtilityAI interactable, int weight) 
+    {
+        var dict = _factionsData[faction_IndexMatch[factionIndex]];
+        dict.Add(interactable, weight);
+        NewAdded?.Invoke(this, new UAIData(interactable, factionIndex));
     }
 
     public void RemoveInteractable(Interactable_UtilityAI interactableToRemove) 

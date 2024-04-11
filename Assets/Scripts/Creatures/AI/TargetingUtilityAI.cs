@@ -116,7 +116,7 @@ namespace Sampo.AI
 
                 _conditions = new();
             }
-
+            //TODO : UtilityAI_BaseState - лучше спрятать в отдельный namespace
             public AIAction(TargetingUtilityAI actionOf, Transform target, string name, int weight, Tool actWith, UtilityAI_BaseState alignedState)
             {
                 this.actionOf = actionOf;
@@ -182,6 +182,8 @@ namespace Sampo.AI
 
         protected virtual void Awake()
         {
+            //TODO : Установка всех ключевых переменных прямо в OnValidate, один раз при создании
+            // Это упростит создание новых юнитов в дальнейшем
             _movingAgent = GetComponent<IMovingAgent>();
             _body = GetComponent<Rigidbody>();
             _factory = new UtilityAI_Factory(this);
@@ -248,7 +250,7 @@ namespace Sampo.AI
         #region actions
         private void FetchAndAddAllActivities()
         {
-            var dict = UtilityAI_Manager.Instance.GetAllInteractions(GetComponent<Faction>().FactionType);
+            var dict = GetActionsDictionary();
             foreach (var kvp in dict)
             {
                 Interactable_UtilityAI target = kvp.Key;
@@ -262,6 +264,7 @@ namespace Sampo.AI
                 AddNewPossibleAction(target.transform, weight, target.transform.name, toolUsed, _factory.Attack());
             }
         }
+
         private void FetchNewActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
         {
             Faction faction = GetComponent<Faction>();
@@ -276,8 +279,7 @@ namespace Sampo.AI
 
             Tool toolUsed = ToolChosingCheck(target.transform);
 
-            //TODO DESIGN : _factory.Attack() - не обязательно он, надо выбирать из фабрики нужное
-            AIAction action = new AIAction(this, target.transform, name, weight, toolUsed, _factory.Attack());
+            AIAction action = new AIAction(this, target.transform, name, weight, toolUsed, TargetReaction(target.transform));
 
             AddNewPossibleAction(action);
         }
@@ -344,6 +346,7 @@ namespace Sampo.AI
             for (int i = 0; i < _possibleActions.Count; i++)
             {
                 AIAction action = _possibleActions[i];
+
                 if (action.target != null)
                 {
                     NormilizeAction(action);
@@ -441,7 +444,7 @@ namespace Sampo.AI
         protected virtual bool IsEnemyPassing(Transform target)
         {
             bool res = true;
-
+            
             Faction other = target.GetComponent<Faction>();
 
             if (!other.IsWillingToAttack(GetComponent<Faction>().FactionType) || target == transform)
@@ -454,11 +457,27 @@ namespace Sampo.AI
             return res;
         }
         /// <summary>
+        /// Предоставляет словарь всех доступных объектов взаимодействия из менеджера
+        /// </summary>
+        protected virtual Dictionary<Interactable_UtilityAI, int> GetActionsDictionary()
+        {
+            return UtilityAI_Manager.Instance.GetAllInteractions(GetComponent<Faction>());
+        }
+        /// <summary>
         /// Выбор оружия исходя из внутренних условий
         /// </summary>
         /// <param name="target">Относительно этой цели</param>
         /// <returns>Выбранное оружие</returns>
         protected abstract Tool ToolChosingCheck(Transform target);
+        /// <summary>
+        /// Определяет поведение на цель для ИИ для этого действия
+        /// </summary>
+        /// <param name="target">Цель</param>
+        /// <returns>Состояние, которое будет применено к цели</returns>
+        protected virtual UtilityAI_BaseState TargetReaction(Transform target) 
+        {
+            return _factory.Attack();
+        }
         /// <summary>
         /// Определяет точку, куда следует отступать
         /// </summary>

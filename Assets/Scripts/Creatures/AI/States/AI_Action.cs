@@ -7,6 +7,9 @@ namespace Sampo.AI
     public class AI_Action : UtilityAI_BaseState
     // Будь то лечение или наложение баффа - в этом состоянии ИИ что-то делает со своими союзниками или с собой, в зависимости от цели.
     {
+        //TODO : Тотальный Dependency Injection, иначе тут и не выкрутиться.
+        //TODO : Перевод Attack в это состояние
+        //TODO : Пусть тут по дефолту будет Interact()
         public AI_Action(TargetingUtilityAI currentContext, UtilityAI_Factory factory) : base(currentContext, factory)
         {
         }

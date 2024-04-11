@@ -33,6 +33,7 @@ public class Faction : MonoBehaviour
     private FType _ftype = FType.neutral;
 
     public FType FactionType { get => _ftype;}
+    public bool isAvailableForSelfFaction = false;
 
     /// <summary>
     /// Полноценная смена фракции, из-за которой боевая сторона меняется полностью и без возможности восстановления.

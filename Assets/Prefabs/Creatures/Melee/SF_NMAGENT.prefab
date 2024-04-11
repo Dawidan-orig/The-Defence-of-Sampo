@@ -487,6 +487,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ftype: 2
+  isAvailableForSelfFaction: 0
 --- !u!114 &806366685081612289
 MonoBehaviour:
   m_ObjectHideFlags: 0

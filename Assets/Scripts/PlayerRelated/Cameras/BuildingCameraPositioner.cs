@@ -1,12 +1,11 @@
 using Cinemachine;
-using System.Collections;
-using System.Collections.Generic;
+using Sampo.Building;
 using UnityEngine;
 
 namespace Sampo.Player
 {
     public class BuildingCameraPositioner : MonoBehaviour
-    {        
+    {
         public float movementSpeed = 20;
         public float groundHeight = 2;
 
@@ -38,7 +37,7 @@ namespace Sampo.Player
 
             position.Translate(worldInput * movementSpeed * Time.deltaTime);
 
-            if(Physics.Raycast(position.position + SNAP_DISTANCE * Vector3.up, Vector3.down, out var hit, SNAP_DISTANCE*2)) 
+            if (Physics.Raycast(position.position + SNAP_DISTANCE * Vector3.up, Vector3.down, out var hit, SNAP_DISTANCE * 2))
             {
                 position.position = hit.point + Vector3.up * groundHeight;
             }
@@ -46,13 +45,23 @@ namespace Sampo.Player
             CheckInputs();
         }
 
-        private void CheckInputs() 
+        private void CheckInputs()
         {
-            if(Input.GetMouseButtonDown(0))
-            if(Utilities.GetMouseInWorldCollision(out var point)) 
+            if (Input.GetMouseButtonDown(0))
+                if (Utilities.GetMouseInWorldCollision(out var point))
+                {
+                    Instantiate(BuildingSystem.Instance.ChosenStructureToBuild, point, Quaternion.identity, buildingsParent);
+                }
+
+            //TODO : Временное решение, без интерфейса
+            for(int i = 0; i < 10; i++) 
             {
-                Instantiate(WallPylonPrefab,point, Quaternion.identity, buildingsParent);
-            }
+                if (Input.GetKey(KeyCode.Alpha0 + i))
+                { 
+                    BuildingSystem.Instance.ChosenStructureToBuild
+                        = BuildingSystem.Instance.prefabs[i == 0 ? 9 : i-1].GetComponent<BuildableStructure>();
+                }
+            }            
         }
     }
 }

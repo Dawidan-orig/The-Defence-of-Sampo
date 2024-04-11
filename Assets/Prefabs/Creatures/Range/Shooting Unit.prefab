@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ftype: 0
+  isAvailableForSelfFaction: 0
 --- !u!54 &2397089146008967547
 Rigidbody:
   m_ObjectHideFlags: 0
