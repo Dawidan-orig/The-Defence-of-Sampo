@@ -1,4 +1,5 @@
 using Sampo.AI;
+using Sampo.Core;
 using Sampo.GUI;
 using Sampo.Player.Economy;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
-namespace Sampo.Core
+namespace Sampo.Building
 {
     public class SampoMainStructure : MonoBehaviour, IInteractable
     {

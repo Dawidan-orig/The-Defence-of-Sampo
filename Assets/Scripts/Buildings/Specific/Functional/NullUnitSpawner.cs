@@ -42,11 +42,12 @@ namespace Sampo.Building.Spawners
 
         private IEnumerator SpawnCycle() 
         {
-            yield return new WaitForSeconds(frequency);
+            while (true)
+            {
+                yield return new WaitForSeconds(frequency);
 
-            Instantiate(spawnPrefab, transfromSpawnPos.position, transfromSpawnPos.rotation, unitContainer);
-
-            yield return StartCoroutine(nameof(SpawnCycle));
+                Instantiate(spawnPrefab, transfromSpawnPos.position, transfromSpawnPos.rotation, unitContainer);
+            }
         }
     }
 }

@@ -1,10 +1,8 @@
 {
-    "name": "SampoBuildingSystem",
+    "name": "SampoAICore",
     "rootNamespace": "",
     "references": [
-        "GUID:6c48c94ad58ed104fa5e4052898e5fab",
-        "GUID:4307f53044263cf4b835bd812fc161a4",
-        "GUID:77d67ac501f6b3248aba6e5adbe60ba7"
+        "GUID:6c48c94ad58ed104fa5e4052898e5fab"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
