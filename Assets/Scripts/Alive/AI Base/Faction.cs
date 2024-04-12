@@ -1,3 +1,4 @@
+using Sampo.Core;
 using UnityEngine;
 
 public class Faction : MonoBehaviour

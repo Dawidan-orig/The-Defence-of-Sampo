@@ -7,7 +7,10 @@ namespace Sampo.Core.VFX
 {
     public class VisualEffectEnd : MonoBehaviour
     {
+        public Light connectedLight;
         VisualEffect connectedVFX;
+
+        private float startIntencity;
 
         private void Awake()
         {
@@ -19,6 +22,17 @@ namespace Sampo.Core.VFX
         private void Start()
         {
             connectedVFX.Play();
+            startIntencity = connectedLight.intensity;
+        }
+
+        private void Update()
+        {
+            connectedLight.intensity = connectedVFX.aliveParticleCount / startIntencity;
+
+            if(connectedVFX.aliveParticleCount <= 0) 
+            {
+                Destroy(gameObject);
+            }
         }
 
         private void OnVFXEnd(VFXOutputEventArgs args) 

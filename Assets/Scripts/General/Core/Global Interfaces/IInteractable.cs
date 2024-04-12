@@ -8,5 +8,6 @@ namespace Sampo.Core
     {
         public abstract void Interact(Transform interactor);
         public abstract void PlayerInteract();
+        public abstract float GetInteractionRange();
     }
 }

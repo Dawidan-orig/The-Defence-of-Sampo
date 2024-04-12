@@ -256,12 +256,12 @@ namespace Sampo.AI
                 Interactable_UtilityAI target = kvp.Key;
                 int weight = kvp.Value;
 
-                if (!IsEnemyPassing(target.transform))
+                if (!IsTargetPassing(target.transform))
                     return;
 
                 Tool toolUsed = ToolChosingCheck(target.transform);
 
-                AddNewPossibleAction(target.transform, weight, target.transform.name, toolUsed, _factory.Attack());
+                AddNewPossibleAction(target.transform, weight, target.transform.name, toolUsed, TargetReaction(target.transform));
             }
         }
 
@@ -274,7 +274,7 @@ namespace Sampo.AI
             Interactable_UtilityAI target = e.newInteractable.Key;
             int weight = e.newInteractable.Value;
 
-            if (!IsEnemyPassing(target.transform))
+            if (!IsTargetPassing(target.transform))
                 return;
 
             Tool toolUsed = ToolChosingCheck(target.transform);
@@ -441,7 +441,7 @@ namespace Sampo.AI
         /// </summary>
         /// <param name="target">Относительно этой цели</param>
         /// <returns>true, если цель подходит</returns>
-        protected virtual bool IsEnemyPassing(Transform target)
+        protected virtual bool IsTargetPassing(Transform target)
         {
             bool res = true;
             

@@ -55,7 +55,7 @@ namespace Sampo.Building
 
         protected virtual void Update()
         {
-            if (_currentProgressToBuild >= progressToBuild)
+            if (_currentProgressToBuild >= progressToBuild && !isBuilt)
             {
                 Build();
 

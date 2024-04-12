@@ -1,6 +1,4 @@
 using Sampo.Core;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Sampo.Building.Transformators
@@ -10,9 +8,14 @@ namespace Sampo.Building.Transformators
     /// </summary>
     public class TransformationHouse : BuildableStructure, IInteractable
     {
+        public float interactionRange = 5;
+        public GameObject prefab_TransformTo;
+
         public void Interact(Transform interactor)
         {
-            //TODO : Преобразование
+            GameObject newBorn = Instantiate(prefab_TransformTo, interactor.position, interactor.rotation, Variable_Provider.Instance.unitsContainer);
+            newBorn.GetComponent<Faction>().ChangeFactionCompletely(GetComponent<Faction>().FactionType);
+            Destroy(interactor.gameObject);
         }
 
         public void PlayerInteract()
@@ -22,7 +25,12 @@ namespace Sampo.Building.Transformators
 
         protected override void Build()
         {
-            throw new System.NotImplementedException();
+            
+        }
+
+        public float GetInteractionRange()
+        {
+            return interactionRange;
         }
     }
 }

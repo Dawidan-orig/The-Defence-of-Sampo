@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7616468700809761091}
   - component: {fileID: 9003573586697308956}
   - component: {fileID: 8681995764900493944}
-  - component: {fileID: 8813883762921256609}
   - component: {fileID: 30361608913014697}
   - component: {fileID: 975673156300585467}
   m_Layer: 0
@@ -54,6 +53,7 @@ MonoBehaviour:
   progressToBuild: 0
   isBuilt: 0
   bufferingAmount: 10
+  interactionRange: 5
   releasePos: {fileID: 8837066927094183628}
   unitContainer: {fileID: 0}
 --- !u!114 &8681995764900493944
@@ -70,19 +70,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _ftype: 1
   isAvailableForSelfFaction: 1
---- !u!114 &8813883762921256609
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1003059208348422353}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 803a0625c3a3eb645b146c72f1c0941c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ai_weight: 50
 --- !u!65 &30361608913014697
 BoxCollider:
   m_ObjectHideFlags: 0

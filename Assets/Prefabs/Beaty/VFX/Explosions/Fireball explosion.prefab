@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a1e92ff619f96a4695588cc01f73f19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  connectedLight: {fileID: 586198411281168066}
 --- !u!82 &7617333261210624080
 AudioSource:
   m_ObjectHideFlags: 0
@@ -236,15 +237,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6786167891786168653, guid: dab1df4849a5ddc4a9d230bd76667280, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6786167891786168653, guid: dab1df4849a5ddc4a9d230bd76667280, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.27
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6786167891786168653, guid: dab1df4849a5ddc4a9d230bd76667280, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 14.9
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6786167891786168653, guid: dab1df4849a5ddc4a9d230bd76667280, type: 3}
       propertyPath: m_LocalRotation.w
@@ -279,6 +280,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dab1df4849a5ddc4a9d230bd76667280, type: 3}
+--- !u!108 &586198411281168066 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 871590766630070143, guid: dab1df4849a5ddc4a9d230bd76667280, type: 3}
+  m_PrefabInstance: {fileID: 304586119934185917}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6491750607628691696 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6786167891786168653, guid: dab1df4849a5ddc4a9d230bd76667280, type: 3}

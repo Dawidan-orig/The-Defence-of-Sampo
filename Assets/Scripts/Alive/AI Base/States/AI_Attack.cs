@@ -20,11 +20,6 @@ namespace Sampo.AI
             return false;
         }
 
-        public override void InitializeSubState()
-        {
-
-        }
-
         public override void UpdateState()
         {
             Debug.DrawRay(_ctx.transform.position, Vector3.up * 2, Color.red);
@@ -34,6 +29,7 @@ namespace Sampo.AI
 
             CheckRepath();
 
+            //TODO : Сделать так, чтоб все Melee не подходили вполтную к строениям. Выглядит убого
             float weaponRange = _ctx.CurrentActivity.actWith.GetRange();
 
             Vector3 closest = _ctx.GetClosestPoint(_ctx.CurrentActivity.target, _ctx.transform.position);
@@ -47,10 +43,6 @@ namespace Sampo.AI
                 MoveAlongPath(10);
 
             _ctx.AttackUpdate(_ctx.CurrentActivity.target);
-        }
-        public override void FixedUpdateState()
-        {
-
         }
 
         public override string ToString()
@@ -75,6 +67,16 @@ namespace Sampo.AI
             }
 
             _ctx.MovingAgent.MoveIteration(newPos, _ctx.CurrentActivity.target.position);
+        }
+
+        public override void FixedUpdateState()
+        {
+
+        }
+
+        public override void InitializeSubState()
+        {
+
         }
     }
 }

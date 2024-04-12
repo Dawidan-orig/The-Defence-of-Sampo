@@ -35,19 +35,24 @@ namespace Sampo.Building.Spawners
 
         protected override void Build()
         {
-            StartCoroutine(nameof(SpawnCycle));
-
             unitContainer = Variable_Provider.Instance.unitsContainer;
+
+            StartCoroutine(SpawnCycle());
         }
 
         private IEnumerator SpawnCycle() 
         {
             while (true)
             {
-                yield return new WaitForSeconds(frequency);
-
                 Instantiate(spawnPrefab, transfromSpawnPos.position, transfromSpawnPos.rotation, unitContainer);
+
+                yield return new WaitForSeconds(frequency);
             }
+        }
+
+        public float GetInteractionRange()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

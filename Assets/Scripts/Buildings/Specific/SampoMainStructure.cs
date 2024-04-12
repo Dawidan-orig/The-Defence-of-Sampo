@@ -126,5 +126,10 @@ namespace Sampo.Building
             }*/
 
         }
+
+        public float GetInteractionRange()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
