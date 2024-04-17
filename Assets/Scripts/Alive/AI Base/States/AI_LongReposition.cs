@@ -28,24 +28,20 @@ namespace Sampo.AI
 
             if (_ctx.CurrentActivity.actWith is BaseShooting shooting)
             {
-                if (shooting.AvilableToShoot(_ctx.CurrentActivity.target, out _))
-                {
+                bool available = shooting.AvilableToShoot(_ctx.CurrentActivity.target, out _);
+                if (available)
                     SwitchStates(_factory.Deciding());
-                    return true;
-                }
 
-                return false;
+                return available;
             }
 
             //TODO? : Выглядит мерзковато, слишком сильная привязка к разделению между Дальним боем и Ближним.
-            if (_ctx.CurrentActivity.actWith.GetRange() + (_ctx is MeleeFighter fighter ? fighter.baseReachDistance : 0) >
-                Vector3.Distance(_ctx.transform.position, _ctx.CurrentActivity.target.position))
-            {
+            bool outOfRange = _ctx.CurrentActivity.actWith.GetRange() + (_ctx.BehaviourAI is MeleeFighter fighter ? fighter.baseReachDistance : 0) >
+                Vector3.Distance(_ctx.transform.position, _ctx.CurrentActivity.target.position);
+            if (outOfRange)
                 SwitchStates(_factory.Deciding());
-                return true;
-            }
 
-            return false;
+            return outOfRange;
         }
 
         public override void FixedUpdateState()

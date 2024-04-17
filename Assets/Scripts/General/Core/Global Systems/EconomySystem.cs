@@ -1,3 +1,5 @@
+using Sampo.Core;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -6,7 +8,6 @@ namespace Sampo.Player.Economy
     public class EconomySystem : MonoBehaviour
     {
         private static EconomySystem _instance;
-
         public static EconomySystem Instance
         {
             get
@@ -31,9 +32,13 @@ namespace Sampo.Player.Economy
         }
 
         //TODO UI : Окно (Панель) экономики.
+        [SerializeField]
         private int hunting = 500;
+        [SerializeField]
         private int crop = 500;
+        [SerializeField]
         private int cattleMeat = 500;
+        [SerializeField]
         private int cattleProd = 500;
 
         /// <summary>

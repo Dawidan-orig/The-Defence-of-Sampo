@@ -32,7 +32,7 @@ namespace Sampo.AI
             //TODO : Сделать так, чтоб все Melee не подходили вполтную к строениям. Выглядит убого
             float weaponRange = _ctx.CurrentActivity.actWith.GetRange();
 
-            Vector3 closest = _ctx.GetClosestPoint(_ctx.CurrentActivity.target, _ctx.transform.position);
+            Vector3 closest = _ctx.BehaviourAI.GetClosestPoint(_ctx.CurrentActivity.target, _ctx.transform.position);
 
             float progress = 1 - (Vector3.Distance(closest, _ctx.transform.position)
                 / weaponRange);
@@ -42,7 +42,7 @@ namespace Sampo.AI
             else
                 MoveAlongPath(10);
 
-            _ctx.AttackUpdate(_ctx.CurrentActivity.target);
+            _ctx.BehaviourAI.AttackUpdate(_ctx.CurrentActivity.target);
         }
 
         public override string ToString()
@@ -52,7 +52,7 @@ namespace Sampo.AI
 
         private void RetreatReposition(float retreatCurveTime)
         {
-            Vector3 newPos = _ctx.transform.position - _ctx.retreatInfluence.Evaluate(retreatCurveTime)
+            Vector3 newPos = _ctx.transform.position - _ctx.BehaviourAI.retreatInfluence.Evaluate(retreatCurveTime)
                     * (_ctx.CurrentActivity.target.position - _ctx.transform.position);
 
             if (_ctx.MovingAgent.IsNearObstacle(newPos - _ctx.transform.position, out Vector3 normal))

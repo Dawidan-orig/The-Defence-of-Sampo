@@ -65,7 +65,7 @@ namespace Sampo.AI
         /// </summary>
         private void Repath()
         {
-            Vector3 closestPos = _ctx.GetClosestPoint(_ctx.CurrentActivity.target, _ctx.navMeshCalcFrom.position);            
+            Vector3 closestPos = _ctx.BehaviourAI.GetClosestPoint(_ctx.CurrentActivity.target, _ctx.BehaviourAI.NavMeshCalcFrom.position);            
             moveTargetPos = closestPos;
 
             repathLastTargetPos = moveTargetPos;
@@ -82,7 +82,7 @@ namespace Sampo.AI
                 moveTargetPos = hit.position;
 
             path = new NavMeshPath();
-            NavMesh.CalculatePath(_ctx.navMeshCalcFrom.position, moveTargetPos, NavMesh.AllAreas, path);
+            NavMesh.CalculatePath(_ctx.BehaviourAI.NavMeshCalcFrom.position, moveTargetPos, NavMesh.AllAreas, path);
             _ctx.MovingAgent.PassPath(path);
 
             MoveAlongPath(10);
@@ -101,7 +101,7 @@ namespace Sampo.AI
             {
                 _ctx.ModifyActionOf(_ctx.CurrentActivity.target, new NoPathCondition(10));                
 
-                var closest = NavMeshCalculations.Instance.GetCell(_ctx.navMeshCalcFrom.position);
+                var closest = NavMeshCalculations.Instance.GetCell(_ctx.BehaviourAI.NavMeshCalcFrom.position);
                 moveTargetPos = closest.Center();
                 _ctx.MovingAgent.MoveIteration(moveTargetPos);
             }

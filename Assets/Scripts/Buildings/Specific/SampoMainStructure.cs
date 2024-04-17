@@ -53,7 +53,7 @@ namespace Sampo.Building
                 VisualElement result = panel.Pick(pointerUI);
 
                 GameObject prefab = menu.ConnectUIToObject(result);
-                if (prefab && EconomySystem.Instance.Spend(prefab.GetComponent<TargetingUtilityAI>().VisiblePowerPoints))
+                if (prefab && EconomySystem.Instance.Spend(prefab.GetComponent<AIBehaviourBase>().VisiblePowerPoints))
                     SpawnGameObject(prefab);
 
                 Cursor.lockState = CursorLockMode.Locked;

@@ -7,6 +7,7 @@ namespace Sampo.Building
     /// Класс для всех построек.
     /// Поддерживет процесс строительства и автоматически выравнивается по земле
     /// </summary>
+    [SelectionBase]
     public abstract class BuildableStructure : MonoBehaviour
     {
         //TODO : Дальше надо привязывать структуры к Terrain'у, чтобы делать rebuild сегмента для NavMesh и NMCalcs.

@@ -93,10 +93,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1728107365678632011}
+  - component: {fileID: 2125682248258309612}
   - component: {fileID: 6510398072594887699}
   - component: {fileID: 3015710332918304387}
   - component: {fileID: 9086344078788441216}
-  - component: {fileID: 2125682248258309612}
   m_Layer: 0
   m_Name: TransformationHouse
   m_TagString: Untagged
@@ -120,6 +120,24 @@ Transform:
   - {fileID: 526355395823985303}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2125682248258309612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3150004897952796988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7a64f5f30e79b94aa192e64d704a178, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  possibleHeightToBuild: 0.1
+  progressToBuild: -1
+  isBuilt: 0
+  interactionRange: 2
+  unitLimit: 5
+  prefab_TransformTo: {fileID: 1526482222200477036, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
 --- !u!65 &6510398072594887699
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -173,23 +191,6 @@ MonoBehaviour:
   remainsPrefab: {fileID: 0}
   vital: {fileID: 0}
   parentToDestroy: {fileID: 0}
---- !u!114 &2125682248258309612
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3150004897952796988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7a64f5f30e79b94aa192e64d704a178, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  possibleHeightToBuild: 0.1
-  progressToBuild: -1
-  isBuilt: 0
-  interactionRange: 2
-  prefab_TransformTo: {fileID: 1526482222200477036, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
 --- !u!1 &6121026666716029928
 GameObject:
   m_ObjectHideFlags: 0

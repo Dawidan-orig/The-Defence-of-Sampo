@@ -8,11 +8,11 @@ public class Interactable_UtilityAI : MonoBehaviour
 
     protected virtual void OnEnable()
     {
-        UtilityAI_Manager.Instance.AddNewInteractable(this, ai_weight);
+        UtilityAI_Manager.Instance.AddNewInteractable(this);
     }
 
     protected virtual void OnDisable()
     {
-        UtilityAI_Manager.Instance.RemoveInteractable(this);
+        UtilityAI_Manager.Instance.RemoveInteractableCompletely(this);
     }
 }

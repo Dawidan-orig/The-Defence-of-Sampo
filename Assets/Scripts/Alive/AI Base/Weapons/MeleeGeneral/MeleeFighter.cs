@@ -6,7 +6,8 @@ using UnityEngine;
 
 namespace Sampo.Melee
 {
-    public abstract class MeleeFighter : TargetingUtilityAI
+
+    public abstract class MeleeFighter : AIBehaviourBase
     {
         #region parameters
         //TODO DESIGN : Сделать обратную зависимость оружия к управлению в состояниях, чтобы всё было Generic полностью.
@@ -116,10 +117,8 @@ namespace Sampo.Melee
             public ActionType currentActionType;
         }
 
-        protected override void Start()
+        protected virtual void Start()
         {
-            base.Start();
-
             distanceFrom = distanceFrom ? distanceFrom : transform;
             _catcher = gameObject.GetComponent<AttackCatcher>();
 
@@ -133,7 +132,7 @@ namespace Sampo.Melee
 
         }
 
-        protected override Tool ToolChosingCheck(Transform target)
+        public override Tool ToolChosingCheck(Transform target)
         {
             return weapon;
         }
@@ -154,9 +153,9 @@ namespace Sampo.Melee
         {
             Vector3 calculateFrom = distanceFrom.position;
 
-            closestPointToTarget = GetClosestPoint(_currentActivity.target, calculateFrom);
+            closestPointToTarget = GetClosestPoint(CurrentActivity.target, calculateFrom);
 
-            return Vector3.Distance(calculateFrom, closestPointToTarget) < _currentActivity.actWith.additionalMeleeReach + baseReachDistance;
+            return Vector3.Distance(calculateFrom, closestPointToTarget) < CurrentActivity.actWith.additionalMeleeReach + baseReachDistance;
         }
 
         public void BecomeReadyToSwing()

@@ -58,7 +58,7 @@ namespace Sampo.AI
 
             MoveAlongPath(10);
 
-            _ctx.ActionUpdate(_ctx.CurrentActivity.target);
+            _ctx.BehaviourAI.ActionUpdate(_ctx.CurrentActivity.target);
         }
 
         public override string ToString()

@@ -81,22 +81,17 @@ namespace Sampo.Weaponry.Melee.Sword
             AttackCatcher.OnIncomingAttack += Incoming;
         }
 
-        protected override void Update()
+        protected void Update()
         {
-            if (!_AIActive)
-                return;
-
-            base.Update();
             _currentSwordState.UpdateState();
 
             currentState = _currentSwordState.ToString();
         }
 
-        protected override void FixedUpdate()
+        protected void FixedUpdate()
         {
             //TODO DESIGN : ƒобавить коррекцию движени€ оружи€ уже во врем€ Swing, чтобы нивелировать движение как врага, так и самого юнита.
             //TODO DESIGN : ѕридумать, как можно вытащить StateMachine и измен€ть в ней только принципы движени€, хваты рук, и добавить возможность делать траекторию через BezierCurve
-            base.FixedUpdate();
             _currentSwordState.FixedUpdateState();
 
             if (_moveProgress < 1)
@@ -396,7 +391,7 @@ namespace Sampo.Weaponry.Melee.Sword
 
         #region Specifications overrided
 
-        protected override Tool ToolChosingCheck(Transform target)
+        public override Tool ToolChosingCheck(Transform target)
         {
             return _blade;
         }

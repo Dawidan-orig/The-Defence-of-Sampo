@@ -20,6 +20,7 @@ public class Faction : MonoBehaviour
 
     private void Start()
     {
+        /*
         var visuals = GetComponentsInChildren<Renderer>();
         foreach (Renderer renderer in visuals)
             switch (_ftype)
@@ -28,13 +29,32 @@ public class Faction : MonoBehaviour
                 case FType.enemy: renderer.material = Variable_Provider.Instance.enemy; break;
                 case FType.aggressive: renderer.material = Variable_Provider.Instance.agro; break;
             }
+        */
     }
 
     [SerializeField]
     private FType _ftype = FType.neutral;
 
     public FType FactionType { get => _ftype;}
-    public bool isAvailableForSelfFaction = false;
+    public bool IsAvailableForSelfFaction {
+        get => isAvailableForSelfFaction;
+
+        set
+        {
+            bool prev = isAvailableForSelfFaction;
+            isAvailableForSelfFaction = value;
+
+            if (TryGetComponent(out Interactable_UtilityAI interact))
+            {
+                if (value == false && prev == true)
+                    UtilityAI_Manager.Instance.RemoveFromFaction(_ftype, GetComponent<Interactable_UtilityAI>());
+                else if (value == true && prev == false)
+                    UtilityAI_Manager.Instance.AddToFaction(_ftype, interact);
+            }
+        }
+    }
+    [SerializeField]
+    private bool isAvailableForSelfFaction = false;
 
     /// <summary>
     /// Полноценная смена фракции, из-за которой боевая сторона меняется полностью и без возможности восстановления.

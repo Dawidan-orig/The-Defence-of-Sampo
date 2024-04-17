@@ -45,8 +45,8 @@ public class MovingAgent : MonoBehaviour, IMovingAgent
         desireLookDir.y = 0;
 
         countFrom = transform;
-        if (TryGetComponent(out TargetingUtilityAI ai) && ai.navMeshCalcFrom)
-            countFrom = ai.navMeshCalcFrom;
+        if (TryGetComponent(out AIBehaviourBase ai) && ai.NavMeshCalcFrom)
+            countFrom = ai.NavMeshCalcFrom;
     }
 
     private void OnEnable()

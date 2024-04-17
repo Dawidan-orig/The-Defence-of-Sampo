@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
-[CustomEditor(typeof(TargetingUtilityAI))]
+//[CustomEditor(typeof(TargetingUtilityAI))]
 public class AI_Inspector : Editor
 {
     public VisualTreeAsset AIWindow;

@@ -112,6 +112,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   distanceWeightMultiplier: 1
+  hasCongestion: 1
   vital: {fileID: 2397089146008967546}
   toGroundDist: 0.3
   navMeshCalcFrom: {fileID: 0}

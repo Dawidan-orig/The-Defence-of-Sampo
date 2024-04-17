@@ -13,47 +13,36 @@ namespace Sampo.AI
     [SelectionBase]
     [RequireComponent(typeof(IMovingAgent))]
     [RequireComponent(typeof(Faction))]
-    public abstract class TargetingUtilityAI : MonoBehaviour, IAnimationProvider, IPointsDistribution
+    [RequireComponent(typeof(AIBehaviourBase))]
+    public class TargetingUtilityAI : MonoBehaviour
     // ИИ, ставящий приоритеты выполнения действий
     // Использует StateMachine в качестве исполнителя
     {
         public bool _AIActive = true;
 
         [Header("Setup")]
-        [Tooltip("Кривая от 0 до 1, определяющая то," +
-            "с какой интенсивностью в зависимости от дальности оружия ИИ будет отдоходить от цели")]
-        public AnimationCurve retreatInfluence;
         [Tooltip("Влияние дистанции на выбор этого ИИ")]
         public float distanceWeightMultiplier = 1;
-
-        [Header("Ground for animation and movement")]
-        public Collider vital;
-        public float toGroundDist = 0.3f;
-        [Tooltip("Точка отсчёта для NavMeshAgent")]
-        public Transform navMeshCalcFrom;
+        [Tooltip("Оказывает ли вес этого ИИ влияние на цель?")]
+        //TODO? : По хорошему, должен считываться только в Start один раз, дальше - игнорироваться. Иначе всё сломает
+        public bool hasCongestion = true;
 
         [Header("lookonly")]
         [SerializeField]
         protected AIAction _currentActivity;
         [SerializeField]
         protected List<AIAction> _possibleActions = new();
-        [SerializeField]
-        [Tooltip(@"Это очки внешней опасности, по котором ИИ определяет, насколько этот противник опасен.
-            Может менять визуальную составляющую.
-            Изначально устанавливается при процедурной инициализации, но может меняться в ходе игры.")]
-        protected int visiblePowerPoints = 100;
 
         IMovingAgent _movingAgent;
-        Rigidbody _body;
         private AIAction _noAction;
+        private AIBehaviourBase _behaviourAI;
         protected UtilityAI_Factory _factory;
         protected UtilityAI_BaseState _currentState;
 
         public UtilityAI_BaseState CurrentState { get => _currentState; set => _currentState = value; }
         public AIAction CurrentActivity { get => _currentActivity; }
-        public Rigidbody Body { get => _body; set => _body = value; }
         public IMovingAgent MovingAgent { get => _movingAgent; set => _movingAgent = value; }
-        public int VisiblePowerPoints { get => visiblePowerPoints; set => visiblePowerPoints = value; }
+        public AIBehaviourBase BehaviourAI { get => _behaviourAI;}
 
         [Serializable]
         public struct AIAction
@@ -82,6 +71,7 @@ namespace Sampo.AI
 
                 distanceSubstraction =
                         Mathf.RoundToInt(Vector3.Distance(actionOf.transform.position, target.position) * actionOf.distanceWeightMultiplier);
+                if(actionOf.hasCongestion)
                 enemiesAmountSubstraction =
                     UtilityAI_Manager.Instance.GetCongestion(target.GetComponent<Interactable_UtilityAI>());
 
@@ -185,10 +175,9 @@ namespace Sampo.AI
             //TODO : Установка всех ключевых переменных прямо в OnValidate, один раз при создании
             // Это упростит создание новых юнитов в дальнейшем
             _movingAgent = GetComponent<IMovingAgent>();
-            _body = GetComponent<Rigidbody>();
             _factory = new UtilityAI_Factory(this);
+            _behaviourAI = GetComponent<AIBehaviourBase>();
             _currentState = _factory.Deciding();
-            navMeshCalcFrom = navMeshCalcFrom == null ? transform : navMeshCalcFrom;
         }
 
         protected virtual void OnEnable()
@@ -233,6 +222,7 @@ namespace Sampo.AI
             const float TIME_OF_BEING_ANGRY = 20;
 
             if (collision.gameObject.TryGetComponent<IDamageDealer>(out var dDealer))
+                //TODO : Перейти на универсальый Condition, работающий на времени
                 ModifyActionOf(dDealer.DamageFrom, new RespondToAttackCondition(TIME_OF_BEING_ANGRY));
         }
 
@@ -240,8 +230,10 @@ namespace Sampo.AI
         {
             UtilityAI_Manager.Instance.NewAdded -= FetchNewActivityFromManager;
             UtilityAI_Manager.Instance.NewRemoved -= RemoveActivityFromManager;
-            if (_currentActivity.target)
-                UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), -visiblePowerPoints);
+            if (_currentActivity.target && hasCongestion)
+                UtilityAI_Manager.Instance.ChangeCongestion(
+                    _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
+                    -_behaviourAI.VisiblePowerPoints);
             NullifyActivity();
             _AIActive = false;
         }
@@ -250,21 +242,20 @@ namespace Sampo.AI
         #region actions
         private void FetchAndAddAllActivities()
         {
-            var dict = GetActionsDictionary();
+            var dict = _behaviourAI.GetActionsDictionary();
             foreach (var kvp in dict)
             {
                 Interactable_UtilityAI target = kvp.Key;
                 int weight = kvp.Value;
 
-                if (!IsTargetPassing(target.transform))
+                if (!_behaviourAI.IsTargetPassing(target.transform))
                     return;
 
-                Tool toolUsed = ToolChosingCheck(target.transform);
+                Tool toolUsed = _behaviourAI.ToolChosingCheck(target.transform);
 
-                AddNewPossibleAction(target.transform, weight, target.transform.name, toolUsed, TargetReaction(target.transform));
+                AddNewPossibleAction(target.transform, weight, target.transform.name, toolUsed, _behaviourAI.TargetReaction(target.transform));
             }
         }
-
         private void FetchNewActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
         {
             Faction faction = GetComponent<Faction>();
@@ -274,12 +265,13 @@ namespace Sampo.AI
             Interactable_UtilityAI target = e.newInteractable.Key;
             int weight = e.newInteractable.Value;
 
-            if (!IsTargetPassing(target.transform))
+            if (!_behaviourAI.IsTargetPassing(target.transform))
                 return;
 
-            Tool toolUsed = ToolChosingCheck(target.transform);
+            Tool toolUsed = _behaviourAI.ToolChosingCheck(target.transform);
 
-            AIAction action = new AIAction(this, target.transform, name, weight, toolUsed, TargetReaction(target.transform));
+            AIAction action = new AIAction(
+                this, target.transform, name, weight, toolUsed, _behaviourAI.TargetReaction(target.transform));
 
             AddNewPossibleAction(action);
         }
@@ -318,10 +310,15 @@ namespace Sampo.AI
         }
         private void ChangeAction(AIAction to)
         {
-            if (!IsNoActionCurrently() && _currentActivity.target) //Убираем влияние текущей цели
-                UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), -visiblePowerPoints);
+            if (!IsNoActionCurrently() && _currentActivity.target && hasCongestion) //Убираем влияние текущей цели
+                UtilityAI_Manager.Instance.ChangeCongestion(
+                    _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
+                    -_behaviourAI.VisiblePowerPoints);
             _currentActivity = to;
-            UtilityAI_Manager.Instance.ChangeCongestion(_currentActivity.target.GetComponent<Interactable_UtilityAI>(), visiblePowerPoints);
+            if(hasCongestion)
+            UtilityAI_Manager.Instance.ChangeCongestion(
+                _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
+                _behaviourAI.VisiblePowerPoints);
         }
         public UtilityAI_BaseState SelectBestActivity()
         {
@@ -343,6 +340,7 @@ namespace Sampo.AI
         }
         private void NormilizeActions()
         {
+            //TODO? : LINQ для красоты
             for (int i = 0; i < _possibleActions.Count; i++)
             {
                 AIAction action = _possibleActions[i];
@@ -368,6 +366,11 @@ namespace Sampo.AI
         }
         public bool IsNoActionCurrently() => _currentActivity == _noAction;
         #endregion
+
+        //TODO!!! : ПЕРЕПИСАТЬ ЭТО НАХРЕН! Пусть состояние выбираются процендурно, и с возможностью их выбора
+        public UtilityAI_BaseState GetAttackState() => _factory.Attack();
+        public UtilityAI_BaseState GetRepositionState() => _factory.Reposition();
+        public UtilityAI_BaseState GetActionState() => _factory.Action();
 
         /// <summary>
         /// Обновление всех связанных с целью задач
@@ -402,128 +405,6 @@ namespace Sampo.AI
         {
             return _currentActivity == _noAction;
         }
-
-        /// <summary>
-        /// Независимая команда вычисления, находящая ближайшую точку для больших объектов
-        /// </summary>
-        /// <param name="ofTarget">Огромная цель, для которой нужно найти ближайшую точку</param>
-        /// <param name="CalculateFrom">От этой позиции находится ближайшая позиция</param>
-        /// <returns>Ближайшая точка</returns>
-        public Vector3 GetClosestPoint(Transform ofTarget, Vector3 CalculateFrom)
-        {
-            Vector3 closestPointToTarget;
-            if (ofTarget.TryGetComponent<IDamagable>(out var ab))
-                closestPointToTarget = ab.Vital.ClosestPointOnBounds(CalculateFrom);
-            else if (ofTarget.TryGetComponent<Collider>(out var c))
-                closestPointToTarget = c.ClosestPointOnBounds(CalculateFrom);
-            else
-                closestPointToTarget = ofTarget.position;
-
-            //closestPointToTarget = ofTarget.position;
-
-            return closestPointToTarget;
-        }
-        #region virtual functions
-
-        /// <summary>
-        /// Присваивание очков и изменение параметров
-        /// </summary>
-        /// <param name="points">Присваиваемые очки</param>
-        public virtual void AssignPoints(int points)
-        {
-            int remaining = points;
-            visiblePowerPoints = points;
-
-            //TODO DESIGN : Гармоничное изменение скорости движения
-        }
-        /// <summary>
-        /// Проверка фракции на себя
-        /// </summary>
-        /// <param name="target">Относительно этой цели</param>
-        /// <returns>true, если цель подходит</returns>
-        protected virtual bool IsTargetPassing(Transform target)
-        {
-            bool res = true;
-            
-            Faction other = target.GetComponent<Faction>();
-
-            if (!other.IsWillingToAttack(GetComponent<Faction>().FactionType) || target == transform)
-                res = false;
-
-            if (other.TryGetComponent(out AliveBeing b))
-                if (b.mainBody == transform)
-                    res = false;
-
-            return res;
-        }
-        /// <summary>
-        /// Предоставляет словарь всех доступных объектов взаимодействия из менеджера
-        /// </summary>
-        protected virtual Dictionary<Interactable_UtilityAI, int> GetActionsDictionary()
-        {
-            return UtilityAI_Manager.Instance.GetAllInteractions(GetComponent<Faction>());
-        }
-        /// <summary>
-        /// Выбор оружия исходя из внутренних условий
-        /// </summary>
-        /// <param name="target">Относительно этой цели</param>
-        /// <returns>Выбранное оружие</returns>
-        protected abstract Tool ToolChosingCheck(Transform target);
-        /// <summary>
-        /// Определяет поведение на цель для ИИ для этого действия
-        /// </summary>
-        /// <param name="target">Цель</param>
-        /// <returns>Состояние, которое будет применено к цели</returns>
-        protected virtual UtilityAI_BaseState TargetReaction(Transform target) 
-        {
-            return _factory.Attack();
-        }
-        /// <summary>
-        /// Определяет точку, куда следует отступать
-        /// </summary>
-        /// <returns>Точка относительно ИИ, длина вектора указывает силу отсупления</returns>
-        public abstract Vector3 RelativeRetreatMovement();
-
-        /*TODO dep AI_Factory : Сделать так, чтобы управляющая StateMachine была интегрирована сюда, либо вообще редуцирована...
-        * Эти Функции не должны быть публичны, они - только для управляющей StateMachine!
-        * Сделать через Event'ы после переделки factory.
-        */
-        /// <summary>
-        /// Обычный Update, но вызываемый в состоянии, когда юнит атакует.
-        /// </summary>
-        /// <param name="target"></param>
-        public abstract void AttackUpdate(Transform target);
-
-        /// <summary>
-        /// Обычный Update, но когда юнит действует
-        /// </summary>
-        /// <param name="target"></param>
-        public abstract void ActionUpdate(Transform target);
-        #endregion
-
-        #region animation
-        public Vector3 GetLookTarget()
-        {
-            return (_currentActivity.target ? _currentActivity.target.position : Vector3.zero);
-        }
-
-        public bool IsGrounded()
-        {
-            return Physics.BoxCast(vital.bounds.center, new Vector3(vital.bounds.size.x / 2, 0.1f, vital.bounds.size.z / 2),
-                transform.up * -1, out _, transform.rotation, vital.bounds.size.y / 2 + toGroundDist);
-        }
-
-        public bool IsInJump()
-        {
-            //TODO DESIGN : ИИ Никогда не бывают в прыжке. Что, вообще-то, надо бы исправить.
-            return false;
-        }
-        /// <summary>
-        /// Нужно для анимации тела
-        /// </summary>
-        /// <returns>Точка, куда будет направлена рука</returns>
-        public virtual Transform GetRightHandTarget() { return null; }
-        #endregion
 
         private void OnDrawGizmos()
         {

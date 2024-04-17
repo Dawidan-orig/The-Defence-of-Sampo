@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Sampo.AI.Monsters
 {
     [SelectionBase]
-    public class SpiderBrain : TargetingUtilityAI
+    public class SpiderBrain : AIBehaviourBase
     {
         //TODO : Преобразовать в StateMachine от Git-Amend.
         [Header("Spider")]
@@ -42,26 +42,20 @@ namespace Sampo.AI.Monsters
             toReturn
         }
 
-        protected override void Start()
+        protected void Start()
         {
-            base.Start();
-
             initialBodyHeightOffset = transform.position.y - legsHarmony.legs[0].legTarget.position.y;
             initialBodyRotation = transform.rotation;
         }
 
-        protected override void Update()
+        protected void Update()
         {
-
-            base.Update();
             if (Physics.Raycast(transform.position, Vector3.down, out var hit, legsHarmony.legsLength, terrain))
-                navMeshCalcFrom.position = hit.point + Vector3.up* 1.5f;
+                NavMeshCalcFrom.position = hit.point + Vector3.up* 1.5f;
         }
 
-        protected override void FixedUpdate()
+        protected void FixedUpdate()
         {
-            base.FixedUpdate();
-
             short onGroundAmount = 0;
             float average = 0;
             foreach (SpiderLegControl leg in legsHarmony.legs)
@@ -99,7 +93,7 @@ namespace Sampo.AI.Monsters
                     diff * rotationInfluence / legsHarmony.legPairs.Count + initialBodyRotation.y);
             }
 
-            if (_currentState != _factory.Attack() && _spiderState != SpiderState.nothing && attackingLeg != null)
+            if (_spiderState != SpiderState.nothing && attackingLeg != null)
             {
                 if (_spiderState != SpiderState.toReturn)
                 {
@@ -195,7 +189,7 @@ namespace Sampo.AI.Monsters
             //TODO DESIGN
         }
 
-        protected override Tool ToolChosingCheck(Transform target)
+        public override Tool ToolChosingCheck(Transform target)
         {
             return legsHarmony.legs[0].limb; //Не важно, какую ногу, важны лишь параметры. У всех ног параметры (Пока что) одинаковы.
         }

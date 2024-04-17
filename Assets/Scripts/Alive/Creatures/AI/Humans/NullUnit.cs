@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class NullUnit : TargetingUtilityAI
+public class NullUnit : AIBehaviourBase
 {
     //TODO : Вот все эти функции должны быть вынесены в отдельный абстрактный класс, независимый от TargetingUtlityAI. Это нужно преобразовать в DependencyInjection, чтобы не создавать новые Instanc'ы юнитов, а лишь менять поведение
     public override void ActionUpdate(Transform target)
@@ -29,22 +29,27 @@ public class NullUnit : TargetingUtilityAI
         
     }
 
-    protected override Dictionary<Interactable_UtilityAI, int> GetActionsDictionary()
+    public override Dictionary<Interactable_UtilityAI, int> GetActionsDictionary()
     {
-        return UtilityAI_Manager.Instance.GetSameFactionInteractions(GetComponent<Faction>())
-            .Where(kvp => kvp.Key.GetComponent<Faction>().isAvailableForSelfFaction)
-            .Select(kvp => new { kvp.Key, val = (kvp.Key.TryGetComponent(out BuildableStructure _) ? kvp.Value * 3 : kvp.Value) })
+        var input = UtilityAI_Manager.Instance.GetSameFactionInteractions(GetComponent<Faction>());
+
+        var res = input
+            .Where(kvp => kvp.Key.GetComponent<Faction>().IsAvailableForSelfFaction)
+            .Select(kvp => new { kvp.Key, val = kvp.Value})
+            //(kvp.Key.TryGetComponent(out BuildableStructure _) ? kvp.Value * 3 : kvp.Value) 
             .ToDictionary(t => t.Key, t => t.val);
+
+        return res;
     }
 
-    protected override bool IsTargetPassing(Transform target)
+    public override bool IsTargetPassing(Transform target)
     {
         return true;
     }
 
-    protected override UtilityAI_BaseState TargetReaction(Transform target)
+    public override UtilityAI_BaseState TargetReaction(Transform target)
     {
-        return _factory.Action();
+        return _AITargeting.GetActionState();
     }
 
     public override Vector3 RelativeRetreatMovement()
@@ -53,7 +58,7 @@ public class NullUnit : TargetingUtilityAI
         return Vector3.zero;
     }
 
-    protected override Tool ToolChosingCheck(Transform target)
+    public override Tool ToolChosingCheck(Transform target)
     {
         // У этого юнита нет оружия
         return null;

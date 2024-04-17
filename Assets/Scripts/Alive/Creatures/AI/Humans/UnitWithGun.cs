@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Sampo.AI.Humans.Ranged
 {
-    public class UnitWithGun : TargetingUtilityAI
+    public class UnitWithGun : AIBehaviourBase
     {
         public BaseShooting weapon;
 
@@ -20,7 +20,7 @@ namespace Sampo.AI.Humans.Ranged
             }
         }
 
-        protected override Tool ToolChosingCheck(Transform target)
+        public override Tool ToolChosingCheck(Transform target)
         {
             return weapon;
         }

@@ -1,4 +1,5 @@
 using Sampo.Core;
+using Sampo.Player.Economy;
 using System.Collections;
 using UnityEngine;
 
@@ -12,15 +13,30 @@ namespace Sampo.Building.Spawners
     {
         //TODO? : Сделать специальный атрибут самостоятельно,
         //Который выкидывает exception если поля не заполнены через Unity
+        //Либо Alchemy
         public float frequency = 10;
-        public GameObject spawnPrefab;
+        public int limitAddition = 10;
         public Transform transfromSpawnPos;
-        public Transform unitContainer;
 
-        private void Awake()
+        [SerializeField]
+        private int toSpawn = 0;
+
+        public int ToSpawn {
+            get => toSpawn;
+            set
+            {
+                AddUnitsToSpawn(value - toSpawn);
+            }
+        }
+
+        private void OnEnable()
         {
-            if(spawnPrefab == null)
-                spawnPrefab = (GameObject)Resources.Load("NullUnit");
+            BuildingsManager.Instance.AddNewSpawner(this);
+        }
+        private void OnDestroy()
+        {
+            BuildingsManager.Instance.RemoveSpawner(this);
+            BuildingsManager.Instance.NullUnitLimit -= limitAddition;
         }
 
         public void Interact(Transform interactor)
@@ -35,17 +51,23 @@ namespace Sampo.Building.Spawners
 
         protected override void Build()
         {
-            unitContainer = Variable_Provider.Instance.unitsContainer;
-
-            StartCoroutine(SpawnCycle());
+            BuildingsManager.Instance.NullUnitLimit += limitAddition;
         }
 
-        private IEnumerator SpawnCycle() 
+        public void AddUnitsToSpawn(int amount) 
         {
-            while (true)
-            {
-                Instantiate(spawnPrefab, transfromSpawnPos.position, transfromSpawnPos.rotation, unitContainer);
+            bool noSpawnCurrently = toSpawn == 0;
+            toSpawn += amount;
+            if (noSpawnCurrently)
+                StartCoroutine(SpawnCycle());
+        }
 
+        private IEnumerator SpawnCycle()
+        {
+            while (toSpawn > 0)
+            {
+                BuildingsManager.Instance.CreateNewNullUnit(transfromSpawnPos);
+                toSpawn--;
                 yield return new WaitForSeconds(frequency);
             }
         }

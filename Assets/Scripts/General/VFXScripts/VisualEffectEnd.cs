@@ -11,6 +11,7 @@ namespace Sampo.Core.VFX
         VisualEffect connectedVFX;
 
         private float startIntencity;
+        bool started = false;
 
         private void Awake()
         {
@@ -29,10 +30,13 @@ namespace Sampo.Core.VFX
         {
             connectedLight.intensity = connectedVFX.aliveParticleCount / startIntencity;
 
+            if (connectedVFX.aliveParticleCount > 0)
+                started = true;
+            else if(!started)
+                return;
+
             if(connectedVFX.aliveParticleCount <= 0) 
-            {
                 Destroy(gameObject);
-            }
         }
 
         private void OnVFXEnd(VFXOutputEventArgs args) 

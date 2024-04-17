@@ -6,6 +6,7 @@
       {
         "id": "369c0087b7b8b4c6",
         "type": "tabs",
+        "dimension": 32.63422818791946,
         "children": [
           {
             "id": "9e4d330aa809f58c",
@@ -13,7 +14,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Планировка и исполнение/TODO-хи фундамента.md",
+                "file": "Калевала и её интерпретация в игру/Калевала.md",
                 "mode": "source",
                 "source": false
               }
@@ -24,6 +25,7 @@
       {
         "id": "7086e8758daaa941",
         "type": "tabs",
+        "dimension": 67.36577181208054,
         "children": [
           {
             "id": "10b558e54446d43a",
@@ -101,7 +103,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Планировка и исполнение/TODO-хи фундамента.md",
+                "file": "Калевала и её интерпретация в игру/Калевала.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +120,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Планировка и исполнение/TODO-хи фундамента.md",
+                "file": "Калевала и её интерпретация в игру/Калевала.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -141,7 +143,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Планировка и исполнение/TODO-хи фундамента.md"
+                "file": "Калевала и её интерпретация в игру/Калевала.md"
               }
             }
           },
@@ -174,7 +176,7 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "10b558e54446d43a",
+  "active": "9e4d330aa809f58c",
   "lastOpenFiles": [
     "Планировка и исполнение/TODO-хи фундамента.md",
     "Калевала и её интерпретация в игру/Сюжет/5 - Бойня.md",

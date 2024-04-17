@@ -1,4 +1,3 @@
-using Sampo.Core;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -9,6 +8,7 @@ public class UtilityAI_Manager : MonoBehaviour
 // Собирает все объекты на сцене, с которыми можно взаимодействовать, и предоставляет информацию для всех UtilityAI
 // Singleton
 {
+    //TODO!!! : Чрезвычайно нужен Logger для всех изменений!!!
     private static UtilityAI_Manager _instance;
     public static UtilityAI_Manager Instance
     {
@@ -39,6 +39,7 @@ public class UtilityAI_Manager : MonoBehaviour
             _instance = this;
     }
 
+    //Перевести в деревья насколько это возможно
     private Dictionary<Interactable_UtilityAI, int> _targetedByUnits = new Dictionary<Interactable_UtilityAI, int>();
     public Dictionary<Faction.FType, int> faction_IndexMatch = new();
     private List<Dictionary<Interactable_UtilityAI, int>> _factionsData = new();
@@ -64,26 +65,27 @@ public class UtilityAI_Manager : MonoBehaviour
     }
 
     #region setters-Getters
-    public Dictionary<Interactable_UtilityAI, int> GetSameFactionInteractions(Faction forFactionObject) 
+    public Dictionary<Interactable_UtilityAI, int> GetSameFactionInteractions(Faction forFactionObject)
     {
+        //TODO : Выдаёт данные других фракций, чего быть не должно
         Dictionary<Interactable_UtilityAI, int> res = new();
 
         int index = faction_IndexMatch[forFactionObject.FactionType];
         foreach (var kvp in _factionsData[index])
         {
-            res.Add(kvp.Key, index);
+            res.Add(kvp.Key, kvp.Value);
         }
 
         return res;
     }
-    public Dictionary<Interactable_UtilityAI, int> GetAllInteractions(Faction forFactionObject) 
+    public Dictionary<Interactable_UtilityAI, int> GetAllInteractions(Faction forFactionObject)
     {
         Dictionary<Interactable_UtilityAI, int> res = new();
-        foreach (var kvp in faction_IndexMatch) 
+        foreach (var kvp in faction_IndexMatch)
         {
             //Пропускаем все объекты, которые могут быть использованы этой же фракцией
             //Либо делаем его доступным ещё и для той же фракции, то-есть не пропускаем ничего
-            if (!forFactionObject.isAvailableForSelfFaction)
+            if (!forFactionObject.IsAvailableForSelfFaction)
             {
                 if (kvp.Key == forFactionObject.FactionType)
                     continue;
@@ -91,7 +93,7 @@ public class UtilityAI_Manager : MonoBehaviour
                     continue;
             }
 
-            foreach(var kvp2 in _factionsData[kvp.Value]) 
+            foreach (var kvp2 in _factionsData[kvp.Value])
             {
                 res.Add(kvp2.Key, kvp.Value);
             }
@@ -99,23 +101,22 @@ public class UtilityAI_Manager : MonoBehaviour
 
         return res;
     }
-    public void AddNewInteractable(Interactable_UtilityAI interactable, int weight)
+    //TODO : Первести weight на SerializedField, чтобы всегда держаться в курсе от реального значения веса ИИ, а не сохранённого в самом начале
+    public void AddNewInteractable(Interactable_UtilityAI interactable)
     {
-        var res = new KeyValuePair<Interactable_UtilityAI, int>(interactable, weight);
-
         if (interactable.TryGetComponent(out Faction f))
         {
             UAIData data = new UAIData(interactable, f.FactionType);
             if (faction_IndexMatch.ContainsKey(f.FactionType)) // Если такая фракция уже есть - получаем индекс
             {
-                AddToFaction(f.FactionType, interactable, weight);
+                AddToFaction(f.FactionType, interactable);
             }
             else // Добавляем те фракции, которых ещё нет
             {
                 _factionsData.Add(new Dictionary<Interactable_UtilityAI, int>());
                 int resIndex = _factionsData.Count - 1;
                 faction_IndexMatch.Add(f.FactionType, resIndex);
-                _factionsData[resIndex].Add(interactable, weight);
+                _factionsData[resIndex].Add(interactable, interactable.ai_weight);
 
                 NewAdded?.Invoke(this, data);
             }
@@ -124,21 +125,25 @@ public class UtilityAI_Manager : MonoBehaviour
         {
             foreach (var key in faction_IndexMatch.Keys)
             {
-                AddToFaction(key, interactable, weight);
+                AddToFaction(key, interactable);
             }
         }
     }
-
-    private void AddToFaction(Faction.FType factionIndex, Interactable_UtilityAI interactable, int weight) 
+    public void AddToFaction(Faction.FType factionIndex, Interactable_UtilityAI interactable)
     {
         var dict = _factionsData[faction_IndexMatch[factionIndex]];
-        dict.Add(interactable, weight);
+        dict.Add(interactable, interactable.ai_weight);
         NewAdded?.Invoke(this, new UAIData(interactable, factionIndex));
     }
-
-    public void RemoveInteractable(Interactable_UtilityAI interactableToRemove) 
+    public void RemoveFromFaction(Faction.FType factionIndex, Interactable_UtilityAI interactable)
     {
-        var kvp = new KeyValuePair<Interactable_UtilityAI, int>(interactableToRemove, 0);        
+        var dict = _factionsData[faction_IndexMatch[factionIndex]];
+        dict.Remove(interactable);
+        NewRemoved?.Invoke(this, new UAIData(interactable, factionIndex));
+    }
+    public void RemoveInteractableCompletely(Interactable_UtilityAI interactableToRemove)
+    {
+        var kvp = new KeyValuePair<Interactable_UtilityAI, int>(interactableToRemove, 0);
 
         if (interactableToRemove.TryGetComponent(out Faction f))
         {
@@ -163,7 +168,6 @@ public class UtilityAI_Manager : MonoBehaviour
         }
         _targetedByUnits.Remove(interactableToRemove);
     }
-
     public void ChangeCongestion(Interactable_UtilityAI to, int powerAdded)
     {
         if (!_targetedByUnits.ContainsKey(to))
@@ -173,7 +177,6 @@ public class UtilityAI_Manager : MonoBehaviour
         else
             _targetedByUnits[to] += powerAdded;
     }
-
     public int GetCongestion(Interactable_UtilityAI from)
     {
         if (!_targetedByUnits.ContainsKey(from))

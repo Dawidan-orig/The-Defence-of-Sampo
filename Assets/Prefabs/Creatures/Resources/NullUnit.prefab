@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7900944302068477665}
-  - component: {fileID: 2843329351619346576}
+  - component: {fileID: 8078203381029455239}
   - component: {fileID: 1579277658286590084}
   - component: {fileID: 6457755934751162684}
   - component: {fileID: 1831915311733266628}
@@ -17,7 +17,6 @@ GameObject:
   - component: {fileID: 3837791418764087138}
   - component: {fileID: 3464873321032151638}
   - component: {fileID: 2498818268452375569}
-  - component: {fileID: 8078203381029455239}
   m_Layer: 6
   m_Name: NullUnit
   m_TagString: Untagged
@@ -42,7 +41,7 @@ Transform:
   - {fileID: 6732385865820284828}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2843329351619346576
+--- !u!114 &8078203381029455239
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -51,18 +50,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 6166585230114025203}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77f2875d5386eed408c325d7384722a9, type: 3}
+  m_Script: {fileID: 11500000, guid: 318f2095dce2c874090f604e8461238a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minDistance: 0.3
-  debug_Draw: 0
-  blade_as_stuff: 0
-  ignoredDistance: 2
-  ignoredImpulse: 5
-  checker: {fileID: 0}
+  _AIActive: 1
+  retreatInfluence:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  distanceWeightMultiplier: 0
+  hasCongestion: 0
   vital: {fileID: 6457755934751162684}
-  ignored: []
-  controlled: []
+  toGroundDist: 0.3
+  navMeshCalcFrom: {fileID: 0}
+  _currentActivity:
+    target: {fileID: 0}
+    name: 
+    actWith: {fileID: 0}
+    _totalWeight: 0
+  _possibleActions: []
+  visiblePowerPoints: 1
 --- !u!54 &1579277658286590084
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -198,36 +207,6 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 2
---- !u!114 &8078203381029455239
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6166585230114025203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 318f2095dce2c874090f604e8461238a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _AIActive: 1
-  retreatInfluence:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  distanceWeightMultiplier: 1
-  vital: {fileID: 6457755934751162684}
-  toGroundDist: 0.3
-  navMeshCalcFrom: {fileID: 0}
-  _currentActivity:
-    target: {fileID: 0}
-    name: 
-    actWith: {fileID: 0}
-    _totalWeight: 0
-  _possibleActions: []
-  visiblePowerPoints: 100
 --- !u!1001 &261701640518159192
 PrefabInstance:
   m_ObjectHideFlags: 0
