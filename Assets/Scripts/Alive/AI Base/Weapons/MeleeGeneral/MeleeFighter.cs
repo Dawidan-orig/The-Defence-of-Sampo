@@ -61,8 +61,6 @@ namespace Sampo.Melee
         protected Transform _bladeContainer;
         [SerializeField]
         protected Transform _bladeHandle;
-        [SerializeField]
-        protected Collider _vital;
 
         [Header("lookonly")]
         [SerializeField]
@@ -96,7 +94,6 @@ namespace Sampo.Melee
         public Blade Blade { get { return _blade; } }
         public Transform InitialBlade { get => _initialBlade; set => _initialBlade = value; }
         public float CurrentToInitialAwait { get => _currentToInitialAwait; set => _currentToInitialAwait = value; }
-        public Collider Vital { get => _vital; set => _vital = value; }
         public Stack<ActionJoint> CurrentCombo { get => _currentCombo; set => _currentCombo = value; }
 
         #endregion
@@ -117,10 +114,14 @@ namespace Sampo.Melee
             public ActionType currentActionType;
         }
 
+        protected override void Awake()
+        {
+            _catcher = gameObject.GetComponent<AttackCatcher>();
+        }
+
         protected virtual void Start()
         {
             distanceFrom = distanceFrom ? distanceFrom : transform;
-            _catcher = gameObject.GetComponent<AttackCatcher>();
 
             if (weapon == null)
             {

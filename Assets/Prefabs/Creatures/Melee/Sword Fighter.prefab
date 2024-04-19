@@ -78,6 +78,7 @@ GameObject:
   - component: {fileID: 7562448127315587629}
   - component: {fileID: 2580508120703694375}
   - component: {fileID: 1961015284316083203}
+  - component: {fileID: 5051268864446202495}
   m_Layer: 6
   m_Name: Sword Fighter
   m_TagString: Untagged
@@ -139,7 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40a72d121ab7166418f3982579712e38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _AIActive: 1
+  visiblePowerPoints: 100
   retreatInfluence:
     serializedVersion: 2
     m_Curve:
@@ -182,17 +183,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  distanceWeightMultiplier: 6
-  vital: {fileID: 6060500822727802340}
   toGroundDist: 0.3
-  navMeshCalcFrom: {fileID: 0}
-  _currentActivity:
-    target: {fileID: 0}
-    name: 
-    actWith: {fileID: 0}
-    forEditor_Weight: 0
-  _possibleActions: []
-  visiblePowerPoints: 100
   weapon: {fileID: 6555781427904815356}
   defaultWeapon: {fileID: 0}
   baseReachDistance: 1
@@ -327,7 +318,6 @@ MonoBehaviour:
   _blade: {fileID: 6555781427904815356}
   _bladeContainer: {fileID: 3809664213183082030}
   _bladeHandle: {fileID: 6555781429139069839}
-  _vital: {fileID: 6060500822727802340}
   _catcher: {fileID: 0}
   _initialBlade: {fileID: 0}
   _moveFrom: {fileID: 0}
@@ -401,6 +391,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ftype: 2
+  isAvailableForSelfFaction: 0
 --- !u!114 &6974210331038364377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -494,6 +485,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   effects: []
+--- !u!114 &5051268864446202495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526482222200477036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef89be94fd9256a40afca2caf7b5d264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _AIActive: 1
+  distanceWeightMultiplier: 1
+  hasCongestion: 1
+  _currentActivity:
+    target: {fileID: 0}
+    name: 
+    actWith: {fileID: 0}
+    _totalWeight: 0
+  _possibleActions: []
 --- !u!1 &4269479461079977091
 GameObject:
   m_ObjectHideFlags: 0

@@ -323,9 +323,9 @@ namespace Sampo.Weaponry.Melee.Sword
 
             Vector3 moveTo = toPoint + (toPoint - BladeHandle.position).normalized * swing_EndDistanceMultiplyer;
 
-            Vector3 pointDir = (moveTo - _vital.bounds.center).normalized;
+            Vector3 pointDir = (moveTo - Vital.bounds.center).normalized;
 
-            Vector3 closest = _vital.ClosestPointOnBounds(moveTo);
+            Vector3 closest = Vital.ClosestPointOnBounds(moveTo);
             float distance = (toPoint - closest).magnitude;
             moveTo = closest + (moveTo - closest).normalized * distance;
             SetDesires(moveTo, pointDir, (moveTo - toPoint).normalized);
@@ -417,7 +417,13 @@ namespace Sampo.Weaponry.Melee.Sword
 
         public override Vector3 RelativeRetreatMovement()
         {
+            //TODO : нормальное перемещение рядом с противников, а не тупое взад-вперёд
             throw new NotImplementedException();
+        }
+
+        public override int GetCurrentWeaponPoints()
+        {
+            return Mathf.RoundToInt(weapon.GetRange() / Vector3.Distance(transform.position, CurrentActivity.target.position));
         }
         #endregion
     }

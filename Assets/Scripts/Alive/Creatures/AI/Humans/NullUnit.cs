@@ -7,14 +7,8 @@ using UnityEngine;
 
 public class NullUnit : AIBehaviourBase
 {
-    //TODO : Вот все эти функции должны быть вынесены в отдельный абстрактный класс, независимый от TargetingUtlityAI. Это нужно преобразовать в DependencyInjection, чтобы не создавать новые Instanc'ы юнитов, а лишь менять поведение
     public override void ActionUpdate(Transform target)
     {
-        //TODO : Проверка близости к цели.
-        //TODO : Вызов функции преобразования у цели-дома
-        //TODO : индивидуальная базовая приоритезация.
-        // В данном случае, например, все строения должны получить бонус X3 к количеству очков
-
         if(target.TryGetComponent(out IInteractable interact)) 
         {
             if(Vector3.Distance(transform.position, target.position) < interact.GetInteractionRange()) 
@@ -31,7 +25,7 @@ public class NullUnit : AIBehaviourBase
 
     public override Dictionary<Interactable_UtilityAI, int> GetActionsDictionary()
     {
-        var input = UtilityAI_Manager.Instance.GetSameFactionInteractions(GetComponent<Faction>());
+        var input = UtilityAI_Manager.Instance.GetSameFactionInteractions(GetMainTransform().gameObject.GetComponent<Faction>());
 
         var res = input
             .Where(kvp => kvp.Key.GetComponent<Faction>().IsAvailableForSelfFaction)
@@ -62,5 +56,10 @@ public class NullUnit : AIBehaviourBase
     {
         // У этого юнита нет оружия
         return null;
+    }
+
+    public override int GetCurrentWeaponPoints()
+    {
+        return 0;
     }
 }

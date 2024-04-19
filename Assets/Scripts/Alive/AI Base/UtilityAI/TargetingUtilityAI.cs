@@ -2,11 +2,12 @@
 using Sampo.Core;
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace Sampo.AI
 {
+    //TODO : Refactor, этот класс подвергся очень большому количеству изменений и тут осталось много мусора
+
     //TODO!!! : Добавить Logger или другую систему логирования.
     // Надо понимать, что происходит с каждым юнитом в пределах Editor'а.
 
@@ -23,9 +24,8 @@ namespace Sampo.AI
         [Header("Setup")]
         [Tooltip("Влияние дистанции на выбор этого ИИ")]
         public float distanceWeightMultiplier = 1;
-        [Tooltip("Оказывает ли вес этого ИИ влияние на цель?")]
-        //TODO? : По хорошему, должен считываться только в Start один раз, дальше - игнорироваться. Иначе всё сломает
-        public bool hasCongestion = true;
+        [Tooltip("Влияние других ИИ на цель выбора этого ИИ")]
+        public float congestionMultiplier = 1;
 
         [Header("lookonly")]
         [SerializeField]
@@ -36,13 +36,30 @@ namespace Sampo.AI
         IMovingAgent _movingAgent;
         private AIAction _noAction;
         private AIBehaviourBase _behaviourAI;
+        private bool _hasCongestion = true;
         protected UtilityAI_Factory _factory;
         protected UtilityAI_BaseState _currentState;
 
         public UtilityAI_BaseState CurrentState { get => _currentState; set => _currentState = value; }
         public AIAction CurrentActivity { get => _currentActivity; }
         public IMovingAgent MovingAgent { get => _movingAgent; set => _movingAgent = value; }
-        public AIBehaviourBase BehaviourAI { get => _behaviourAI;}
+        public AIBehaviourBase BehaviourAI { get => _behaviourAI ??= GetComponent<AIBehaviourBase>(); }
+        public bool HasCongestion { get => _hasCongestion;
+            set 
+            {
+                bool prev = value;
+                _hasCongestion = prev;
+                if(prev == true && value == false)
+                    UtilityAI_Manager.Instance.ChangeCongestion(
+                    _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
+                    -BehaviourAI.VisiblePowerPoints);
+
+                if (prev == false && value == true)
+                    UtilityAI_Manager.Instance.ChangeCongestion(
+                    _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
+                    BehaviourAI.VisiblePowerPoints);
+            }
+        }
 
         [Serializable]
         public struct AIAction
@@ -50,10 +67,10 @@ namespace Sampo.AI
             private TargetingUtilityAI actionOf;
 
             public Transform target;
-            public string name;            
+            public string name;
             private int baseWeight;
             private int distanceSubstraction;
-            private int enemiesAmountSubstraction;            
+            private int enemiesAmountSubstraction;
             private List<BaseAICondition> _conditions;
             public Tool actWith;
             public UtilityAI_BaseState whatDoWhenClose;
@@ -70,10 +87,17 @@ namespace Sampo.AI
                 _conditions.RemoveAll(item => item == null || !item.IsConditionAlive);
 
                 distanceSubstraction =
-                        Mathf.RoundToInt(Vector3.Distance(actionOf.transform.position, target.position) * actionOf.distanceWeightMultiplier);
-                if(actionOf.hasCongestion)
-                enemiesAmountSubstraction =
-                    UtilityAI_Manager.Instance.GetCongestion(target.GetComponent<Interactable_UtilityAI>());
+                        Mathf.RoundToInt(
+                            Vector3.Distance(
+                                actionOf.transform.position, target.position)
+                            * actionOf.distanceWeightMultiplier);
+
+                if (actionOf.HasCongestion)
+                    enemiesAmountSubstraction =
+                        Mathf.RoundToInt(
+                            UtilityAI_Manager.Instance.GetCongestion(
+                                target.GetComponent<Interactable_UtilityAI>())
+                            * actionOf.congestionMultiplier);
 
                 _totalWeight = baseWeight - distanceSubstraction - enemiesAmountSubstraction;
 
@@ -81,10 +105,10 @@ namespace Sampo.AI
                 {
                     c.Update();
                     _totalWeight += c.WeightInfluence;
-                } 
+                }
             }
-            public void Modify(BaseAICondition condition) 
-            {              
+            public void Modify(BaseAICondition condition)
+            {
                 _conditions.Add(condition);
                 Update();
             }
@@ -176,7 +200,6 @@ namespace Sampo.AI
             // Это упростит создание новых юнитов в дальнейшем
             _movingAgent = GetComponent<IMovingAgent>();
             _factory = new UtilityAI_Factory(this);
-            _behaviourAI = GetComponent<AIBehaviourBase>();
             _currentState = _factory.Deciding();
         }
 
@@ -230,30 +253,35 @@ namespace Sampo.AI
         {
             UtilityAI_Manager.Instance.NewAdded -= FetchNewActivityFromManager;
             UtilityAI_Manager.Instance.NewRemoved -= RemoveActivityFromManager;
-            if (_currentActivity.target && hasCongestion)
+            if (_currentActivity.target && HasCongestion)
                 UtilityAI_Manager.Instance.ChangeCongestion(
                     _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
-                    -_behaviourAI.VisiblePowerPoints);
+                    -BehaviourAI.VisiblePowerPoints);
             NullifyActivity();
             _AIActive = false;
+        }
+
+        private void OnValidate()
+        {
+
         }
         #endregion
 
         #region actions
         private void FetchAndAddAllActivities()
         {
-            var dict = _behaviourAI.GetActionsDictionary();
+            var dict = BehaviourAI.GetActionsDictionary();
             foreach (var kvp in dict)
             {
                 Interactable_UtilityAI target = kvp.Key;
                 int weight = kvp.Value;
 
-                if (!_behaviourAI.IsTargetPassing(target.transform))
+                if (!BehaviourAI.IsTargetPassing(target.transform))
                     return;
 
-                Tool toolUsed = _behaviourAI.ToolChosingCheck(target.transform);
+                Tool toolUsed = BehaviourAI.ToolChosingCheck(target.transform);
 
-                AddNewPossibleAction(target.transform, weight, target.transform.name, toolUsed, _behaviourAI.TargetReaction(target.transform));
+                AddNewPossibleAction(target.transform, weight, target.transform.name, toolUsed, BehaviourAI.TargetReaction(target.transform));
             }
         }
         private void FetchNewActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
@@ -265,13 +293,13 @@ namespace Sampo.AI
             Interactable_UtilityAI target = e.newInteractable.Key;
             int weight = e.newInteractable.Value;
 
-            if (!_behaviourAI.IsTargetPassing(target.transform))
+            if (!BehaviourAI.IsTargetPassing(target.transform))
                 return;
 
-            Tool toolUsed = _behaviourAI.ToolChosingCheck(target.transform);
+            Tool toolUsed = BehaviourAI.ToolChosingCheck(target.transform);
 
             AIAction action = new AIAction(
-                this, target.transform, name, weight, toolUsed, _behaviourAI.TargetReaction(target.transform));
+                this, target.transform, name, weight, toolUsed, BehaviourAI.TargetReaction(target.transform));
 
             AddNewPossibleAction(action);
         }
@@ -310,15 +338,15 @@ namespace Sampo.AI
         }
         private void ChangeAction(AIAction to)
         {
-            if (!IsNoActionCurrently() && _currentActivity.target && hasCongestion) //Убираем влияние текущей цели
+            if (!IsNoActionCurrently() && _currentActivity.target && HasCongestion) //Убираем влияние текущей цели
                 UtilityAI_Manager.Instance.ChangeCongestion(
                     _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
-                    -_behaviourAI.VisiblePowerPoints);
+                    -BehaviourAI.VisiblePowerPoints);
             _currentActivity = to;
-            if(hasCongestion)
-            UtilityAI_Manager.Instance.ChangeCongestion(
-                _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
-                _behaviourAI.VisiblePowerPoints);
+            if (HasCongestion)
+                UtilityAI_Manager.Instance.ChangeCongestion(
+                    _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
+                    BehaviourAI.VisiblePowerPoints);
         }
         public UtilityAI_BaseState SelectBestActivity()
         {
@@ -368,6 +396,7 @@ namespace Sampo.AI
         #endregion
 
         //TODO!!! : ПЕРЕПИСАТЬ ЭТО НАХРЕН! Пусть состояние выбираются процендурно, и с возможностью их выбора
+        //Может быть даже сделать Factory состояний как отдельный Singleton, безо всех этих глупых переходов
         public UtilityAI_BaseState GetAttackState() => _factory.Attack();
         public UtilityAI_BaseState GetRepositionState() => _factory.Reposition();
         public UtilityAI_BaseState GetActionState() => _factory.Action();
@@ -376,10 +405,10 @@ namespace Sampo.AI
         /// Обновление всех связанных с целью задач
         /// </summary>
         /// <param name="withCondition">Динамическое условие, что применяется на все задачи</param>
-        public void ModifyActionOf(Transform target, BaseAICondition withCondition) 
+        public void ModifyActionOf(Transform target, BaseAICondition withCondition)
         {
             AIAction? best = null;
-            foreach(var action in _possibleActions) 
+            foreach (var action in _possibleActions)
             {
                 if (best == null)
                     best = action;
@@ -388,7 +417,7 @@ namespace Sampo.AI
                 {
                     action.Modify(withCondition);
                     if (action.TotalWeight > best.Value.TotalWeight)
-                    {                        
+                    {
                         best = action;
                     }
                 }

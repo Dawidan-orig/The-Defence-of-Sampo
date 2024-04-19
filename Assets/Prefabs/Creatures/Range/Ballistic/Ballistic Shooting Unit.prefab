@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 1024381372517145169}
   - component: {fileID: 8305905749232884267}
   - component: {fileID: 8668680843658328651}
+  - component: {fileID: 5423339021834514990}
   m_Layer: 6
   m_Name: Ballistic Shooting Unit
   m_TagString: Untagged
@@ -87,7 +88,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf6bfd97c22875e4a80dab4979102aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _AIActive: 1
+  visiblePowerPoints: 100
   retreatInfluence:
     serializedVersion: 2
     m_Curve:
@@ -112,18 +113,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  distanceWeightMultiplier: 1
-  hasCongestion: 1
-  vital: {fileID: 2397089146008967546}
   toGroundDist: 0.3
-  navMeshCalcFrom: {fileID: 0}
-  _currentActivity:
-    target: {fileID: 0}
-    name: 
-    actWith: {fileID: 0}
-    _totalWeight: 0
-  _possibleActions: []
-  visiblePowerPoints: 100
   weapon: {fileID: 2420862382218053515}
 --- !u!114 &2397089146008967542
 MonoBehaviour:
@@ -295,6 +285,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   effects: []
+--- !u!114 &5423339021834514990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397089146008967548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef89be94fd9256a40afca2caf7b5d264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _AIActive: 1
+  distanceWeightMultiplier: 1
+  hasCongestion: 1
+  _currentActivity:
+    target: {fileID: 0}
+    name: 
+    actWith: {fileID: 0}
+    _totalWeight: 0
+  _possibleActions: []
 --- !u!1 &2397089146338771506
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3837791418764087138}
   - component: {fileID: 3464873321032151638}
   - component: {fileID: 2498818268452375569}
+  - component: {fileID: 1015069394030362810}
   m_Layer: 6
   m_Name: NullUnit
   m_TagString: Untagged
@@ -53,25 +54,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 318f2095dce2c874090f604e8461238a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _AIActive: 1
+  visiblePowerPoints: 1
   retreatInfluence:
     serializedVersion: 2
     m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  distanceWeightMultiplier: 0
-  hasCongestion: 0
-  vital: {fileID: 6457755934751162684}
   toGroundDist: 0.3
-  navMeshCalcFrom: {fileID: 0}
-  _currentActivity:
-    target: {fileID: 0}
-    name: 
-    actWith: {fileID: 0}
-    _totalWeight: 0
-  _possibleActions: []
-  visiblePowerPoints: 1
 --- !u!54 &1579277658286590084
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -207,6 +197,27 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 2
+--- !u!114 &1015069394030362810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6166585230114025203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef89be94fd9256a40afca2caf7b5d264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _AIActive: 1
+  distanceWeightMultiplier: 1
+  hasCongestion: 1
+  _currentActivity:
+    target: {fileID: 0}
+    name: 
+    actWith: {fileID: 0}
+    _totalWeight: 0
+  _possibleActions: []
 --- !u!1001 &261701640518159192
 PrefabInstance:
   m_ObjectHideFlags: 0

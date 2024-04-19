@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Sampo.AI
 {
-    [RequireComponent(typeof(TargetingUtilityAI))]
     public abstract class AIBehaviourBase : MonoBehaviour, IPointsDistribution, IAnimationProvider
     {
         [SerializeField]
@@ -13,7 +12,6 @@ namespace Sampo.AI
         protected int visiblePowerPoints = 100;
 
         [Header("Ground for animation and movement")]
-        public Collider vital;
         [Tooltip("Кривая от 0 до 1, определяющая то," +
             "с какой интенсивностью в зависимости от дальности оружия ИИ будет отдоходить от цели")]
         public AnimationCurve retreatInfluence;
@@ -21,6 +19,7 @@ namespace Sampo.AI
         [Tooltip("Точка отсчёта для NavMeshAgent")]
         private Transform navMeshCalcFrom;
 
+        private Collider vital;
         private Rigidbody _body;
         protected TargetingUtilityAI _AITargeting;
 
@@ -39,12 +38,26 @@ namespace Sampo.AI
                 return navMeshCalcFrom;
             }
         }
+        public Collider Vital 
+        {
+            get 
+            {
+                if (!vital) {
+                    var colliders = GetComponents<Collider>();
+                    if (colliders.Length != 1)
+                        Debug.LogWarning("Много коллайдеров за раз на одном объекте, беру в Vital самый первый",transform);
+                    vital = colliders[0];
+                }
+                return vital;
+            }
+        }
         #endregion
 
         protected virtual void Awake()
         {
-            _AITargeting = GetComponent<TargetingUtilityAI>();
-            _body = GetComponent<Rigidbody>();
+            Transform absoluteParent = GetMainTransform();
+
+            _body = absoluteParent.gameObject.GetComponent<Rigidbody>();
             navMeshCalcFrom ??= transform;
         }
 
@@ -70,6 +83,14 @@ namespace Sampo.AI
         }
 
         #region virtual functions
+        protected Transform GetMainTransform() 
+        {
+            _AITargeting = GetComponent<TargetingUtilityAI>();
+            if (_AITargeting == null)
+                _AITargeting = GetComponentInParent<TargetingUtilityAI>();
+
+            return _AITargeting.transform;
+        }
         /// <summary>
         /// Присваивание очков и изменение параметров
         /// </summary>
@@ -143,6 +164,11 @@ namespace Sampo.AI
         /// </summary>
         /// <param name="target"></param>
         public abstract void ActionUpdate(Transform target);
+        /// <summary>
+        /// Определяет количество очков на данный момент времени для текущей формы поведения.
+        /// </summary>
+        /// <returns>Количество очков для определения приоритетности поведения</returns>
+        public abstract int GetCurrentWeaponPoints();
         #endregion
 
         #region animation
@@ -155,14 +181,14 @@ namespace Sampo.AI
         {
             const float PLANE_CAST_MINIMUM = 0.1f;
 
-            return Physics.BoxCast(vital.bounds.center,
-                new Vector3(vital.bounds.size.x / 2,
+            return Physics.BoxCast(Vital.bounds.center,
+                new Vector3(Vital.bounds.size.x / 2,
                 PLANE_CAST_MINIMUM,
-                vital.bounds.size.z / 2),
+                Vital.bounds.size.z / 2),
                 transform.up * -1,
                 out _,
                 transform.rotation,
-                vital.bounds.size.y / 2 + toGroundDist);
+                Vital.bounds.size.y / 2 + toGroundDist);
         }
 
         public bool IsInJump()
@@ -171,7 +197,7 @@ namespace Sampo.AI
             return false;
         }
         /// <summary>
-        /// Нужно для анимации тела
+        /// Нужно для анимации тела,
         /// </summary>
         /// <returns>Точка, куда будет направлена рука</returns>
         public virtual Transform GetRightHandTarget() { return null; }

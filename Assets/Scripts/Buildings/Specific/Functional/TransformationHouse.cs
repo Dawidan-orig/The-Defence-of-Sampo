@@ -1,6 +1,6 @@
 using Sampo.AI;
+using Sampo.AI.Humans;
 using Sampo.Core;
-using Sampo.Player.Economy;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +17,7 @@ namespace Sampo.Building.Transformators
         /* TODO (dep. TODO : Система классов) : Преобразование напрямую, а не через полное удаление GameObject
          * Для этого надо указывать тут тип, в который и будет происходить преобразование, а не Prefab.
          */
-        public GameObject prefab_TransformTo;
+        public GameObject TransformationKitPrefab;
         [SerializeField]
         private List<GameObject> createdUnits;
 
@@ -40,15 +40,24 @@ namespace Sampo.Building.Transformators
                 GetComponent<Faction>().IsAvailableForSelfFaction = false;
             }
 
-            //TODO!!!!! : Преобразование должно быть проще, и без удаления Gameobject. Нужно оставить тот же объект, и не менять ему фракцию. Это делает 100500 вызовов у менеджера
-            //ломает всё! Необходимо убрать.
-            GameObject newBorn = Instantiate(prefab_TransformTo, interactor.position, interactor.rotation, Variable_Provider.Instance.unitsContainer);
-            newBorn.GetComponent<Faction>().ChangeFactionCompletely(GetComponent<Faction>().FactionType);
-            Destroy(interactor.gameObject);
-            createdUnits.Add(newBorn);
+            if(interactor.TryGetComponent(out MultiweaponUnit multiweapon))
+                multiweapon.AddNewBehaviour(TransformationKitPrefab);
+            else 
+            {
+                Debug.Log("Преобразование константного юнита в MultiweaponUnit");
+                AIBehaviourBase directBehaviour = interactor.GetComponent<AIBehaviourBase>();
+                Destroy(directBehaviour);
+                multiweapon = interactor.gameObject.AddComponent<MultiweaponUnit>();
 
-            if (!newBorn.TryGetComponent<OnDestroyNotifier>(out var comp))
-                comp = newBorn.AddComponent<OnDestroyNotifier>();
+                //TODO!!! : добавить NullUnitKit в глобальном виде. Он должен быть у всех
+                //multiweapon.AddNewBehaviour((GameObject)Resources.Load("NullUnitKit"));
+                multiweapon.AddNewBehaviour(TransformationKitPrefab);
+            }
+
+            createdUnits.Add(interactor.gameObject);
+
+            if (!interactor.gameObject.TryGetComponent<OnDestroyNotifier>(out var comp))
+                comp = interactor.gameObject.AddComponent<OnDestroyNotifier>();
             comp.onDestroy += UpdateConnectedUnits;
         }
 

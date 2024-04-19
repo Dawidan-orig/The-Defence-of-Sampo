@@ -203,5 +203,10 @@ namespace Sampo.AI.Monsters
         {
             throw new System.NotImplementedException();
         }
+
+        public override int GetCurrentWeaponPoints()
+        {
+            return 100;
+        }
     }
 }

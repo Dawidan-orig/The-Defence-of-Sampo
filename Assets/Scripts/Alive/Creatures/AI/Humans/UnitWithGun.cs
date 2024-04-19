@@ -41,12 +41,20 @@ namespace Sampo.AI.Humans.Ranged
 
         public override void ActionUpdate(Transform target)
         {
-            //TODO : Сделать медленное радиальное отсутпление как у скелетов в майне, изменить Targeting Utility AI для этого
+            
         }
 
         public override Vector3 RelativeRetreatMovement()
         {
+            //TODO : Сделать медленное радиальное отсутпление как у скелетов в майне
             throw new System.NotImplementedException();
+        }
+
+        public override int GetCurrentWeaponPoints()
+        {
+            float range = weapon.GetRange();
+            float dist = Vector3.Distance(transform.position, CurrentActivity.target.position);
+            return Mathf.RoundToInt(-Mathf.Pow(dist - range, 2) + (dist - range) + range);
         }
     }
 }

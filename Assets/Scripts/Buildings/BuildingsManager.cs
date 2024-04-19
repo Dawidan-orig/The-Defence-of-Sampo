@@ -1,7 +1,5 @@
 using Sampo.Building.Spawners;
 using Sampo.Core;
-using Sampo.Player.Economy;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -17,7 +15,7 @@ public class BuildingsManager : MonoBehaviour
             if (_instance == null)
                 _instance = FindObjectOfType<BuildingsManager>();
 
-            if (_instance == null)
+            if (_instance == null && Application.isPlaying)
             {
                 GameObject go = new("BuildingsManager");
                 _instance = go.AddComponent<BuildingsManager>();
@@ -33,19 +31,27 @@ public class BuildingsManager : MonoBehaviour
         }
     }
 
-    GameObject nullUnitPrefab;
+    [SerializeField]
+    private GameObject nullUnitPrefab;
 
     //TODO? : Преобразовать в более универсальную систему, которая позволяет работать с любым типом юнитов
     [SerializeField]
     private int nullUnitLimit = 0;
     private int stashedRequestedAmount = 0;
-    public int NullUnitLimit { get => nullUnitLimit; set => nullUnitLimit = value; }
 
     [SerializeField]
-    List<NullUnitSpawner> nullUnitSpawners;
-    public void AddNewSpawner(NullUnitSpawner spawner) 
+    List<NullUnitSpawner> _nullUnitSpawners;
+
+    public int NullUnitLimit { get => nullUnitLimit; set => nullUnitLimit = value; }
+
+    private void Awake()
     {
-        if (nullUnitSpawners.Count == 0)
+        nullUnitPrefab ??= Resources.Load<GameObject>("NullUnit");
+        _nullUnitSpawners = new();
+    }
+    public void AddNewSpawner(NullUnitSpawner spawner)
+    {
+        if (_nullUnitSpawners.Count == 0 && stashedRequestedAmount > 0)
         {
             //TODO : Перераспределение значений спавна юнитов между всеми спавнерами при добавлении нового.
             //Вариант решения: Собрать все уже имеющиеся toSpawn'ы, сохранить в одно значение и пульнуть это в RequestNullUnits.
@@ -53,22 +59,16 @@ public class BuildingsManager : MonoBehaviour
             stashedRequestedAmount = 0;
         }
 
-        nullUnitSpawners.Add(spawner);
+        _nullUnitSpawners.Add(spawner);
     }
-    public void RemoveSpawner(NullUnitSpawner spawner) 
+    public void RemoveSpawner(NullUnitSpawner spawner)
     {
-        nullUnitSpawners.Remove(spawner);
-    }
-
-    private void Awake()
-    {
-        nullUnitPrefab = Resources.Load<GameObject>("NullUnit");
-        nullUnitSpawners = new();
+        _nullUnitSpawners.Remove(spawner);
     }
 
     public void CreateNewNullUnit(Transform spawnPos)
     {
-        Instantiate(nullUnitPrefab, spawnPos.position, spawnPos.rotation, Variable_Provider.Instance.unitsContainer);
+        CreateNewNullUnit(spawnPos.position, spawnPos.rotation);
     }
     public void CreateNewNullUnit(Vector3 spawnPos, Quaternion rotation)
     {
@@ -79,30 +79,31 @@ public class BuildingsManager : MonoBehaviour
     {
         //TODO : Вывод из зданий-буферов 
 
-        nullUnitSpawners.Sort((spawner1, spawner2) => spawner2.ToSpawn.CompareTo(spawner1.ToSpawn));
+        _nullUnitSpawners.Sort((spawner1, spawner2) => spawner2.ToSpawn.CompareTo(spawner1.ToSpawn));
 
-        if (nullUnitSpawners.Count == 0) {
-            stashedRequestedAmount = amount;
-            return;
-                }
-        if (nullUnitSpawners.Count == 1)
+        if (_nullUnitSpawners.Count == 0)
         {
-            nullUnitSpawners[0].AddUnitsToSpawn(amount);
+            stashedRequestedAmount += amount;
             return;
         }
-        for(int i = 0; i <  nullUnitSpawners.Count-1; i++) 
+        if (_nullUnitSpawners.Count == 1)
         {
-            int currentValue = nullUnitSpawners[i].ToSpawn;
-            int upTo = nullUnitSpawners[i + 1].ToSpawn;
+            _nullUnitSpawners[0].AddUnitsToSpawn(amount);
+            return;
+        }
+        for (int i = 0; i < _nullUnitSpawners.Count - 1; i++)
+        {
+            int currentValue = _nullUnitSpawners[i].ToSpawn;
+            int upTo = _nullUnitSpawners[i + 1].ToSpawn;
 
             if (currentValue == upTo)
                 continue;
 
             int diff = upTo - currentValue;
             int toAdd = Mathf.Clamp(amount, 0, diff);
-            for (int j = 0; j < i+1; j++) 
+            for (int j = 0; j < i + 1; j++)
             {
-                nullUnitSpawners[j].AddUnitsToSpawn(toAdd);
+                _nullUnitSpawners[j].AddUnitsToSpawn(toAdd);
                 amount -= toAdd;
                 if (amount == 0)
                     break;

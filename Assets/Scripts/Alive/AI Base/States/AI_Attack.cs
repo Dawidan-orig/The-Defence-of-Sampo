@@ -11,13 +11,16 @@ namespace Sampo.AI
 
         public override bool CheckSwitchStates()
         {
-            if (_ctx.IsDecidingStateRequired() || _ctx.CurrentActivity.target == null || path.status == UnityEngine.AI.NavMeshPathStatus.PathInvalid)
-            {
-                SwitchStates(_factory.Deciding());
-                return true;
-            }
+            bool toDecide = _ctx.IsDecidingStateRequired()
+                || _ctx.CurrentActivity.target == null
+                || path.status == UnityEngine.AI.NavMeshPathStatus.PathInvalid;
 
-            return false;
+            toDecide = toDecide || _ctx.CurrentActivity.actWith == null;
+
+            if (toDecide)
+                SwitchStates(_factory.Deciding());
+
+            return toDecide;
         }
 
         public override void UpdateState()
