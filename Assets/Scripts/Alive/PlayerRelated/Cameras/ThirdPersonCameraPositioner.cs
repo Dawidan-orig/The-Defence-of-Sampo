@@ -151,7 +151,7 @@ namespace Sampo.Player.CameraControls
                     if (locker)
                     {
                         if (locker.gameObject.TryGetComponent<IInteractable>(out var interactable))
-                            interactable.Interact(player.transform);
+                            interactable.PlayerInteract();
 
                         if (!_currentLockRigidbodyTransfrom)
                         {

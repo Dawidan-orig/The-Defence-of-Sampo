@@ -6,7 +6,7 @@ namespace Sampo.AI
     /// Состояние-распределитель. Попадая сюда, ии решает, что ему делать дальше.
     /// </summary>
     public class AI_Decide : UtilityAI_BaseState
-
+    //TODO : После всех изменений в поведениях это состояние, похоже, стало вообще бесполезным
     // Если ИИ попал в патовую ситуацию, столкнулся с какой-то ошибкой или ещё по каким-то экстраординарным причинам не выполнил задачу -
     // Он попадает в это состояние.
     {
@@ -16,16 +16,12 @@ namespace Sampo.AI
 
         public override bool CheckSwitchStates()
         {
-            UtilityAI_BaseState newAcitivty = _ctx.SelectBestActivity();
+            bool hasAction = _ctx.SelectBestActivityIfAny();
 
-            if (newAcitivty == null)
-            {
-                // Задач нет ВООБЩЕ.
-                return false;
-            }
+            if (hasAction)
+                SwitchStates(_factory.Action());
 
-            SwitchStates(newAcitivty);
-            return true;
+            return hasAction;
 
         }
 

@@ -6,6 +6,8 @@ using UnityEngine;
 
 namespace Sampo.AI
 {
+    // TODO (Сложное!) : Поиск ближайших укрытий при массированном обстреле
+
     //TODO : Refactor, этот класс подвергся очень большому количеству изменений и тут осталось много мусора
 
     //TODO!!! : Добавить Logger или другую систему логирования.
@@ -20,12 +22,6 @@ namespace Sampo.AI
     // Использует StateMachine в качестве исполнителя
     {
         public bool _AIActive = true;
-
-        [Header("Setup")]
-        [Tooltip("Влияние дистанции на выбор этого ИИ")]
-        public float distanceWeightMultiplier = 1;
-        [Tooltip("Влияние других ИИ на цель выбора этого ИИ")]
-        public float congestionMultiplier = 1;
 
         [Header("lookonly")]
         [SerializeField]
@@ -72,8 +68,7 @@ namespace Sampo.AI
             private int distanceSubstraction;
             private int enemiesAmountSubstraction;
             private List<BaseAICondition> _conditions;
-            public Tool actWith;
-            public UtilityAI_BaseState whatDoWhenClose;
+            public AIBehaviourBase behaviour;
 
             [SerializeField]
             private int _totalWeight;
@@ -90,14 +85,14 @@ namespace Sampo.AI
                         Mathf.RoundToInt(
                             Vector3.Distance(
                                 actionOf.transform.position, target.position)
-                            * actionOf.distanceWeightMultiplier);
+                            * behaviour.distanceInfluence);
 
                 if (actionOf.HasCongestion)
                     enemiesAmountSubstraction =
                         Mathf.RoundToInt(
                             UtilityAI_Manager.Instance.GetCongestion(
                                 target.GetComponent<Interactable_UtilityAI>())
-                            * actionOf.congestionMultiplier);
+                            * behaviour.congestionInfluence);
 
                 _totalWeight = baseWeight - distanceSubstraction - enemiesAmountSubstraction;
 
@@ -122,24 +117,22 @@ namespace Sampo.AI
                 name = default;
                 baseWeight = default;
                 distanceSubstraction = default;
-                actWith = default;
-                whatDoWhenClose = default;
-
+                behaviour = default;
+                
                 enemiesAmountSubstraction = 0;
                 _totalWeight = 0;
 
                 _conditions = new();
             }
             //TODO : UtilityAI_BaseState - лучше спрятать в отдельный namespace
-            public AIAction(TargetingUtilityAI actionOf, Transform target, string name, int weight, Tool actWith, UtilityAI_BaseState alignedState)
+            public AIAction(TargetingUtilityAI actionOf, Transform target, string name, int weight, AIBehaviourBase behaviour)
             {
                 this.actionOf = actionOf;
 
                 this.target = target;
                 this.name = name;
                 this.baseWeight = weight;
-                this.actWith = actWith;
-                whatDoWhenClose = alignedState;
+                this.behaviour = behaviour;
                 distanceSubstraction = 0;
 
                 enemiesAmountSubstraction = 0;
@@ -159,12 +152,12 @@ namespace Sampo.AI
 
                 AIAction casted = (AIAction)obj;
 
-                return (target == casted.target) && (whatDoWhenClose == casted.whatDoWhenClose) && (actWith == casted.actWith);
+                return (target == casted.target) && (behaviour == casted.behaviour);
             }
 
             public override int GetHashCode()
             {
-                return HashCode.Combine(target, name, baseWeight, whatDoWhenClose);
+                return HashCode.Combine(target, name, baseWeight, behaviour);
             }
 
             public static bool operator ==(AIAction c1, AIAction c2)
@@ -176,7 +169,7 @@ namespace Sampo.AI
                     return false;
                 */
 
-                return (c1.target == c2.target) && (c1.whatDoWhenClose == c2.whatDoWhenClose) && (c1.actWith == c2.actWith);
+                return (c1.target == c2.target) && (c1.behaviour == c2.behaviour);
             }
             public static bool operator !=(AIAction c1, AIAction c2)
             {
@@ -187,7 +180,7 @@ namespace Sampo.AI
                     return false;
                 */
 
-                return (c1.target != c2.target) || (c1.name != c2.name) || (c1.actWith != c2.actWith);
+                return (c1.target != c2.target) || (c1.name != c2.name) || (c1.behaviour != c2.behaviour);
             }
             #endregion
         }
@@ -211,7 +204,7 @@ namespace Sampo.AI
         protected virtual void Start()
         {
             UtilityAI_Manager.Instance.NewAdded += FetchNewActivityFromManager;
-            UtilityAI_Manager.Instance.NewRemoved += RemoveActivityFromManager;
+            UtilityAI_Manager.Instance.NewRemoved += RemoveActivityGotFromManager;
 
             _noAction = new AIAction(this);
 
@@ -252,7 +245,7 @@ namespace Sampo.AI
         protected virtual void OnDisable()
         {
             UtilityAI_Manager.Instance.NewAdded -= FetchNewActivityFromManager;
-            UtilityAI_Manager.Instance.NewRemoved -= RemoveActivityFromManager;
+            UtilityAI_Manager.Instance.NewRemoved -= RemoveActivityGotFromManager;
             if (_currentActivity.target && HasCongestion)
                 UtilityAI_Manager.Instance.ChangeCongestion(
                     _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
@@ -268,6 +261,20 @@ namespace Sampo.AI
         #endregion
 
         #region actions
+        public void AddNewActionsFromBehaviour(AIBehaviourBase beh) 
+        {
+            var dict = beh.GetActionsDictionary();
+            foreach (var kvp in dict)
+            {
+                Interactable_UtilityAI target = kvp.Key;
+                int weight = kvp.Value;
+
+                if (!beh.IsTargetPassing(target.transform))
+                    return;
+
+                AddNewPossibleAction(target.transform, weight, target.transform.name, beh.TargetReaction(target.transform));
+            }
+        }
         private void FetchAndAddAllActivities()
         {
             var dict = BehaviourAI.GetActionsDictionary();
@@ -279,9 +286,7 @@ namespace Sampo.AI
                 if (!BehaviourAI.IsTargetPassing(target.transform))
                     return;
 
-                Tool toolUsed = BehaviourAI.ToolChosingCheck(target.transform);
-
-                AddNewPossibleAction(target.transform, weight, target.transform.name, toolUsed, BehaviourAI.TargetReaction(target.transform));
+                AddNewPossibleAction(target.transform, weight, target.transform.name, BehaviourAI.TargetReaction(target.transform));
             }
         }
         private void FetchNewActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
@@ -296,14 +301,12 @@ namespace Sampo.AI
             if (!BehaviourAI.IsTargetPassing(target.transform))
                 return;
 
-            Tool toolUsed = BehaviourAI.ToolChosingCheck(target.transform);
-
             AIAction action = new AIAction(
-                this, target.transform, name, weight, toolUsed, BehaviourAI.TargetReaction(target.transform));
+                this, target.transform, name, weight, BehaviourAI.TargetReaction(target.transform));
 
             AddNewPossibleAction(action);
         }
-        private void RemoveActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
+        private void RemoveActivityGotFromManager(object sender, UtilityAI_Manager.UAIData e)
         {
             AIAction similar = _possibleActions.Find(item => item.target == e.newInteractable.Key.transform);
 
@@ -330,11 +333,28 @@ namespace Sampo.AI
 
             _possibleActions.Add(action);
         }
-        private void AddNewPossibleAction(Transform target, int weight, string name, Tool actWith, UtilityAI_BaseState treatment)
+        private void AddNewPossibleAction(Transform target, int weight, string name, AIBehaviourBase behaviour)
         {
-            AIAction action = new AIAction(this, target, name, weight, actWith, treatment);
+            AIAction action = new AIAction(this, target, name, weight, behaviour);
 
             AddNewPossibleAction(action);
+        }
+        public void MarkCurrentActionAsDone() 
+        {
+            _possibleActions.Remove(CurrentActivity);
+            NullifyActivity();
+        }
+        public void RemoveAction(Transform target, AIBehaviourBase behaviour) 
+        {
+            AIAction similar = _possibleActions.Find(item => item.target == target && item.behaviour == behaviour);
+
+            if (_possibleActions.Contains(similar))
+            {
+                _possibleActions.Remove(similar);
+
+                if (CurrentActivity == similar)
+                    NullifyActivity();
+            }
         }
         private void ChangeAction(AIAction to)
         {
@@ -348,15 +368,15 @@ namespace Sampo.AI
                     _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
                     BehaviourAI.VisiblePowerPoints);
         }
-        public UtilityAI_BaseState SelectBestActivity()
+        public bool SelectBestActivityIfAny()
         {
             if (_possibleActions.Count == 0)
-                return null;
+                return false;
 
             NormilizeActions(); //TODO : Проверить и убрать, если в этом нет смысла. Но его наличие создаёт надёжность.
 
             if (_possibleActions.Count == 0)
-                return null;
+                return false;
 
             int bestActivityIndex = 0;
 
@@ -364,7 +384,7 @@ namespace Sampo.AI
 
             ChangeAction(_possibleActions[bestActivityIndex]);
 
-            return _currentActivity.whatDoWhenClose;
+            return true;
         }
         private void NormilizeActions()
         {
@@ -394,12 +414,6 @@ namespace Sampo.AI
         }
         public bool IsNoActionCurrently() => _currentActivity == _noAction;
         #endregion
-
-        //TODO!!! : ПЕРЕПИСАТЬ ЭТО НАХРЕН! Пусть состояние выбираются процендурно, и с возможностью их выбора
-        //Может быть даже сделать Factory состояний как отдельный Singleton, безо всех этих глупых переходов
-        public UtilityAI_BaseState GetAttackState() => _factory.Attack();
-        public UtilityAI_BaseState GetRepositionState() => _factory.Reposition();
-        public UtilityAI_BaseState GetActionState() => _factory.Action();
 
         /// <summary>
         /// Обновление всех связанных с целью задач

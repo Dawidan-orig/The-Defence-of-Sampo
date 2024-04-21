@@ -26,7 +26,7 @@ namespace Sampo.AI
                 return true;
             }*/
 
-            if (_ctx.CurrentActivity.actWith is BaseShooting shooting)
+            if (_ctx.CurrentActivity.behaviour.BehaviourWeapon is BaseShooting shooting)
             {
                 bool available = shooting.AvilableToShoot(_ctx.CurrentActivity.target, out _);
                 if (available)
@@ -35,8 +35,14 @@ namespace Sampo.AI
                 return available;
             }
 
+            //TODO : Пусть ИИ будет уметь использовать дальнобойное оружие
+            // Которое может быть использовано в движении (Добавить эту характеристику)
+            // И, сбстно, использовать его на наиболее подходящих целях.
+            // Их можно выбирать прям тут, локально. Но скорее всего это будут просто ближайшие.
+            // Те, кто подошёл достаточно близко, чтоб ударить - сразу переключают внимание на себя
+
             //TODO? : Выглядит мерзковато, слишком сильная привязка к разделению между Дальним боем и Ближним.
-            bool outOfRange = _ctx.CurrentActivity.actWith.GetRange() + (_ctx.BehaviourAI is MeleeFighter fighter ? fighter.baseReachDistance : 0) >
+            bool outOfRange = _ctx.CurrentActivity.behaviour.BehaviourWeapon.GetRange() + (_ctx.BehaviourAI is MeleeFighter fighter ? fighter.baseReachDistance : 0) >
                 Vector3.Distance(_ctx.transform.position, _ctx.CurrentActivity.target.position);
             if (outOfRange)
                 SwitchStates(_factory.Deciding());

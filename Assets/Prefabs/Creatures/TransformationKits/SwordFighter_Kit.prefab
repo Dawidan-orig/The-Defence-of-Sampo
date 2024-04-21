@@ -260,6 +260,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   toGroundDist: 0.3
+  distanceInfluence: 1
+  congestionInfluence: 1
   weapon: {fileID: 3529802196489267887}
   defaultWeapon: {fileID: 0}
   baseReachDistance: 1
@@ -394,7 +396,6 @@ MonoBehaviour:
   _blade: {fileID: 3529802196489267887}
   _bladeContainer: {fileID: 3521898452228561578}
   _bladeHandle: {fileID: 3529802195641012700}
-  _vital: {fileID: 0}
   _catcher: {fileID: 0}
   _initialBlade: {fileID: 0}
   _moveFrom: {fileID: 0}
@@ -425,6 +426,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[1]
       value: 
       objectReference: {fileID: 2100000, guid: 0c5964cf455b1d34ca4d52e577782be1, type: 2}
+    - target: {fileID: 7455112556665308002, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
+      propertyPath: host
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7455112556665308002, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
       propertyPath: predictionColor.b
       value: 0.035294116

@@ -97,6 +97,7 @@ GameObject:
   - component: {fileID: 6510398072594887699}
   - component: {fileID: 3015710332918304387}
   - component: {fileID: 9086344078788441216}
+  - component: {fileID: 3108711757716894565}
   m_Layer: 0
   m_Name: TransformationHouse
   m_TagString: Untagged
@@ -137,7 +138,8 @@ MonoBehaviour:
   isBuilt: 0
   interactionRange: 2
   unitLimit: 5
-  prefab_TransformTo: {fileID: 1526482222200477036, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
+  TransformationKitPrefab: {fileID: 0}
+  createdUnits: []
 --- !u!65 &6510398072594887699
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -191,6 +193,22 @@ MonoBehaviour:
   remainsPrefab: {fileID: 0}
   vital: {fileID: 0}
   parentToDestroy: {fileID: 0}
+--- !u!208 &3108711757716894565
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3150004897952796988}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &6121026666716029928
 GameObject:
   m_ObjectHideFlags: 0

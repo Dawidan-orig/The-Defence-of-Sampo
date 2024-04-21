@@ -36,7 +36,7 @@ namespace Sampo.Weaponry.Melee
         {
             float addition = 0;
 
-            if (host.TryGetComponent<MeleeFighter>(out var m))
+            if (_host.TryGetComponent<MeleeFighter>(out var m))
                 addition += m.baseReachDistance;
 
 

@@ -80,7 +80,7 @@ namespace Sampo.Abilities
                 Quaternion.FromToRotation(Vector3.right,
                 Vector3.ProjectOnPlane((e.desire.position - e.moveStart.position).normalized, user.forward)));
 
-            slash.GetComponent<Tool>().host = user;
+            slash.GetComponent<Tool>().Host = user;
 
             slash.GetComponent<Faction>().ChangeFactionCompletely(user.GetComponent<Faction>().FactionType);
 

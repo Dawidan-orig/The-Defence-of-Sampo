@@ -69,7 +69,7 @@ namespace Sampo.Weaponry
                     continue;
 
                 if (thing.TryGetComponent(out Blade blade))
-                    if (blade.host != null || !blade_as_stuff)
+                    if (blade.Host != null || !blade_as_stuff)
                     {
                         BladeIncoming(blade);
                         continue;

@@ -114,6 +114,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   toGroundDist: 0.3
+  distanceInfluence: 1
+  congestionInfluence: 1
   weapon: {fileID: 2420862382218053515}
 --- !u!114 &2397089146008967542
 MonoBehaviour:
@@ -298,12 +300,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _AIActive: 1
-  distanceWeightMultiplier: 1
-  hasCongestion: 1
   _currentActivity:
     target: {fileID: 0}
     name: 
-    actWith: {fileID: 0}
+    behaviour: {fileID: 0}
     _totalWeight: 0
   _possibleActions: []
 --- !u!1 &2397089146338771506
@@ -350,7 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7c643220423b09438ea5b29014f378e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  host: {fileID: 0}
+  _host: {fileID: 0}
   additionalMeleeReach: 0
   alive:
     serializedVersion: 2
@@ -485,7 +485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86b5238e563ff7e4dba45887f0b0e895, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  host: {fileID: 2397089146008967549}
+  _host: {fileID: 2397089146008967549}
   additionalMeleeReach: 0
   alive:
     serializedVersion: 2

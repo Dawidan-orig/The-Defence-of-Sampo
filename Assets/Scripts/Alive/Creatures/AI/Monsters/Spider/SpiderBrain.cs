@@ -42,6 +42,12 @@ namespace Sampo.AI.Monsters
             toReturn
         }
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            _behaviourWeapon = legsHarmony.legs[0].limb;
+        }
         protected void Start()
         {
             initialBodyHeightOffset = transform.position.y - legsHarmony.legs[0].legTarget.position.y;
@@ -111,7 +117,7 @@ namespace Sampo.AI.Monsters
             }
         }
 
-        public override void AttackUpdate(Transform target)
+        public override void ActionUpdate(Transform target)
         {
             if (attackingLeg == null)
             {
@@ -187,16 +193,6 @@ namespace Sampo.AI.Monsters
             int remaining = points;
 
             //TODO DESIGN
-        }
-
-        public override Tool ToolChosingCheck(Transform target)
-        {
-            return legsHarmony.legs[0].limb; //Не важно, какую ногу, важны лишь параметры. У всех ног параметры (Пока что) одинаковы.
-        }
-
-        public override void ActionUpdate(Transform target)
-        {
-            throw new System.NotImplementedException();
         }
 
         public override Vector3 RelativeRetreatMovement()

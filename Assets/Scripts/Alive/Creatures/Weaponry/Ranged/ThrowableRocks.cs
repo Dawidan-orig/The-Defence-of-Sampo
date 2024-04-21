@@ -43,10 +43,10 @@ namespace Sampo.Weaponry.Ranged
             Faction BFac;
             if (!bullet.TryGetComponent(out BFac))
                 BFac = bullet.AddComponent<Faction>();
-            BFac.ChangeFactionCompletely(host.GetComponent<Faction>().FactionType);
+            BFac.ChangeFactionCompletely(_host.GetComponent<Faction>().FactionType);
 
             Physics.IgnoreCollision(GetComponent<Collider>(), bullet.GetComponent<Collider>());
-            Physics.IgnoreCollision(host.GetComponent<Collider>(), bullet.GetComponent<Collider>());
+            Physics.IgnoreCollision(_host.GetComponent<Collider>(), bullet.GetComponent<Collider>());
 
             BulletBase b = bullet.GetComponent<BulletBase>();
             b.SetDamageDealer(transform);

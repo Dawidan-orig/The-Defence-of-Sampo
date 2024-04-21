@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using Sampo.Core;
 using UnityEngine;
 
 namespace Sampo.AI
@@ -9,7 +8,6 @@ namespace Sampo.AI
     /// </summary>
     public class AI_Action : UtilityAI_BaseState
     {
-        //TODO : Перевод Attack в это состояние, объединение двух классов
         //TODO : Пусть тут по дефолту будет Interact()
         public AI_Action(TargetingUtilityAI currentContext, UtilityAI_Factory factory) : base(currentContext, factory)
         {
@@ -37,26 +35,48 @@ namespace Sampo.AI
 
             CheckRepath();
 
-            /* TODO : Надо придумать следующее теперь:
-             * Переход в другое состояние. Прежде всего, он должен происходить посредством завершения Action.
-             * Если речь об Interact, то достаточно проверять расстояние через него же.
-             * Но что делать в случае оружий и того же лечения?
-             * Есть смысл обновить логику AIAction, в него добавить эти параметры.
-             * Например, завершение Action и удаление его из локального списка.
-             * 
-             * В этот же Action ещё много чего можно спрятать.
-             * Например, функцию проверки дальности до цели.
-            */
+            float weaponRange;
+            if (_ctx.CurrentActivity.behaviour.BehaviourWeapon == null
+                && _ctx.CurrentActivity.target.TryGetComponent(out IInteractable interact))
+            {
+                weaponRange = interact.GetInteractionRange();
 
-            // Способ решения: Сделать пока в лоб через этот же Interact.
-            // Подумать, Как бы я сделал медиков (Хотя понятно как - через оружие. Копирка Attack)
-            // Дальше найти что-то общее между здешним Interact и текущим Attack.
-            // Объеденить функционал без потери возможностей.
-            // В идеале - ещё увеличить их
-            // Тогда будет состояние чистого перемещения и чистого действия, а также принятия решения.
-            // То, что нужно. Оно покрывает все возможные вероятности
+                if (Vector3.Distance(_ctx.transform.position, _ctx.CurrentActivity.target.position)
+                    < interact.GetInteractionRange())
+                {
+                    interact.Interact(_ctx.transform);
+                    _ctx.MarkCurrentActionAsDone();
+                    return;
+                }
+            }
+            else
+            {
+                weaponRange = _ctx.CurrentActivity.behaviour.BehaviourWeapon.GetRange();
+            }
 
-            MoveAlongPath(10);
+            Vector3 closest = _ctx.BehaviourAI.GetClosestPoint(_ctx.CurrentActivity.target, _ctx.transform.position);
+
+            float progress = 1 - (Vector3.Distance(closest, _ctx.transform.position)
+                / weaponRange);
+
+            if (progress > 0)
+                RetreatReposition(progress);
+            else
+                MoveAlongPath(10);
+
+            //TODO DESIGN : Способности. Это будет отдельный компонент, но не AIBehaviour.
+            // Они сам определяют, какие у них зависимости и что им нужно.
+            // Они добавляют Action'ы в TargetingUtilityAI.
+
+            // Вот только Action содержит в себе AIBehaviour.
+            // Значит мне потребуется особый AIBehaviour для способностей.
+            // Причём для всего набора способностей должен использоваться только один Kit и AIBehaviour.
+            // В нём будет список этих самых способностей.
+            // MultiweaponUnit сам выберет их исходя из количества очков,
+            // Которые постоянно обновляются для каждой из способностей, в GetCurrentWeaponPoints() возвращается максимум
+            // Как только начнёт происходить там ActionUpdate - можно активировать способность со всеми анимациями по цели.
+            // Способности могут быть совершенно разными, от лечения до разрушения,
+            // А потому этот класс сам должен будет выбирать наиболее подходящую.
 
             _ctx.BehaviourAI.ActionUpdate(_ctx.CurrentActivity.target);
         }
@@ -68,12 +88,31 @@ namespace Sampo.AI
 
         public override void FixedUpdateState()
         {
-            
+
         }
 
         public override void InitializeSubState()
         {
-            
+
+        }
+        private void RetreatReposition(float retreatCurveTime)
+        {
+            //TODO : Использование _ctx.BehaviourAI.RelativeRetreatMovement
+            Vector3 newPos = _ctx.transform.position - _ctx.BehaviourAI.retreatInfluence.Evaluate(retreatCurveTime)
+                    * (_ctx.CurrentActivity.target.position - _ctx.transform.position);
+
+            if (_ctx.MovingAgent.IsNearObstacle(newPos - _ctx.transform.position, out Vector3 normal))
+            {
+                Vector3 dir = Vector3.ProjectOnPlane(
+                    (_ctx.CurrentActivity.target.position - _ctx.transform.position).normalized,
+                    normal);
+                dir.Normalize();
+
+                newPos = _ctx.transform.position - dir
+                    * (_ctx.CurrentActivity.target.position - _ctx.transform.position).magnitude;
+            }
+
+            _ctx.MovingAgent.MoveIteration(newPos, _ctx.CurrentActivity.target.position);
         }
     }
 }

@@ -9,17 +9,6 @@ public class NullUnit : AIBehaviourBase
 {
     public override void ActionUpdate(Transform target)
     {
-        if(target.TryGetComponent(out IInteractable interact)) 
-        {
-            if(Vector3.Distance(transform.position, target.position) < interact.GetInteractionRange()) 
-            {
-                interact.Interact(transform);
-            }
-        }
-    }
-
-    public override void AttackUpdate(Transform target)
-    {
         
     }
 
@@ -30,7 +19,7 @@ public class NullUnit : AIBehaviourBase
         var res = input
             .Where(kvp => kvp.Key.GetComponent<Faction>().IsAvailableForSelfFaction)
             .Select(kvp => new { kvp.Key, val = kvp.Value})
-            //(kvp.Key.TryGetComponent(out BuildableStructure _) ? kvp.Value * 3 : kvp.Value) 
+            //.Select(kvp.Key.TryGetComponent(out BuildableStructure _) ? kvp.val * 3 : kvp.val) 
             .ToDictionary(t => t.Key, t => t.val);
 
         return res;
@@ -38,24 +27,24 @@ public class NullUnit : AIBehaviourBase
 
     public override bool IsTargetPassing(Transform target)
     {
-        return true;
-    }
+        bool res = true;
 
-    public override UtilityAI_BaseState TargetReaction(Transform target)
-    {
-        return _AITargeting.GetActionState();
+        Faction other = target.GetComponent<Faction>();
+
+        if (!other.IsAvailableForSelfFaction || target == transform)
+            res = false;
+
+        if (other.TryGetComponent(out AliveBeing b))
+            if (b.mainBody == transform)
+                res = false;
+
+        return res;
     }
 
     public override Vector3 RelativeRetreatMovement()
     {
         // Этот юнит не отсутпает
         return Vector3.zero;
-    }
-
-    public override Tool ToolChosingCheck(Transform target)
-    {
-        // У этого юнита нет оружия
-        return null;
     }
 
     public override int GetCurrentWeaponPoints()

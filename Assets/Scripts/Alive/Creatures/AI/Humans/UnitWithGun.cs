@@ -7,7 +7,14 @@ namespace Sampo.AI.Humans.Ranged
     {
         public BaseShooting weapon;
 
-        public override void AttackUpdate(Transform target)
+        protected override void Awake()
+        {
+            base.Awake();
+
+            _behaviourWeapon = weapon;
+        }
+
+        public override void ActionUpdate(Transform target)
         {
             if (weapon.AvilableToShoot(target, out _))
             {
@@ -18,11 +25,6 @@ namespace Sampo.AI.Humans.Ranged
 
                 weapon.Shoot(target.position);
             }
-        }
-
-        public override Tool ToolChosingCheck(Transform target)
-        {
-            return weapon;
         }
 
         public override Transform GetRightHandTarget()
@@ -37,11 +39,6 @@ namespace Sampo.AI.Humans.Ranged
             int remaining = points;
 
             //TODO DESIGN
-        }
-
-        public override void ActionUpdate(Transform target)
-        {
-            
         }
 
         public override Vector3 RelativeRetreatMovement()

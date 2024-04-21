@@ -37,6 +37,13 @@ namespace Sampo.Weaponry.Melee.Sword
 
         #region Unity
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            _behaviourWeapon = _blade;
+        }
+
         protected override void Start()
         {
             base.Start();
@@ -48,8 +55,6 @@ namespace Sampo.Weaponry.Melee.Sword
             _fighter_states = new SwordFighter_StateFactory(this);
             _currentSwordState = _fighter_states.Idle();
             _currentSwordState.EnterState();
-
-            _blade.GetComponent<Tool>().SetHost(transform);
 
             if (_bladeContainer == null)
                 _bladeContainer = transform;
@@ -251,10 +256,8 @@ namespace Sampo.Weaponry.Melee.Sword
             SetDesires(start, (end - start).normalized, SlashingDir);
         }
 
-        public override void AttackUpdate(Transform target)
+        public override void ActionUpdate(Transform target)
         {
-            base.AttackUpdate(target);
-
             if (!_swingReady || CurrentCombo.Count > 0)
                 return;
 
@@ -391,11 +394,6 @@ namespace Sampo.Weaponry.Melee.Sword
 
         #region Specifications overrided
 
-        public override Tool ToolChosingCheck(Transform target)
-        {
-            return _blade;
-        }
-
         public override Transform GetRightHandTarget()
         {
             return _blade.rightHandHandle;
@@ -408,11 +406,6 @@ namespace Sampo.Weaponry.Melee.Sword
             int remaining = points;
 
             //TODO DESIGN
-        }
-
-        public override void ActionUpdate(Transform target)
-        {
-
         }
 
         public override Vector3 RelativeRetreatMovement()

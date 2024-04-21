@@ -4,6 +4,7 @@ using Sampo.Core;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Alchemy.Inspector;
 
 namespace Sampo.Building.Transformators
 {
@@ -14,9 +15,7 @@ namespace Sampo.Building.Transformators
     {
         public float interactionRange = 1f;
         public int unitLimit = 5;
-        /* TODO (dep. TODO : —истема классов) : ѕреобразование напр€мую, а не через полное удаление GameObject
-         * ƒл€ этого надо указывать тут тип, в который и будет происходить преобразование, а не Prefab.
-         */
+        [Required]
         public GameObject TransformationKitPrefab;
         [SerializeField]
         private List<GameObject> createdUnits;

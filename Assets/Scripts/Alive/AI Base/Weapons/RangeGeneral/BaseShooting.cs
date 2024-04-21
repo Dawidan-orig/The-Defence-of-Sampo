@@ -21,7 +21,7 @@ namespace Sampo.Weaponry.Ranged
 
         protected virtual void Awake()
         {
-            AIUser = host.GetComponent<TargetingUtilityAI>();
+            AIUser = _host.GetComponent<TargetingUtilityAI>();
         }
 
         public virtual void Shoot(Vector3? target = null)
@@ -37,10 +37,10 @@ namespace Sampo.Weaponry.Ranged
             Faction BFac;
             if (!bullet.TryGetComponent(out BFac))
                 BFac = bullet.AddComponent<Faction>();
-            BFac.ChangeFactionCompletely(host.GetComponent<Faction>().FactionType);
+            BFac.ChangeFactionCompletely(_host.GetComponent<Faction>().FactionType);
 
             Physics.IgnoreCollision(GetComponent<Collider>(), bullet.GetComponent<Collider>());
-            Physics.IgnoreCollision(host.GetComponent<Collider>(), bullet.GetComponent<Collider>());
+            Physics.IgnoreCollision(_host.GetComponent<Collider>(), bullet.GetComponent<Collider>());
 
             BulletBase b = bullet.GetComponent<BulletBase>();
             b.SetDamageDealer(transform);
@@ -81,9 +81,9 @@ namespace Sampo.Weaponry.Ranged
         private Vector3 FindBestPointToShoot_Dijkstra(Transform target)
         {
             Vector3 res = Vector3.zero;
-            Vector3 delta = transform.position - host.transform.position;
+            Vector3 delta = transform.position - _host.transform.position;
             delta.x = 0; delta.z = 0;
-            float height = delta.magnitude + host.GetComponent<AliveBeing>().vital.bounds.size.y / 2;
+            float height = delta.magnitude + _host.GetComponent<AliveBeing>().vital.bounds.size.y / 2;
 
             NavMeshCalculations.Cell start = NavMeshCalculations.Instance.GetCell(target.position);
 
@@ -129,7 +129,7 @@ namespace Sampo.Weaponry.Ranged
 
             if (res == Vector3.zero)
             {
-                res = host.transform.position;
+                res = _host.transform.position;
                 AIUser.IsDecidingStateRequired();
             }
 
@@ -169,7 +169,7 @@ namespace Sampo.Weaponry.Ranged
                 if (hit.collider.isTrigger)
                     PenetratingRaycast(hit.point + dir * 0.05f, to, out hit, duration, color);
 
-            if (hit.transform == host)
+            if (hit.transform == _host)
                 PenetratingRaycast(hit.point + dir * 0.05f, to, out hit, duration, color);
         }
 

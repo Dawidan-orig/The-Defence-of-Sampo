@@ -24,7 +24,7 @@ namespace Sampo.Weaponry.Melee
 
         public Transform Handle { get => handle; private set => handle = value; }
 
-        public Transform DamageFrom => host;
+        public Transform DamageFrom => _host;
 
         public struct Border
         {
@@ -41,26 +41,12 @@ namespace Sampo.Weaponry.Melee
 
         private void Start()
         {
-            if (host)
-                Physics.IgnoreCollision(GetComponent<Collider>(), host.GetComponent<IDamagable>().Vital);
-
             GameObject massCenterGo = new("MassCenter");
             massCenterGo.transform.parent = transform;
             body.centerOfMass = handle.localPosition;
             massCenterGo.transform.position = body.worldCenterOfMass;
 
             additionalMeleeReach = Vector3.Distance(upperPoint.position, handle.position) / 2;
-        }
-
-        private void Update()
-        {
-            if (faction)
-            {
-                if (host)
-                    faction.ChangeFactionCompletely(host.GetComponent<Faction>().FactionType);
-                else
-                    faction.ChangeFactionCompletely(Faction.FType.aggressive);
-            }
         }
 
         /// <summary>

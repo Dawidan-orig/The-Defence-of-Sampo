@@ -5,14 +5,28 @@ using UnityEngine;
 
 public class Tool : MonoBehaviour
 {
-    public Transform host;
+    [SerializeField]
+    protected Transform _host;
     public float additionalMeleeReach;
     public LayerMask alive;
     public LayerMask structures;
 
-    public void SetHost(Transform newHost)
+    public Transform Host
     {
-        host = newHost;
+        get => _host;
+        set 
+        {
+            _host = value;
+            if (_host == null)
+            {
+                GetComponent<Faction>().ChangeFactionCompletely(Faction.FType.aggressive);
+            }
+            else
+            {
+                GetComponent<Faction>().ChangeFactionCompletely(_host.GetComponent<Faction>().FactionType);
+                Physics.IgnoreCollision(GetComponent<Collider>(), _host.GetComponent<IDamagable>().Vital);
+            }
+        } 
     }
 
     public virtual float GetRange() { return additionalMeleeReach; }

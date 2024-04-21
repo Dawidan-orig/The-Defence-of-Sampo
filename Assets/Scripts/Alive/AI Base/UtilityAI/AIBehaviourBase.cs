@@ -16,12 +16,16 @@ namespace Sampo.AI
             "с какой интенсивностью в зависимости от дальности оружия ИИ будет отдоходить от цели")]
         public AnimationCurve retreatInfluence;
         public float toGroundDist = 0.3f;
-        [Tooltip("Точка отсчёта для NavMeshAgent")]
-        private Transform navMeshCalcFrom;
+        [Header("Targeting AI")]
+        public float distanceInfluence = 1;
+        public float congestionInfluence = 1;
 
-        private Collider vital;
+        private Transform _navMeshCalcFrom;
+        private Collider _vital;
         private Rigidbody _body;
         protected TargetingUtilityAI _AITargeting;
+        //TODO : Сделать абстрактную функцию (Для обязательности) которое требует вернуть оружие
+        protected Tool _behaviourWeapon;
 
         #region properties
         public int VisiblePowerPoints { get => visiblePowerPoints; set => visiblePowerPoints = value; }
@@ -34,31 +38,32 @@ namespace Sampo.AI
         {
             get
             {
-                navMeshCalcFrom ??= transform;
-                return navMeshCalcFrom;
+                _navMeshCalcFrom ??= transform;
+                return _navMeshCalcFrom;
             }
         }
         public Collider Vital 
         {
             get 
             {
-                if (!vital) {
-                    var colliders = GetComponents<Collider>();
+                if (!_vital) {
+                    var colliders = GetMainTransform().GetComponents<Collider>();
                     if (colliders.Length != 1)
                         Debug.LogWarning("Много коллайдеров за раз на одном объекте, беру в Vital самый первый",transform);
-                    vital = colliders[0];
+                    _vital = colliders[0];
                 }
-                return vital;
+                return _vital;
             }
         }
+        public Tool BehaviourWeapon { get => _behaviourWeapon;}
         #endregion
 
         protected virtual void Awake()
-        {
+        {            
             Transform absoluteParent = GetMainTransform();
 
             _body = absoluteParent.gameObject.GetComponent<Rigidbody>();
-            navMeshCalcFrom ??= transform;
+            _navMeshCalcFrom ??= transform;
         }
 
         /// <summary>
@@ -85,8 +90,9 @@ namespace Sampo.AI
         #region virtual functions
         protected Transform GetMainTransform() 
         {
-            _AITargeting = GetComponent<TargetingUtilityAI>();
-            if (_AITargeting == null)
+            if(!_AITargeting)
+                _AITargeting = GetComponent<TargetingUtilityAI>();
+            if (!_AITargeting)
                 _AITargeting = GetComponentInParent<TargetingUtilityAI>();
 
             return _AITargeting.transform;
@@ -103,9 +109,9 @@ namespace Sampo.AI
             //TODO DESIGN : Гармоничное изменение скорости движения
         }
         /// <summary>
-        /// Проверка фракции на себя
+        /// Проверка что цель следует превращать в действие
         /// </summary>
-        /// <param name="target">Относительно этой цели</param>
+        /// <param name="target">Проверка относительно этой цели</param>
         /// <returns>true, если цель подходит</returns>
         public virtual bool IsTargetPassing(Transform target)
         {
@@ -113,7 +119,7 @@ namespace Sampo.AI
 
             Faction other = target.GetComponent<Faction>();
 
-            if (!other.IsWillingToAttack(GetComponent<Faction>().FactionType) || target == transform)
+            if (!other.IsWillingToAttack(GetMainTransform().GetComponent<Faction>().FactionType) || target == transform)
                 res = false;
 
             if (other.TryGetComponent(out AliveBeing b))
@@ -127,38 +133,24 @@ namespace Sampo.AI
         /// </summary>
         public virtual Dictionary<Interactable_UtilityAI, int> GetActionsDictionary()
         {
-            return UtilityAI_Manager.Instance.GetAllInteractions(GetComponent<Faction>());
+            return UtilityAI_Manager.Instance.GetAllInteractions(GetMainTransform().GetComponent<Faction>());
         }
-        /// <summary>
-        /// Выбор оружия исходя из внутренних условий
-        /// </summary>
-        /// <param name="target">Относительно этой цели</param>
-        /// <returns>Выбранное оружие</returns>
-        public abstract Tool ToolChosingCheck(Transform target);
         /// <summary>
         /// Определяет поведение на цель для ИИ для этого действия
         /// </summary>
         /// <param name="target">Цель</param>
-        /// <returns>Состояние, которое будет применено к цели</returns>
-        public virtual UtilityAI_BaseState TargetReaction(Transform target)
+        /// <returns>Поведение, которое будет применено к цели в первую очередь</returns>
+        public virtual AIBehaviourBase TargetReaction(Transform target)
         {
-            return _AITargeting.GetAttackState();
+            return this;
         }
         /// <summary>
         /// Определяет точку, куда следует отступать
         /// </summary>
         /// <returns>Точка относительно ИИ, длина вектора указывает силу отсупления</returns>
         public abstract Vector3 RelativeRetreatMovement();
-        /*TODO dep AI_Factory : Сделать так, чтобы управляющая StateMachine была интегрирована сюда, либо вообще редуцирована...
-        * Эти Функции не должны быть публичны, они - только для управляющей StateMachine!
-        * Сделать через Event'ы после переделки factory.
-        */
-        /// <summary>
-        /// Обычный Update, но вызываемый в состоянии, когда юнит атакует.
-        /// </summary>
-        /// <param name="target"></param>
-        public abstract void AttackUpdate(Transform target);
-
+        //TODO : Эта функция не должна быть публичной для всех.
+        // Разве что в пределах namespace
         /// <summary>
         /// Обычный Update, но когда юнит действует
         /// </summary>

@@ -103,7 +103,7 @@ namespace Sampo.Player
 
         private void Awake()
         {
-            blade.SetHost(transform);
+            blade.Host = transform;
             blade.OnBladeCollision += BladeCollision;
         }
 

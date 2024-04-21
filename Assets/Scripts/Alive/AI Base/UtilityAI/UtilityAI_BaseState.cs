@@ -71,7 +71,7 @@ namespace Sampo.AI
             repathLastTargetPos = moveTargetPos;
             repathLastUnitPos = _ctx.transform.position;
 
-            if (_ctx.CurrentActivity.actWith is BaseShooting shooting) // »щем лучшую позицию дл€ стрельбы
+            if (_ctx.CurrentActivity.behaviour.BehaviourWeapon is BaseShooting shooting) // »щем лучшую позицию дл€ стрельбы
             {
                 moveTargetPos = shooting.NavMeshClosestAviableToShoot(_ctx.CurrentActivity.target);
             }

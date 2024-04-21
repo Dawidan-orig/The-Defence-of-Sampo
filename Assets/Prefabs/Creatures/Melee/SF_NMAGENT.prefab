@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7c643220423b09438ea5b29014f378e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  host: {fileID: 0}
+  _host: {fileID: 0}
   additionalMeleeReach: 0
   alive:
     serializedVersion: 2
@@ -227,7 +227,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visiblePowerPoints: 100
-  vital: {fileID: 6457755934751162684}
   retreatInfluence:
     serializedVersion: 2
     m_Curve:
@@ -271,6 +270,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   toGroundDist: 0.3
+  distanceInfluence: 1
+  congestionInfluence: 1
   weapon: {fileID: 6184862296936070201}
   defaultWeapon: {fileID: 0}
   baseReachDistance: 1
@@ -405,7 +406,6 @@ MonoBehaviour:
   _blade: {fileID: 6184862296936070201}
   _bladeContainer: {fileID: 5534593060646177564}
   _bladeHandle: {fileID: 6184862298220644170}
-  _vital: {fileID: 6457755934751162684}
   _catcher: {fileID: 0}
   _initialBlade: {fileID: 0}
   _moveFrom: {fileID: 0}
@@ -564,12 +564,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _AIActive: 1
-  distanceWeightMultiplier: 1
-  hasCongestion: 1
   _currentActivity:
     target: {fileID: 0}
     name: 
-    actWith: {fileID: 0}
+    behaviour: {fileID: 0}
     _totalWeight: 0
   _possibleActions: []
 --- !u!1001 &261701640518159192
@@ -656,6 +654,10 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 0c5964cf455b1d34ca4d52e577782be1, type: 2}
     - target: {fileID: 7455112556665308002, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
       propertyPath: host
+      value: 
+      objectReference: {fileID: 7900944302068477665}
+    - target: {fileID: 7455112556665308002, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
+      propertyPath: _host
       value: 
       objectReference: {fileID: 7900944302068477665}
     - target: {fileID: 7455112556665308002, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}

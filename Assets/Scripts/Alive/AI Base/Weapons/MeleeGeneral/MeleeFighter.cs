@@ -116,6 +116,7 @@ namespace Sampo.Melee
 
         protected override void Awake()
         {
+            _behaviourWeapon = weapon;
             _catcher = gameObject.GetComponent<AttackCatcher>();
         }
 
@@ -127,15 +128,6 @@ namespace Sampo.Melee
             {
                 weapon = defaultWeapon;
             }
-        }
-        public override void AttackUpdate(Transform target)
-        {
-
-        }
-
-        public override Tool ToolChosingCheck(Transform target)
-        {
-            return weapon;
         }
 
         public override Transform GetRightHandTarget()
@@ -156,7 +148,7 @@ namespace Sampo.Melee
 
             closestPointToTarget = GetClosestPoint(CurrentActivity.target, calculateFrom);
 
-            return Vector3.Distance(calculateFrom, closestPointToTarget) < CurrentActivity.actWith.additionalMeleeReach + baseReachDistance;
+            return Vector3.Distance(calculateFrom, closestPointToTarget) < CurrentActivity.behaviour.BehaviourWeapon.additionalMeleeReach + baseReachDistance;
         }
 
         public void BecomeReadyToSwing()

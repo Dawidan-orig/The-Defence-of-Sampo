@@ -148,7 +148,7 @@ namespace Sampo.AI.Monsters.Spider
         {
             foreach (SpiderLegControl leg in legs)
             {
-                leg.limb.SetHost(mainBody);
+                leg.limb.Host = mainBody;
                 leg.distanceToNew = distanceToNew;
                 leg.maxDistToNew = maxDistToNew;
                 leg.moveSpeed = moveSpeed;

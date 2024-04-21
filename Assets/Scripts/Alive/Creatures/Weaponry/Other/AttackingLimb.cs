@@ -21,7 +21,7 @@ namespace Sampo.Weaponry.Special
                 IsDamaging)
             {
                 if (collision.transform.TryGetComponent<AttackingLimb>(out var otherLimb))
-                    if (otherLimb.host == host)
+                    if (otherLimb.Host == _host)
                         return;
 
                 Utilities.DrawSphere(collision.GetContact(0).point, color: Color.red, duration: 3);
