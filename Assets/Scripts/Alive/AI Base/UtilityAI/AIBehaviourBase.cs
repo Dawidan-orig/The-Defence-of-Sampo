@@ -24,8 +24,6 @@ namespace Sampo.AI
         private Collider _vital;
         private Rigidbody _body;
         protected TargetingUtilityAI _AITargeting;
-        //TODO : Сделать абстрактную функцию (Для обязательности) которое требует вернуть оружие
-        protected Tool _behaviourWeapon;
 
         #region properties
         public int VisiblePowerPoints { get => visiblePowerPoints; set => visiblePowerPoints = value; }
@@ -55,7 +53,7 @@ namespace Sampo.AI
                 return _vital;
             }
         }
-        public Tool BehaviourWeapon { get => _behaviourWeapon;}
+        public abstract Tool BehaviourWeapon { get; }
         #endregion
 
         protected virtual void Awake()
@@ -136,25 +134,15 @@ namespace Sampo.AI
             return UtilityAI_Manager.Instance.GetAllInteractions(GetMainTransform().GetComponent<Faction>());
         }
         /// <summary>
-        /// Определяет поведение на цель для ИИ для этого действия
-        /// </summary>
-        /// <param name="target">Цель</param>
-        /// <returns>Поведение, которое будет применено к цели в первую очередь</returns>
-        public virtual AIBehaviourBase TargetReaction(Transform target)
-        {
-            return this;
-        }
-        /// <summary>
         /// Определяет точку, куда следует отступать
         /// </summary>
         /// <returns>Точка относительно ИИ, длина вектора указывает силу отсупления</returns>
         public abstract Vector3 RelativeRetreatMovement();
-        //TODO : Эта функция не должна быть публичной для всех.
-        // Разве что в пределах namespace
         /// <summary>
         /// Обычный Update, но когда юнит действует
         /// </summary>
         /// <param name="target"></param>
+        //TODO : Вместе с редуцированием системы состояний эта функция должна уйти.
         public abstract void ActionUpdate(Transform target);
         /// <summary>
         /// Определяет количество очков на данный момент времени для текущей формы поведения.

@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class NullUnit : AIBehaviourBase
 {
+    public override Tool BehaviourWeapon => null;
+
     public override void ActionUpdate(Transform target)
     {
         
@@ -49,6 +51,10 @@ public class NullUnit : AIBehaviourBase
 
     public override int GetCurrentWeaponPoints()
     {
-        return 0;
+        int res = 0;
+        if (IsTargetPassing(CurrentActivity.target))
+            res = 100;
+
+        return res;
     }
 }

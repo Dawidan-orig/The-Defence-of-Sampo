@@ -7,11 +7,11 @@ namespace Sampo.AI.Humans.Ranged
     {
         public BaseShooting weapon;
 
+        public override Tool BehaviourWeapon => weapon;
+
         protected override void Awake()
         {
             base.Awake();
-
-            _behaviourWeapon = weapon;
         }
 
         public override void ActionUpdate(Transform target)

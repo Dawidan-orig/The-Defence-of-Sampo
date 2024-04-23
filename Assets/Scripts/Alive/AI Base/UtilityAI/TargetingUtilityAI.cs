@@ -1,4 +1,5 @@
 ﻿using Sampo.AI.Conditions;
+using Sampo.AI.Humans;
 using Sampo.Core;
 using System;
 using System.Collections.Generic;
@@ -124,7 +125,6 @@ namespace Sampo.AI
 
                 _conditions = new();
             }
-            //TODO : UtilityAI_BaseState - лучше спрятать в отдельный namespace
             public AIAction(TargetingUtilityAI actionOf, Transform target, string name, int weight, AIBehaviourBase behaviour)
             {
                 this.actionOf = actionOf;
@@ -189,8 +189,6 @@ namespace Sampo.AI
 
         protected virtual void Awake()
         {
-            //TODO : Установка всех ключевых переменных прямо в OnValidate, один раз при создании
-            // Это упростит создание новых юнитов в дальнейшем
             _movingAgent = GetComponent<IMovingAgent>();
             _factory = new UtilityAI_Factory(this);
             _currentState = _factory.Deciding();
@@ -253,14 +251,13 @@ namespace Sampo.AI
             NullifyActivity();
             _AIActive = false;
         }
-
-        private void OnValidate()
-        {
-
-        }
         #endregion
 
         #region actions
+        /// <summary>
+        /// Добавляем новые действия в runtime, связанные с поведением
+        /// </summary>
+        /// <param name="beh">Используемое поведение</param>
         public void AddNewActionsFromBehaviour(AIBehaviourBase beh) 
         {
             var dict = beh.GetActionsDictionary();
@@ -272,9 +269,12 @@ namespace Sampo.AI
                 if (!beh.IsTargetPassing(target.transform))
                     return;
 
-                AddNewPossibleAction(target.transform, weight, target.transform.name, beh.TargetReaction(target.transform));
+                AddNewPossibleAction(target.transform, weight, target.transform.name, beh);
             }
         }
+        /// <summary>
+        /// Получаем все доступные действия из менеджера в соответствии с текущим поведением
+        /// </summary>
         private void FetchAndAddAllActivities()
         {
             var dict = BehaviourAI.GetActionsDictionary();
@@ -286,15 +286,15 @@ namespace Sampo.AI
                 if (!BehaviourAI.IsTargetPassing(target.transform))
                     return;
 
-                AddNewPossibleAction(target.transform, weight, target.transform.name, BehaviourAI.TargetReaction(target.transform));
+                AddNewPossibleAction(target.transform, weight, target.transform.name, BehaviourAI);
             }
         }
+        /// <summary>
+        /// Добавляем новое действия из менеджера
+        /// Это может быть новый созданный объект взаимодействия, например
+        /// </summary>
         private void FetchNewActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
         {
-            Faction faction = GetComponent<Faction>();
-            if (!faction.IsWillingToAttack(e.factionWhereChangeHappened))
-                return;
-
             Interactable_UtilityAI target = e.newInteractable.Key;
             int weight = e.newInteractable.Value;
 
@@ -302,10 +302,14 @@ namespace Sampo.AI
                 return;
 
             AIAction action = new AIAction(
-                this, target.transform, name, weight, BehaviourAI.TargetReaction(target.transform));
+                this, target.transform, name, weight, BehaviourAI);
 
             AddNewPossibleAction(action);
         }
+        /// <summary>
+        /// Удаляем активность по событию из менеджера
+        /// Например, какой-то объект перестал существовать
+        /// </summary>
         private void RemoveActivityGotFromManager(object sender, UtilityAI_Manager.UAIData e)
         {
             AIAction similar = _possibleActions.Find(item => item.target == e.newInteractable.Key.transform);

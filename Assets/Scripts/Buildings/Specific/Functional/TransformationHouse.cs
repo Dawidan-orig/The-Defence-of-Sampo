@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Alchemy.Inspector;
+using System.Linq;
 
 namespace Sampo.Building.Transformators
 {
@@ -34,10 +35,15 @@ namespace Sampo.Building.Transformators
 
         public void Interact(Transform interactor)
         {
-            if (createdUnits.Count >= unitLimit-1)
+            //TODO : Logger сюда
+            if (createdUnits.Contains(interactor.gameObject))
             {
-                GetComponent<Faction>().IsAvailableForSelfFaction = false;
+                Debug.LogWarning("ѕопытка добавить такое же поведение", transform);
+                return;
             }
+
+            if (createdUnits.Count >= unitLimit-1)            
+                GetComponent<Faction>().IsAvailableForSelfFaction = false;            
 
             if(interactor.TryGetComponent(out MultiweaponUnit multiweapon))
                 multiweapon.AddNewBehaviour(TransformationKitPrefab);
@@ -62,7 +68,8 @@ namespace Sampo.Building.Transformators
 
         private void UpdateConnectedUnits(object sender, EventArgs _) 
         {
-            int removed = createdUnits.RemoveAll(unit => unit == null);
+            createdUnits.Remove((GameObject)sender);
+            int removed = createdUnits.RemoveAll(unit => unit == null) + 1;
             if (removed > 0)
             {
                 GetComponent<Faction>().IsAvailableForSelfFaction = true;

@@ -95,6 +95,7 @@ namespace Sampo.Melee
         public Transform InitialBlade { get => _initialBlade; set => _initialBlade = value; }
         public float CurrentToInitialAwait { get => _currentToInitialAwait; set => _currentToInitialAwait = value; }
         public Stack<ActionJoint> CurrentCombo { get => _currentCombo; set => _currentCombo = value; }
+        public override Tool BehaviourWeapon => _blade;
 
         #endregion
 
@@ -116,7 +117,6 @@ namespace Sampo.Melee
 
         protected override void Awake()
         {
-            _behaviourWeapon = weapon;
             _catcher = gameObject.GetComponent<AttackCatcher>();
         }
 

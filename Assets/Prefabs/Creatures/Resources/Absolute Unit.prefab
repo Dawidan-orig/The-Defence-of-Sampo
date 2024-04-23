@@ -62,9 +62,13 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   toGroundDist: 0.3
+  distanceInfluence: 1
+  congestionInfluence: 1
   unitReferencePrefabs:
   - {fileID: 622290399896821018, guid: d37bd346832a248409f3258746c3d79b, type: 3}
-  behaviourUpdateFrequency: 10
+  behaviourUpdateFrequency: 3
+  behaviours: []
+  currentBehaviour: {fileID: 0}
 --- !u!54 &1579277658286590084
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -192,7 +196,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 1
+  m_StoppingDistance: 0.2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 0
@@ -213,12 +217,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _AIActive: 1
-  distanceWeightMultiplier: 0.1
-  hasCongestion: 0
   _currentActivity:
     target: {fileID: 0}
     name: 
-    actWith: {fileID: 0}
+    behaviour: {fileID: 0}
     _totalWeight: 0
   _possibleActions: []
 --- !u!1001 &261701640518159192

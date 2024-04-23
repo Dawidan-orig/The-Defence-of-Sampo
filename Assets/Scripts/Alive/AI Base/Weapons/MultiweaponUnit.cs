@@ -1,11 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Sampo.AI.Humans
 {
     public class MultiweaponUnit : AIBehaviourBase
     {
+        // Пример MultiweaponUnit'а
+        // Можно атаковать магией,
+        // Можно действовать - активировать способность заморозки
+        // Можно действовать - активировать другую способность поле отравления
+        // Или атаковать мечом.
+        // И всё это на одну цель
         [Tooltip("Добавьте в этот список все GameObject-наборы, определяющие юнитов")]
         public List<GameObject> unitReferencePrefabs = new();
         public float behaviourUpdateFrequency = 10;
@@ -17,6 +24,8 @@ namespace Sampo.AI.Humans
         private Dictionary<AIBehaviourBase, Transform> behaviourToChild;
         [SerializeField]
         private AIBehaviourBase currentBehaviour;
+
+        public override Tool BehaviourWeapon => currentBehaviour.BehaviourWeapon;
 
         protected override void Awake()
         {
@@ -39,18 +48,13 @@ namespace Sampo.AI.Humans
 
             if (unitReferencePrefabs.Count == 0)
             {
+                //TODO : Сделать сюда автоматическую загрузку null-unit
                 Debug.LogError("Отсутствуют заданные классы");
                 return;
             }
 
             foreach (var reference in unitReferencePrefabs)
-            {
-                GameObject copy = Instantiate(reference, kitContainer);
-                AIBehaviourBase beh = copy.GetComponent<AIBehaviourBase>();
-                behaviours.Add(beh);
-                behaviourToChild.Add(beh, copy.transform);
-                copy.SetActive(false);
-            }
+                AddNewBehaviour(reference);
 
             StartCoroutine(CheckingCycle());
         }
@@ -65,19 +69,35 @@ namespace Sampo.AI.Humans
             }
         }
 
-        private AIBehaviourBase ChooseBestWeapon() 
+        private AIBehaviourBase ChooseBestWeapon()
         {
-            if (behaviours.Count > 1)
-                behaviours.Sort((beh1, beh2) => beh2.GetCurrentWeaponPoints().CompareTo(beh1.GetCurrentWeaponPoints()));
-            return behaviours[0];
-        }
+            //Event не успевает удалить действие у TargetingAI,
+            // а тут уже происходит выбор по target=null
+            if (CurrentActivity.target == null)
+                return currentBehaviour;
 
+            List<AIBehaviourBase> behavioursCopy;
+
+            behavioursCopy = behaviours.Where(beh => beh.IsTargetPassing(CurrentActivity.target))
+                .ToList();
+
+            //TODO : Костыльная затычка. Следует исправить.
+            // behavioursCopy = null почему-то, но не всегда. 
+            // С чем это связано - предстоит узнать, т.к. ломается вообще всё
+            if (behavioursCopy.Count == 0)
+                return currentBehaviour;
+
+            if (behavioursCopy.Count > 1)
+                behavioursCopy.Sort((beh1, beh2) => beh2.GetCurrentWeaponPoints().CompareTo(beh1.GetCurrentWeaponPoints()));
+
+            return behavioursCopy[0];
+        }
         private void ChangeToBestWeapon()
         {
             ChangeBehavoiur(ChooseBestWeapon());
         }
 
-        private void ChangeBehavoiur(AIBehaviourBase to) 
+        private void ChangeBehavoiur(AIBehaviourBase to)
         {
             currentBehaviour?.gameObject.SetActive(false);
             to.gameObject.SetActive(true);
@@ -86,32 +106,40 @@ namespace Sampo.AI.Humans
 
         public void AddNewBehaviour(GameObject AIKit)
         {
-            GameObject copy = Instantiate(AIKit, kitContainer);            
+            GameObject copy = Instantiate(AIKit, kitContainer);
             AIBehaviourBase beh = copy.GetComponent<AIBehaviourBase>();
-            beh.BehaviourWeapon.Host = GetMainTransform().transform;
+            if (!currentBehaviour)
+                currentBehaviour = beh;
+            if (beh.BehaviourWeapon)
+                beh.BehaviourWeapon.Host = GetMainTransform().transform;
             behaviours.Add(beh);
             behaviourToChild.Add(beh, copy.transform);
+            copy.SetActive(false);
 
             _AITargeting.AddNewActionsFromBehaviour(beh);
+
+            ChangeToBestWeapon();
+        }
+        public void ExternalChangeToBehaviour()
+        {
+
         }
         #region AIBehaviour overrides
         public override void ActionUpdate(Transform target)
         {
             currentBehaviour.ActionUpdate(target);
         }
-
         public override Vector3 RelativeRetreatMovement()
         {
             //Это зависит от текщего выбранного оружия
             return currentBehaviour.RelativeRetreatMovement();
         }
-
         public override int GetCurrentWeaponPoints()
         {
             int sum = 0;
-            foreach(var beh in behaviours)            
+            foreach (var beh in behaviours)
                 sum += beh.GetCurrentWeaponPoints();
-            
+
             return sum;
         }
         public override Transform GetRightHandTarget()
@@ -123,8 +151,8 @@ namespace Sampo.AI.Humans
             Dictionary<Interactable_UtilityAI, int> res = new();
 
             foreach (var beh in behaviours)
-                foreach(var kvp in beh.GetActionsDictionary())
-                res.Add(kvp.Key, kvp.Value);
+                foreach (var kvp in beh.GetActionsDictionary())
+                    res.Add(kvp.Key, kvp.Value);
 
             return res;
         }
@@ -135,18 +163,6 @@ namespace Sampo.AI.Humans
                     return true;
 
             return false;
-        }
-        // Пример MultiweaponUnit'аW
-        // Можно атаковать магией,
-        // Можно действовать - активировать способность заморозки
-        // Можно действовать - активировать другую способность поле отравления
-        // Или атаковать мечом.
-        // И всё это на одну цель
-        
-        // TODO : IsTargetPassing и это надо как-нибудь объеденить
-        public override AIBehaviourBase TargetReaction(Transform target)
-        {
-            return ChooseBestWeapon();
         }
         #endregion
     }

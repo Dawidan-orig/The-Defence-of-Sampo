@@ -30,6 +30,7 @@ namespace Sampo.Player
 
             CameraController.Instance.ThirdPerson = transform.parent.GetComponentInChildren<ThirdPersonCameraPositioner>().gameObject.GetComponent<CinemachineVirtualCamera>();
             CameraController.Instance.FirstPerson = transform.parent.GetComponentInChildren<FirstPersonCameraPositioner>().gameObject.GetComponent<CinemachineVirtualCamera>();
+            CameraController.Instance.player = this;
         }
 
         private void Update()

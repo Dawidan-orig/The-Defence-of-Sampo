@@ -35,7 +35,7 @@ namespace Sampo.AI
 
             CheckRepath();
 
-            float weaponRange;
+            float weaponRange = 1;
             if (_ctx.CurrentActivity.behaviour.BehaviourWeapon == null
                 && _ctx.CurrentActivity.target.TryGetComponent(out IInteractable interact))
             {
@@ -44,12 +44,14 @@ namespace Sampo.AI
                 if (Vector3.Distance(_ctx.transform.position, _ctx.CurrentActivity.target.position)
                     < interact.GetInteractionRange())
                 {
+                    //TODO!!! : Два вызова откуда-то в MultiweaponUnit
+                    // Добавить Logger'ы для этих систем уже, наконец!!
                     interact.Interact(_ctx.transform);
                     _ctx.MarkCurrentActionAsDone();
                     return;
                 }
             }
-            else
+            else if(_ctx.CurrentActivity.behaviour.BehaviourWeapon != null)
             {
                 weaponRange = _ctx.CurrentActivity.behaviour.BehaviourWeapon.GetRange();
             }

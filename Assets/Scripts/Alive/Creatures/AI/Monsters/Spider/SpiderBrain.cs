@@ -34,6 +34,8 @@ namespace Sampo.AI.Monsters
         private Quaternion initialBodyRotation;
         private float initialBodyHeightOffset;
 
+        public override Tool BehaviourWeapon => legsHarmony.legs[0].limb;
+
         private enum SpiderState
         {
             nothing,
@@ -45,8 +47,6 @@ namespace Sampo.AI.Monsters
         protected override void Awake()
         {
             base.Awake();
-
-            _behaviourWeapon = legsHarmony.legs[0].limb;
         }
         protected void Start()
         {

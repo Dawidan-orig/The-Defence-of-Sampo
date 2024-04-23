@@ -138,7 +138,7 @@ MonoBehaviour:
   isBuilt: 0
   interactionRange: 2
   unitLimit: 5
-  TransformationKitPrefab: {fileID: 0}
+  TransformationKitPrefab: {fileID: 8076466354686635130, guid: 6e9893dc919e73f4790281552f95982c, type: 3}
   createdUnits: []
 --- !u!65 &6510398072594887699
 BoxCollider:

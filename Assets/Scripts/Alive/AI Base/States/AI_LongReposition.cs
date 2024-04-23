@@ -36,14 +36,14 @@ namespace Sampo.AI
             }
 
             //TODO : Пусть ИИ будет уметь использовать дальнобойное оружие
-            // Которое может быть использовано в движении (Добавить эту характеристику)
+            // Которое может быть использовано в движении (Добавить эту характеристику) при этом самом долгом перемещении
             // И, сбстно, использовать его на наиболее подходящих целях.
             // Их можно выбирать прям тут, локально. Но скорее всего это будут просто ближайшие.
             // Те, кто подошёл достаточно близко, чтоб ударить - сразу переключают внимание на себя
 
-            //TODO? : Выглядит мерзковато, слишком сильная привязка к разделению между Дальним боем и Ближним.
-            bool outOfRange = _ctx.CurrentActivity.behaviour.BehaviourWeapon.GetRange() + (_ctx.BehaviourAI is MeleeFighter fighter ? fighter.baseReachDistance : 0) >
-                Vector3.Distance(_ctx.transform.position, _ctx.CurrentActivity.target.position);
+            bool outOfRange = _ctx.CurrentActivity.behaviour.BehaviourWeapon.GetRange()
+                + (_ctx.BehaviourAI is MeleeFighter fighter ? fighter.baseReachDistance : 0)
+                > Vector3.Distance(_ctx.transform.position, _ctx.CurrentActivity.target.position);
             if (outOfRange)
                 SwitchStates(_factory.Deciding());
 

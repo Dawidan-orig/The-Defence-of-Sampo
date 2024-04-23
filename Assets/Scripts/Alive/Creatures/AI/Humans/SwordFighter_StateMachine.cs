@@ -40,8 +40,6 @@ namespace Sampo.Weaponry.Melee.Sword
         protected override void Awake()
         {
             base.Awake();
-
-            _behaviourWeapon = _blade;
         }
 
         protected override void Start()
