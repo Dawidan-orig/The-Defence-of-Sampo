@@ -96,6 +96,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2090390282454193909}
   - component: {fileID: 7033485070939488888}
+  - component: {fileID: 2359355757760768037}
   m_Layer: 6
   m_Name: RightHand
   m_TagString: Untagged
@@ -146,6 +147,20 @@ MonoBehaviour:
   _collision_alive: []
   body: {fileID: 0}
   audioSource: {fileID: 0}
+--- !u!114 &2359355757760768037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3375333874970042204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ftype: 0
+  isAvailableForSelfFaction: 0
 --- !u!1 &6166585230114025203
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,6 +287,7 @@ MonoBehaviour:
   toGroundDist: 0.3
   distanceInfluence: 1
   congestionInfluence: 1
+  _hasCongestion: 1
   weapon: {fileID: 6184862296936070201}
   defaultWeapon: {fileID: 0}
   baseReachDistance: 1
@@ -563,7 +579,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef89be94fd9256a40afca2caf7b5d264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _AIActive: 1
+  AIActive: 1
   _currentActivity:
     target: {fileID: 0}
     name: 

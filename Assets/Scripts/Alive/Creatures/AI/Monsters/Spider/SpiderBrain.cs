@@ -1,4 +1,5 @@
 using Sampo.AI.Monsters.Spider;
+using Sampo.Weaponry;
 using UnityEngine;
 
 namespace Sampo.AI.Monsters
@@ -48,16 +49,46 @@ namespace Sampo.AI.Monsters
         {
             base.Awake();
         }
-        protected void Start()
+        protected override void Start()
         {
+            base.Start();
             initialBodyHeightOffset = transform.position.y - legsHarmony.legs[0].legTarget.position.y;
             initialBodyRotation = transform.rotation;
         }
 
-        protected void Update()
+        protected override void Update()
         {
             if (Physics.Raycast(transform.position, Vector3.down, out var hit, legsHarmony.legsLength, terrain))
                 NavMeshCalcFrom.position = hit.point + Vector3.up* 1.5f;
+
+            Transform target = CurrentActivity.target;
+
+            if (attackingLeg == null)
+            {
+                legsHarmony.legs.RemoveAll(item => item == null);
+
+                if (legsHarmony.legs.Count == 0)
+                    return;
+
+                attackingLeg = legsHarmony.legs[Random.Range(0, legsHarmony.legs.Count)];
+                attackingLeg.enabled = false;
+
+                _spiderState = SpiderState.prepare;
+                _stateProgress = 0;
+                _wholeInitial = attackingLeg.legTarget.position;
+                _stateInitial = _wholeInitial;
+                _legDesire = _wholeInitial + Vector3.up * legRaiseHeight;
+            }
+
+            if (_stateProgress <= 1)
+                _stateProgress += Time.deltaTime * attackSpeed;
+
+            if (_spiderState == SpiderState.prepare)
+                PrepareProcess(target);
+            else if (_spiderState == SpiderState.attack)
+                AttackProcess();
+            else if (_spiderState == SpiderState.toReturn)
+                ReturnProcess();
         }
 
         protected void FixedUpdate()
@@ -115,36 +146,6 @@ namespace Sampo.AI.Monsters
 
                 ReturnProcess();
             }
-        }
-
-        public override void ActionUpdate(Transform target)
-        {
-            if (attackingLeg == null)
-            {
-                legsHarmony.legs.RemoveAll(item => item == null);
-
-                if (legsHarmony.legs.Count == 0)
-                    return;
-
-                attackingLeg = legsHarmony.legs[Random.Range(0, legsHarmony.legs.Count)];
-                attackingLeg.enabled = false;
-
-                _spiderState = SpiderState.prepare;
-                _stateProgress = 0;
-                _wholeInitial = attackingLeg.legTarget.position;
-                _stateInitial = _wholeInitial;
-                _legDesire = _wholeInitial + Vector3.up * legRaiseHeight;
-            }
-
-            if (_stateProgress <= 1)
-                _stateProgress += Time.deltaTime * attackSpeed;
-
-            if (_spiderState == SpiderState.prepare)
-                PrepareProcess(target);
-            else if (_spiderState == SpiderState.attack)
-                AttackProcess();
-            else if (_spiderState == SpiderState.toReturn)
-                ReturnProcess();
         }
 
         private void PrepareProcess(Transform target)

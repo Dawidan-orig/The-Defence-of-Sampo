@@ -4,11 +4,11 @@ namespace Sampo.Weaponry.Ranged
 {
     public class ThrowableRocks : BaseShooting
     {
+        [Tooltip("–азрешение дуги на одну сторону")]
         public int ONE_SIDE_SEPARAIONS = 0;
 
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
             // ” баллистического оружи€ дальность зависит от силы запуска
             float velocityAxis = Mathf.Sin(45 * Mathf.Deg2Rad) * gunPower; // 45 - угол, при котором полЄт будет дальше всего
             float flyTime = (velocityAxis / 9.8f) * 2; // ¬верх и потом вниз

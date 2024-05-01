@@ -1,4 +1,5 @@
 using Sampo.Player;
+using Sampo.Weaponry;
 using System;
 using UnityEngine;
 

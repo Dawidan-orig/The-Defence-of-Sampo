@@ -1,3 +1,5 @@
+using Sampo.Weaponry;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +42,6 @@ namespace Sampo.AI.Humans
 
             Initialize();
         }
-
         private void Initialize()
         {
             behaviours = new List<AIBehaviourBase>();
@@ -56,9 +57,14 @@ namespace Sampo.AI.Humans
             foreach (var reference in unitReferencePrefabs)
                 AddNewBehaviour(reference);
 
+            _AITargeting.ChangedToNewAction += OnNewAction;
+
             StartCoroutine(CheckingCycle());
         }
-
+        private void OnNewAction(object sender, EventArgs _) 
+        {
+            ChangeToBestWeapon();
+        }
         private IEnumerator CheckingCycle()
         {
             while (true)
@@ -68,7 +74,6 @@ namespace Sampo.AI.Humans
                 yield return new WaitForSeconds(behaviourUpdateFrequency);
             }
         }
-
         private AIBehaviourBase ChooseBestWeapon()
         {
             //Event не успевает удалить действие у TargetingAI,
@@ -76,34 +81,33 @@ namespace Sampo.AI.Humans
             if (CurrentActivity.target == null)
                 return currentBehaviour;
 
-            List<AIBehaviourBase> behavioursCopy;
-
-            behavioursCopy = behaviours.Where(beh => beh.IsTargetPassing(CurrentActivity.target))
+            List<AIBehaviourBase> behavioursSorted = behaviours.Where(beh => beh.IsTargetPassing(CurrentActivity.target))
                 .ToList();
 
             //TODO :  остыльна€ затычка. —ледует исправить.
-            // behavioursCopy = null почему-то, но не всегда. 
+            // behavioursSorted = null почему-то, но не всегда. 
             // — чем это св€зано - предстоит узнать, т.к. ломаетс€ вообще всЄ
-            if (behavioursCopy.Count == 0)
+            if (behavioursSorted.Count == 0)
                 return currentBehaviour;
 
-            if (behavioursCopy.Count > 1)
-                behavioursCopy.Sort((beh1, beh2) => beh2.GetCurrentWeaponPoints().CompareTo(beh1.GetCurrentWeaponPoints()));
+            if (behavioursSorted.Count > 1)
+                behavioursSorted.Sort((beh1, beh2) => beh2.GetCurrentWeaponPoints().CompareTo(beh1.GetCurrentWeaponPoints()));
 
-            return behavioursCopy[0];
+            return behavioursSorted[0];
         }
         private void ChangeToBestWeapon()
         {
             ChangeBehavoiur(ChooseBestWeapon());
+            HasCongestion = currentBehaviour.HasCongestion;
+            congestionInfluence = currentBehaviour.congestionInfluence;
+            distanceInfluence = currentBehaviour.distanceInfluence;
         }
-
         private void ChangeBehavoiur(AIBehaviourBase to)
         {
             currentBehaviour?.gameObject.SetActive(false);
             to.gameObject.SetActive(true);
             currentBehaviour = to;
         }
-
         public void AddNewBehaviour(GameObject AIKit)
         {
             GameObject copy = Instantiate(AIKit, kitContainer);
@@ -120,15 +124,8 @@ namespace Sampo.AI.Humans
 
             ChangeToBestWeapon();
         }
-        public void ExternalChangeToBehaviour()
-        {
 
-        }
         #region AIBehaviour overrides
-        public override void ActionUpdate(Transform target)
-        {
-            currentBehaviour.ActionUpdate(target);
-        }
         public override Vector3 RelativeRetreatMovement()
         {
             //Ёто зависит от текщего выбранного оружи€

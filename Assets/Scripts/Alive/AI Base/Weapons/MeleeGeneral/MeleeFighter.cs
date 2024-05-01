@@ -117,11 +117,13 @@ namespace Sampo.Melee
 
         protected override void Awake()
         {
+            base.Awake();
             _catcher = gameObject.GetComponent<AttackCatcher>();
         }
 
-        protected virtual void Start()
+        protected override void Start()
         {
+            base.Start();
             distanceFrom = distanceFrom ? distanceFrom : transform;
 
             if (weapon == null)
@@ -148,7 +150,7 @@ namespace Sampo.Melee
 
             closestPointToTarget = GetClosestPoint(CurrentActivity.target, calculateFrom);
 
-            return Vector3.Distance(calculateFrom, closestPointToTarget) < CurrentActivity.behaviour.BehaviourWeapon.additionalMeleeReach + baseReachDistance;
+            return Vector3.Distance(calculateFrom, closestPointToTarget) < weapon.additionalMeleeReach + baseReachDistance;
         }
 
         public void BecomeReadyToSwing()

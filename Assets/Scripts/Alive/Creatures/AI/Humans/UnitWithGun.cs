@@ -1,3 +1,4 @@
+using Sampo.Weaponry;
 using Sampo.Weaponry.Ranged;
 using UnityEngine;
 
@@ -13,9 +14,13 @@ namespace Sampo.AI.Humans.Ranged
         {
             base.Awake();
         }
-
-        public override void ActionUpdate(Transform target)
+        protected override void Update()
         {
+            base.Update();
+            Transform target = CurrentActivity.target;
+            if (target == null)
+                return;
+
             if (weapon.AvilableToShoot(target, out _))
             {
                 if (target.TryGetComponent(out Rigidbody body))
@@ -43,8 +48,16 @@ namespace Sampo.AI.Humans.Ranged
 
         public override Vector3 RelativeRetreatMovement()
         {
-            //TODO : Сделать медленное радиальное отсутпление как у скелетов в майне
-            throw new System.NotImplementedException();
+            const float RANGE_EDGE_MODIFIER = 0.8f;
+
+            float progress = weapon.GetRange()
+                /Vector3.Distance(CurrentActivity.target.position, transform.position)
+                * RANGE_EDGE_MODIFIER;
+
+            Vector3 outDir = (CurrentActivity.target.position - transform.position).normalized;
+            outDir *= progress;
+
+            return outDir + Vector3.right;
         }
 
         public override int GetCurrentWeaponPoints()

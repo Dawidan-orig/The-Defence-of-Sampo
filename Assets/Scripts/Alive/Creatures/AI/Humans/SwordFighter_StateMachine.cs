@@ -9,6 +9,7 @@ namespace Sampo.Weaponry.Melee.Sword
     [RequireComponent(typeof(AttackCatcher))]
     public class SwordFighter_StateMachine : MeleeFighter
     {
+        //TODO : Увороты
         public SwordFighter_BaseState CurrentSwordState { get { return _currentSwordState; } set { _currentSwordState = value; } }
 
         SwordFighter_BaseState _currentSwordState;
@@ -84,11 +85,71 @@ namespace Sampo.Weaponry.Melee.Sword
             AttackCatcher.OnIncomingAttack += Incoming;
         }
 
-        protected void Update()
+        protected override void Update()
         {
+            base.Update();
             _currentSwordState.UpdateState();
 
             currentState = _currentSwordState.ToString();
+
+            Transform target = CurrentActivity.target;
+
+            if (!_swingReady || CurrentCombo.Count > 0)
+                return;
+
+            if (MeleeReachable(out _))
+            {
+                //TODO DESIGN : Тут ещё можем выбирать конкретную комбинацию из библиотеки комбо.
+
+                ActionJoint afterPreparation = new ActionJoint();
+                ActionJoint preparation = new ActionJoint();
+
+                // Выбираем какую-то точку для удара
+                float posX = 0;
+                List<Keyframe> sorted = attackProbability.keys.ToList();
+                sorted.Sort((item1, item2) => item1.value.CompareTo(item2.value));
+                for (int i = 0; i < sorted.Count; i++)
+                {
+                    Keyframe key = sorted[i];
+                    posX = key.time;
+                    float prob = UnityEngine.Random.Range(0, 1);
+                    if (prob > key.value)
+                    {
+                        float offset = UnityEngine.Random.Range(
+                            attackProbability.Evaluate(i == 0 ? 0 : sorted[i - 1].time),
+                            attackProbability.Evaluate(i == sorted.Count - 1 ? sorted.Count - 1 : sorted[i + 1].time));
+                        attackProbability.Evaluate(posX + offset);
+                        break;
+                    }
+                }
+
+                Vector3 newPos = distanceFrom.position + new Vector3(posX - 0.5f, Mathf.Abs(posX - 0.5f)).normalized * swing_startDistance;
+
+                GameObject gameObj = new GameObject("NotDestroyedInAttackUpdate");
+                Transform preaparePoint = gameObj.transform;
+                preaparePoint.parent = transform;
+                preaparePoint.position = newPos;
+                preaparePoint.LookAt(preaparePoint.position + (preaparePoint.position - Vital.bounds.center).normalized,
+                    (CurrentActivity.target.position - preaparePoint.position).normalized);
+                preaparePoint.RotateAround(preaparePoint.position, preaparePoint.right, 90);
+
+                preparation.rotationFrom = _bladeHandle.rotation;
+                preparation.relativeDesireFrom = _bladeHandle.position - transform.position;
+                preparation.nextRelativeDesire = preaparePoint.position - transform.position;
+                preparation.nextRotation = preaparePoint.rotation;
+                preparation.currentActionType = ActionType.Reposition;
+
+                afterPreparation.relativeDesireFrom = preaparePoint.position - transform.position;
+                afterPreparation.rotationFrom = preaparePoint.rotation;
+                afterPreparation.nextRelativeDesire = CurrentActivity.target.position - transform.position;
+                afterPreparation.currentActionType = ActionType.Swing;
+
+                //Добавляем начиная с последнего
+                _currentCombo.Push(afterPreparation);
+                _currentCombo.Push(preparation);
+
+                Destroy(gameObj);
+            }
         }
 
         protected void FixedUpdate()
@@ -254,66 +315,6 @@ namespace Sampo.Weaponry.Melee.Sword
             SetDesires(start, (end - start).normalized, SlashingDir);
         }
 
-        public override void ActionUpdate(Transform target)
-        {
-            if (!_swingReady || CurrentCombo.Count > 0)
-                return;
-
-            if (MeleeReachable(out _))
-            {
-                //TODO DESIGN : Тут ещё можем выбирать конкретную комбинацию из библиотеки комбо.
-
-                ActionJoint afterPreparation = new ActionJoint();
-                ActionJoint preparation = new ActionJoint();
-
-                // Выбираем какую-то точку для удара
-                float posX = 0;
-                List<Keyframe> sorted = attackProbability.keys.ToList();
-                sorted.Sort((item1, item2) => item1.value.CompareTo(item2.value));
-                for (int i = 0; i < sorted.Count; i++) 
-                {
-                    Keyframe key = sorted[i];
-                    posX = key.time;
-                    float prob = UnityEngine.Random.Range(0, 1);
-                    if (prob > key.value)
-                    {
-                        float offset = UnityEngine.Random.Range(
-                            attackProbability.Evaluate(i == 0 ? 0 : sorted[i - 1].time),
-                            attackProbability.Evaluate(i == sorted.Count -1 ? sorted.Count - 1 : sorted[i + 1].time));
-                        attackProbability.Evaluate(posX + offset);
-                        break;
-                    }
-                }
-
-                Vector3 newPos = distanceFrom.position + new Vector3(posX - 0.5f, Mathf.Abs(posX - 0.5f)).normalized * swing_startDistance;
-
-                GameObject gameObj = new GameObject("NotDestroyedInAttackUpdate");
-                Transform preaparePoint = gameObj.transform;
-                preaparePoint.parent = transform;
-                preaparePoint.position = newPos;
-                preaparePoint.LookAt(preaparePoint.position + (preaparePoint.position - Vital.bounds.center).normalized,
-                    (CurrentActivity.target.position - preaparePoint.position).normalized);
-                preaparePoint.RotateAround(preaparePoint.position, preaparePoint.right, 90);
-
-                preparation.rotationFrom = _bladeHandle.rotation;
-                preparation.relativeDesireFrom = _bladeHandle.position - transform.position;
-                preparation.nextRelativeDesire = preaparePoint.position - transform.position;
-                preparation.nextRotation = preaparePoint.rotation;
-                preparation.currentActionType = ActionType.Reposition;
-
-                afterPreparation.relativeDesireFrom = preaparePoint.position - transform.position;
-                afterPreparation.rotationFrom = preaparePoint.rotation;
-                afterPreparation.nextRelativeDesire = CurrentActivity.target.position - transform.position;
-                afterPreparation.currentActionType = ActionType.Swing;
-
-                //Добавляем начиная с последнего
-                _currentCombo.Push(afterPreparation);
-                _currentCombo.Push(preparation);
-
-                Destroy(gameObj);
-            }
-        }
-
         // Атака оружием по какой-то точке из текущей позиции.
         public override void Swing(Vector3 toPoint)
         {
@@ -408,8 +409,9 @@ namespace Sampo.Weaponry.Melee.Sword
 
         public override Vector3 RelativeRetreatMovement()
         {
-            //TODO : нормальное перемещение рядом с противников, а не тупое взад-вперёд
-            throw new NotImplementedException();
+            //TODO : Обход препятствий когда близко к цели
+            //TODO : Шаг фехтования, отходы в сторону
+            return Vector3.zero;
         }
 
         public override int GetCurrentWeaponPoints()

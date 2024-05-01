@@ -1,6 +1,5 @@
 using Sampo.AI;
-using Sampo.Building;
-using Sampo.Core;
+using Sampo.Weaponry;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,12 +7,6 @@ using UnityEngine;
 public class NullUnit : AIBehaviourBase
 {
     public override Tool BehaviourWeapon => null;
-
-    public override void ActionUpdate(Transform target)
-    {
-        
-    }
-
     public override Dictionary<Interactable_UtilityAI, int> GetActionsDictionary()
     {
         var input = UtilityAI_Manager.Instance.GetSameFactionInteractions(GetMainTransform().gameObject.GetComponent<Faction>());
@@ -26,7 +19,6 @@ public class NullUnit : AIBehaviourBase
 
         return res;
     }
-
     public override bool IsTargetPassing(Transform target)
     {
         bool res = true;
@@ -42,13 +34,11 @@ public class NullUnit : AIBehaviourBase
 
         return res;
     }
-
     public override Vector3 RelativeRetreatMovement()
     {
         // Этот юнит не отсутпает
         return Vector3.zero;
     }
-
     public override int GetCurrentWeaponPoints()
     {
         int res = 0;

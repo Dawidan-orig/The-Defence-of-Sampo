@@ -17,12 +17,6 @@ namespace Sampo.Weaponry.Ranged
         public float gunPower = 50;
 
         protected bool readyToFire = true;
-        protected TargetingUtilityAI AIUser;
-
-        protected virtual void Awake()
-        {
-            AIUser = _host.GetComponent<TargetingUtilityAI>();
-        }
 
         public virtual void Shoot(Vector3? target = null)
         {
@@ -130,7 +124,8 @@ namespace Sampo.Weaponry.Ranged
             if (res == Vector3.zero)
             {
                 res = _host.transform.position;
-                AIUser.IsDecidingStateRequired();
+                //TODO : NoPathCondition нужно бросить на текущую цель.
+                // Сделать это надо через CurrentActivity от Behaviour
             }
 
             return res;

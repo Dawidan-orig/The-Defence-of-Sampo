@@ -8,38 +8,37 @@ namespace Sampo.Core.VFX
     public class VisualEffectEnd : MonoBehaviour
     {
         public Light connectedLight;
+        public float time = 3;
         VisualEffect connectedVFX;
 
+        private float startTime;
         private float startIntencity;
-        bool started = false;
 
         private void Awake()
         {
             connectedVFX = GetComponent<VisualEffect>();
-            connectedVFX.outputEventReceived += OnVFXEnd;
-            //TODO : Лучше сделать перевод на Event какой-нибудь
         }
 
         private void Start()
         {
             connectedVFX.Play();
             startIntencity = connectedLight.intensity;
+            startTime = Time.time;
+
+            Invoke(nameof(Kill), time);
         }
 
         private void Update()
         {
-            connectedLight.intensity = connectedVFX.aliveParticleCount / startIntencity;
-
-            if (connectedVFX.aliveParticleCount > 0)
-                started = true;
-            else if(!started)
-                return;
-
-            if(connectedVFX.aliveParticleCount <= 0) 
-                Destroy(gameObject);
+            connectedLight.intensity = Mathf.Lerp(startIntencity,0,Time.time - startTime);
         }
 
-        private void OnVFXEnd(VFXOutputEventArgs args) 
+        private void OnApplicationQuit()
+        {
+            Kill();
+        }
+
+        private void Kill() 
         {
             Destroy(gameObject);
         }

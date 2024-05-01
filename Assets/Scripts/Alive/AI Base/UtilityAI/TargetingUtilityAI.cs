@@ -22,7 +22,7 @@ namespace Sampo.AI
     // ИИ, ставящий приоритеты выполнения действий
     // Использует StateMachine в качестве исполнителя
     {
-        public bool _AIActive = true;
+        public bool AIActive = true;
 
         [Header("lookonly")]
         [SerializeField]
@@ -33,30 +33,11 @@ namespace Sampo.AI
         IMovingAgent _movingAgent;
         private AIAction _noAction;
         private AIBehaviourBase _behaviourAI;
-        private bool _hasCongestion = true;
-        protected UtilityAI_Factory _factory;
-        protected UtilityAI_BaseState _currentState;
-
-        public UtilityAI_BaseState CurrentState { get => _currentState; set => _currentState = value; }
         public AIAction CurrentActivity { get => _currentActivity; }
         public IMovingAgent MovingAgent { get => _movingAgent; set => _movingAgent = value; }
+        //TODO? : В идеале вообще убрать отсюда BehaviourAI для избегания Tight Coupling'а
         public AIBehaviourBase BehaviourAI { get => _behaviourAI ??= GetComponent<AIBehaviourBase>(); }
-        public bool HasCongestion { get => _hasCongestion;
-            set 
-            {
-                bool prev = value;
-                _hasCongestion = prev;
-                if(prev == true && value == false)
-                    UtilityAI_Manager.Instance.ChangeCongestion(
-                    _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
-                    -BehaviourAI.VisiblePowerPoints);
-
-                if (prev == false && value == true)
-                    UtilityAI_Manager.Instance.ChangeCongestion(
-                    _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
-                    BehaviourAI.VisiblePowerPoints);
-            }
-        }
+        public EventHandler ChangedToNewAction;
 
         [Serializable]
         public struct AIAction
@@ -69,6 +50,7 @@ namespace Sampo.AI
             private int distanceSubstraction;
             private int enemiesAmountSubstraction;
             private List<BaseAICondition> _conditions;
+            //TODO? : Убрать это бы отсюда, всё равно не используется более нигде и почти бесполезно
             public AIBehaviourBase behaviour;
 
             [SerializeField]
@@ -88,7 +70,7 @@ namespace Sampo.AI
                                 actionOf.transform.position, target.position)
                             * behaviour.distanceInfluence);
 
-                if (actionOf.HasCongestion)
+                if (behaviour.HasCongestion)
                     enemiesAmountSubstraction =
                         Mathf.RoundToInt(
                             UtilityAI_Manager.Instance.GetCongestion(
@@ -190,13 +172,11 @@ namespace Sampo.AI
         protected virtual void Awake()
         {
             _movingAgent = GetComponent<IMovingAgent>();
-            _factory = new UtilityAI_Factory(this);
-            _currentState = _factory.Deciding();
         }
 
         protected virtual void OnEnable()
         {
-            _AIActive = true;
+            AIActive = true;
         }
 
         protected virtual void Start()
@@ -208,27 +188,28 @@ namespace Sampo.AI
 
             NullifyActivity();
 
-            FetchAndAddAllActivities();
+            SelectBestActivityIfAny();
         }
 
         protected virtual void Update()
         {
-            if (!_AIActive)
+            if (!AIActive)
             {
                 return;
             }
 
-            _currentState.UpdateState();
+            //TODO? : Стоит тут ещё сделать корутин-паузу при успехе секунд на 5,
+            // чтоб не грузил пустыми действиями.
+            if (_currentActivity == _noAction)
+                SelectBestActivityIfAny();
         }
 
         protected virtual void FixedUpdate()
         {
-            if (!_AIActive)
+            if (!AIActive)
             {
                 return;
             }
-
-            _currentState.FixedUpdateState();
         }
 
         protected virtual void OnCollisionEnter(Collision collision)
@@ -244,12 +225,12 @@ namespace Sampo.AI
         {
             UtilityAI_Manager.Instance.NewAdded -= FetchNewActivityFromManager;
             UtilityAI_Manager.Instance.NewRemoved -= RemoveActivityGotFromManager;
-            if (_currentActivity.target && HasCongestion)
+            if (_currentActivity.target && BehaviourAI.HasCongestion)
                 UtilityAI_Manager.Instance.ChangeCongestion(
                     _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
                     -BehaviourAI.VisiblePowerPoints);
             NullifyActivity();
-            _AIActive = false;
+            AIActive = false;
         }
         #endregion
 
@@ -270,23 +251,6 @@ namespace Sampo.AI
                     return;
 
                 AddNewPossibleAction(target.transform, weight, target.transform.name, beh);
-            }
-        }
-        /// <summary>
-        /// Получаем все доступные действия из менеджера в соответствии с текущим поведением
-        /// </summary>
-        private void FetchAndAddAllActivities()
-        {
-            var dict = BehaviourAI.GetActionsDictionary();
-            foreach (var kvp in dict)
-            {
-                Interactable_UtilityAI target = kvp.Key;
-                int weight = kvp.Value;
-
-                if (!BehaviourAI.IsTargetPassing(target.transform))
-                    return;
-
-                AddNewPossibleAction(target.transform, weight, target.transform.name, BehaviourAI);
             }
         }
         /// <summary>
@@ -337,13 +301,13 @@ namespace Sampo.AI
 
             _possibleActions.Add(action);
         }
-        private void AddNewPossibleAction(Transform target, int weight, string name, AIBehaviourBase behaviour)
+        public void AddNewPossibleAction(Transform target, int weight, string name, AIBehaviourBase behaviour)
         {
             AIAction action = new AIAction(this, target, name, weight, behaviour);
 
             AddNewPossibleAction(action);
         }
-        public void MarkCurrentActionAsDone() 
+        public void CompleteCurrentAction() 
         {
             _possibleActions.Remove(CurrentActivity);
             NullifyActivity();
@@ -362,15 +326,17 @@ namespace Sampo.AI
         }
         private void ChangeAction(AIAction to)
         {
-            if (!IsNoActionCurrently() && _currentActivity.target && HasCongestion) //Убираем влияние текущей цели
+            if (!IsNoActionCurrently() && _currentActivity.target && BehaviourAI.HasCongestion) //Убираем влияние текущей цели
                 UtilityAI_Manager.Instance.ChangeCongestion(
                     _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
                     -BehaviourAI.VisiblePowerPoints);
             _currentActivity = to;
-            if (HasCongestion)
+            if (BehaviourAI.HasCongestion)
                 UtilityAI_Manager.Instance.ChangeCongestion(
                     _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
                     BehaviourAI.VisiblePowerPoints);
+
+            ChangedToNewAction?.Invoke(to, new EventArgs());
         }
         public bool SelectBestActivityIfAny()
         {
@@ -448,10 +414,6 @@ namespace Sampo.AI
         /// Проверка, что в данный момент требуется выбрать новое состояние
         /// </summary>
         /// <returns></returns>
-        public bool IsDecidingStateRequired()
-        {
-            return _currentActivity == _noAction;
-        }
 
         private void OnDrawGizmos()
         {

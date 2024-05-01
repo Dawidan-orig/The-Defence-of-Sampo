@@ -14,6 +14,7 @@ namespace Sampo.Building.Transformators
     /// </summary>
     public class TransformationHouse : BuildableStructure, IInteractable
     {
+        public bool requestUnits = false;
         public float interactionRange = 1f;
         public int unitLimit = 5;
         [Required]
@@ -42,7 +43,7 @@ namespace Sampo.Building.Transformators
                 return;
             }
 
-            if (createdUnits.Count >= unitLimit-1)            
+            if (createdUnits.Count > unitLimit-1)            
                 GetComponent<Faction>().IsAvailableForSelfFaction = false;            
 
             if(interactor.TryGetComponent(out MultiweaponUnit multiweapon))
@@ -54,7 +55,9 @@ namespace Sampo.Building.Transformators
                 Destroy(directBehaviour);
                 multiweapon = interactor.gameObject.AddComponent<MultiweaponUnit>();
 
-                //TODO!!! : добавить NullUnitKit в глобальном виде. Он должен быть у всех
+                //TODO!!! : добавить NullUnitKit в глобальном виде. Он должен быть у всех,
+                //Так как отвечает за все важные взаимодействия
+                //С собственной фракцией
                 //multiweapon.AddNewBehaviour((GameObject)Resources.Load("NullUnitKit"));
                 multiweapon.AddNewBehaviour(TransformationKitPrefab);
             }
@@ -66,11 +69,12 @@ namespace Sampo.Building.Transformators
             comp.onDestroy += UpdateConnectedUnits;
         }
 
+        //TODO : Сделать интерфейс для этого
         private void UpdateConnectedUnits(object sender, EventArgs _) 
         {
             createdUnits.Remove((GameObject)sender);
             int removed = createdUnits.RemoveAll(unit => unit == null) + 1;
-            if (removed > 0)
+            if (removed > 0 && requestUnits)
             {
                 GetComponent<Faction>().IsAvailableForSelfFaction = true;
                 BuildingsManager.Instance.RequestNullUnits(this, removed);
@@ -84,7 +88,8 @@ namespace Sampo.Building.Transformators
 
         protected override void Build()
         {
-            BuildingsManager.Instance.RequestNullUnits(this, unitLimit);
+            if(requestUnits)
+                BuildingsManager.Instance.RequestNullUnits(this, unitLimit);
         }
 
         public float GetInteractionRange()

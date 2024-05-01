@@ -64,6 +64,10 @@ namespace Sampo.AI.Movement
                 Vector3 lookDir = (lookPos - countFrom.position).normalized;
                 lookDir.y = 0;
                 desireLookDir = lookDir;
+
+                if (lookDir == Vector3.zero)
+                    return;
+
                 Quaternion rotation = Quaternion.LookRotation(lookDir);
                 //Да, знаю, что так использовать Lerp не хорошо.
                 // Но в данном случае это очень простой способ, а большего и не нужно от агента.

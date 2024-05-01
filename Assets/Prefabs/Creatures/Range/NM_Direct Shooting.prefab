@@ -45,12 +45,12 @@ GameObject:
   - component: {fileID: 2397089146008967545}
   - component: {fileID: 2397089146008967547}
   - component: {fileID: 2397089146008967546}
-  - component: {fileID: 2919344465677225324}
-  - component: {fileID: 568334352800466455}
   - component: {fileID: 6325525520336111847}
   - component: {fileID: 1667672298561886317}
+  - component: {fileID: 4760303856139256941}
+  - component: {fileID: 4090504870370541617}
   m_Layer: 6
-  m_Name: Shooting Unit
+  m_Name: NM_Direct Shooting
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -115,6 +115,7 @@ MonoBehaviour:
   toGroundDist: 0.3
   distanceInfluence: 1
   congestionInfluence: 1
+  _hasCongestion: 1
   weapon: {fileID: 2397089146641432726}
 --- !u!114 &2397089146008967542
 MonoBehaviour:
@@ -197,69 +198,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2919344465677225324
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2397089146008967548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d19ad544bb6e4b418c19c1e4e1f26e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  walkSpeed: 1
-  runSpeed: 3
-  sprintSpeed: 5
-  maximumReachableSpeed: 25
-  ragdollSpeed: 35
-  velociyAngleChangeSpeedEuler: 90
-  distToGround: 0.3
-  activeDrag: 20
-  passiveDragOnGround: 1
-  snapHeight: 3
-  snapSpeed: 21
-  toGroundForce: 5
-  dragOffGround: 0.2
-  airMultiplier: 0.5
-  externalGravityControl: 0
-  jumpForce: 10
-  jumpCooldown: 2
-  _inJump: 0
-  slopeAngle: 65
-  ground:
-    serializedVersion: 2
-    m_Bits: 0
-  vital: {fileID: 0}
-  _movement: {x: 0, y: 0, z: 0}
-  _currentMoveSpeed: 0
-  _isGrounded: 1
-  _jumpReady: 1
-  _inputMovement: {x: 0, y: 0}
-  _framesSinceLastGrounded: 0
-  _contactNormal: {x: 0, y: 0, z: 0}
---- !u!114 &568334352800466455
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2397089146008967548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4652a86ce5fa5f9458f2079275f270bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  walkToTargetDist: 5
-  runToTargetDist: 30
-  angularRotatingSpeed: 360
-  wallHeight: 1
-  edgeDistance: 2
-  edgeDepth: 1
-  terrainMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!114 &6325525520336111847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,13 +223,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef89be94fd9256a40afca2caf7b5d264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _AIActive: 1
+  AIActive: 1
   _currentActivity:
     target: {fileID: 0}
     name: 
     behaviour: {fileID: 0}
     _totalWeight: 0
   _possibleActions: []
+--- !u!195 &4760303856139256941
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397089146008967548}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &4090504870370541617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397089146008967548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b9a7e1a0578f3249914383b5ff629d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wallHeight: 1
+  edgeDistance: 2
+  edgeDepth: 1
+  toGroundHeight: 1
+  terrainMask:
+    serializedVersion: 2
+    m_Bits: 9
 --- !u!1 &2397089146338771506
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,6 +281,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2397089146338771507}
   - component: {fileID: 2397089146338771504}
+  - component: {fileID: 4596392956039587152}
   m_Layer: 6
   m_Name: RightHand
   m_TagString: Untagged
@@ -352,6 +332,20 @@ MonoBehaviour:
   _collision_alive: []
   body: {fileID: 0}
   audioSource: {fileID: 0}
+--- !u!114 &4596392956039587152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397089146338771506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ftype: 0
+  isAvailableForSelfFaction: 0
 --- !u!1 &2397089146641432728
 GameObject:
   m_ObjectHideFlags: 0
@@ -365,6 +359,7 @@ GameObject:
   - component: {fileID: 2397089146641432724}
   - component: {fileID: 2397089146641432727}
   - component: {fileID: 2397089146641432726}
+  - component: {fileID: 7474681578376165495}
   m_Layer: 2
   m_Name: Gun
   m_TagString: Untagged
@@ -484,6 +479,20 @@ MonoBehaviour:
   range: 30
   timeBetweenBullets: 1
   gunPower: 40
+--- !u!114 &7474681578376165495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397089146641432728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ftype: 0
+  isAvailableForSelfFaction: 0
 --- !u!1001 &666792822963999985
 PrefabInstance:
   m_ObjectHideFlags: 0
