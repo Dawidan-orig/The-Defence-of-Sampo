@@ -1,18 +1,22 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Faction))]
-public class Interactable_UtilityAI : MonoBehaviour
-    // Предоставляет менеджеру вес GameObject'а, делая его одной из возможных целей UtilityAI
+namespace Sampo.AI
 {
-    public int ai_weight = 1;
-
-    protected virtual void OnEnable()
+    [RequireComponent(typeof(Faction))]
+    public class Interactable_UtilityAI : MonoBehaviour
+    // Предоставляет менеджеру вес GameObject'а, делая его одной из возможных целей UtilityAI
     {
-        UtilityAI_Manager.Instance.AddNewInteractable(this);
-    }
+        //TODO : Объеденить с Faction. Они взаимосвязанны, и различия между ними не несут никакого смысла.
+        public int ai_weight = 1;
 
-    protected virtual void OnDisable()
-    {
-        UtilityAI_Manager.Instance.RemoveInteractableCompletely(this);
+        protected virtual void OnEnable()
+        {
+            UtilityAI_Manager.Instance.AddNewInteractable(this);
+        }
+
+        protected virtual void OnDisable()
+        {
+            UtilityAI_Manager.Instance.RemoveInteractableCompletely(this);
+        }
     }
 }

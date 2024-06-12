@@ -281,7 +281,7 @@ MonoBehaviour:
   wallHeight: 1
   edgeDistance: 2
   edgeDepth: 1
-  toGroundHeight: 1
+  toGroundHeight: 1.5
   terrainMask:
     serializedVersion: 2
     m_Bits: 9

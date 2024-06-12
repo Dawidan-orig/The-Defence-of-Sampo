@@ -1,3 +1,4 @@
+using Sampo.AI;
 using UnityEngine;
 
 namespace Sampo.Weaponry.Ranged

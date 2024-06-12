@@ -83,8 +83,7 @@ namespace Sampo.Core.Shaderworks
         {
             _computeInstance = Instantiate(grassCompute);
             _grassShaderInstance = Instantiate(grassMaterial);
-            //TODO : Надо б это настроить нормально, сделать свой Logger для всех систем
-            //_logger = new Logger(Debug.unityLogger);
+            //TODO : JournalLogger сюда
 
             if (_computeInstance)
             {

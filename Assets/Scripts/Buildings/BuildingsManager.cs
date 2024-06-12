@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class BuildingsManager : MonoBehaviour
 {
+    //TODO : Сделать универсальной, для любой из фракций, а не только для игрока
+
     private static BuildingsManager _instance;
 
     public static BuildingsManager Instance

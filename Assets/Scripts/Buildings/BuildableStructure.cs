@@ -1,3 +1,5 @@
+using Sampo.AI;
+using Sampo.Core.JournalLogger;
 using UnityEngine;
 
 
@@ -42,9 +44,8 @@ namespace Sampo.Building
             {
                 if (Vector3.Distance(transform.position, hit.point) > possibleHeightToBuild)
                 {
-                    //TODO : Локальный Logger
                     transform.position = hit.point + Vector3.down * possibleHeightToBuild/2;
-                    Debug.Log("Опускаю строение вниз на землю");
+                    LoggerSingleton.DebugLog("Опускаю строение вниз на землю", gameObject);
                 }
             }
             else

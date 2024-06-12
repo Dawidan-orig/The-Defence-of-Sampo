@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// ИИ-подсистема, контроллирующая все внешние команды,
+/// Не имеет оружия, есть вообще у всех ИИ,
+/// Является утилитарной и основная задача которой - выполнять небоевые задачи
+/// </summary>
 public class NullUnit : AIBehaviourBase
 {
     public override Tool BehaviourWeapon => null;

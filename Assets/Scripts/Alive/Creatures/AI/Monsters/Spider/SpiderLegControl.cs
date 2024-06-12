@@ -97,10 +97,10 @@ namespace Sampo.AI.Monsters.Spider
         private void OnDrawGizmos()
         {
             Vector3 legRelativePoint = (transform.rotation * Quaternion.Inverse(initialRot)) * toLegDir * legLength;
-            Utilities.VisualisedRaycast(transform.position + legRelativePoint,
+            Utilities.VisualizedRaycast(transform.position + legRelativePoint,
                 (Vector3.down * legLength - legRelativePoint).normalized, out _,
                 legLength, walkable);
-            Utilities.VisualisedRaycast(transform.position, legRelativePoint, out _, legLength, walkable);
+            Utilities.VisualizedRaycast(transform.position, legRelativePoint, out _, legLength, walkable);
         }
     }
 }

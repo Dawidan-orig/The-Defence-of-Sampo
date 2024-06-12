@@ -94,7 +94,7 @@ namespace Sampo.Weaponry.Melee.Sword
 
             Transform target = CurrentActivity.target;
 
-            if (!_swingReady || CurrentCombo.Count > 0)
+            if (!_swingReady || CurrentCombo.Count > 0 || target == null)
                 return;
 
             if (MeleeReachable(out _))
@@ -416,7 +416,9 @@ namespace Sampo.Weaponry.Melee.Sword
 
         public override int GetCurrentWeaponPoints()
         {
-            return Mathf.RoundToInt(weapon.GetRange() / Vector3.Distance(transform.position, CurrentActivity.target.position));
+            float range = weapon.GetRange();
+            float dist = Vector3.Distance(transform.position, CurrentActivity.target.position);
+            return Mathf.RoundToInt(-Mathf.Pow(dist - range, 2) + (dist - range) + range);
         }
         #endregion
     }

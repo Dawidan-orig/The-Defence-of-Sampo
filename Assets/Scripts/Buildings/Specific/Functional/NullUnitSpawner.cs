@@ -56,9 +56,9 @@ namespace Sampo.Building.Spawners
 
         public void AddUnitsToSpawn(int amount) 
         {
-            bool noSpawnCurrently = toSpawn == 0;
+            bool wasNoSpawns = toSpawn == 0;
             toSpawn += amount;
-            if (noSpawnCurrently)
+            if (wasNoSpawns)
                 StartCoroutine(SpawnCycle());
         }
 

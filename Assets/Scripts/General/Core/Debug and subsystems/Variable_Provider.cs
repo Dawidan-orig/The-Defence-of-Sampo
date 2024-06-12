@@ -4,7 +4,7 @@ namespace Sampo.Core
 {
     public class Variable_Provider : MonoBehaviour
     {
-        //TODO : Сделать GameObject'ы со всеми фракциями юнитов. Убрать это в UtilityAIManager
+        //TODO : Сделать из этого соответствующие GameObject'ы для всех фракций юнитов. Убрать это в UtilityAIManager
         private static Variable_Provider _instance;
         public static Variable_Provider Instance
         {
@@ -32,6 +32,18 @@ namespace Sampo.Core
         public Material sampo;
         public Material enemy;
         public Material agro;
+
+        /// <summary>
+        /// Это слой модификации очков для симуляции эмоций юнита.
+        /// От юнита TODO зависит влияние этого слоя и его собственная эмоциональность
+        /// </summary>
+        public const int emotionalPointsLayer = 10000;
+        /// <summary>
+        /// Слой модифицкации очков для приказов этого юнита
+        /// Приказы - это приоритетные Interactable,
+        /// динамически изменяющие поведение юнита
+        /// </summary>
+        public const int orderPointsLayer = 1000;
 
         public Transform unitsContainer;
 

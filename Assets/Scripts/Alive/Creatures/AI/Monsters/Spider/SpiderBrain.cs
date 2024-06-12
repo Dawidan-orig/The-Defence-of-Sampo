@@ -59,7 +59,7 @@ namespace Sampo.AI.Monsters
         protected override void Update()
         {
             if (Physics.Raycast(transform.position, Vector3.down, out var hit, legsHarmony.legsLength, terrain))
-                NavMeshCalcFrom.position = hit.point + Vector3.up* 1.5f;
+                CalcFrom.position = hit.point + Vector3.up* 1.5f;
 
             Transform target = CurrentActivity.target;
 

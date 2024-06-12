@@ -49,7 +49,7 @@ namespace Sampo.AI
         {
             get { return _AITargeting.CurrentActivity; }
         }
-        public Transform NavMeshCalcFrom
+        public Transform CalcFrom
         {
             get
             {
@@ -207,7 +207,7 @@ namespace Sampo.AI
         /// </summary>
         private void Repath()
         {
-            Vector3 closestPos = GetClosestPoint(CurrentActivity.target, NavMeshCalcFrom.position);
+            Vector3 closestPos = GetClosestPoint(CurrentActivity.target, CalcFrom.position);
             moveTargetPos = closestPos;
 
             if (CurrentActivity.behaviour.BehaviourWeapon
@@ -224,7 +224,7 @@ namespace Sampo.AI
             repathLastTargetPos = moveTargetPos;
 
             path = new NavMeshPath();
-            NavMesh.CalculatePath(NavMeshCalcFrom.position, moveTargetPos, NavMesh.AllAreas, path);
+            NavMesh.CalculatePath(CalcFrom.position, moveTargetPos, NavMesh.AllAreas, path);
             _AITargeting.MovingAgent.PassPath(path);
 
             /*
@@ -242,6 +242,9 @@ namespace Sampo.AI
         /// <param name="lookDist">ƒистанци€, при которой уже стоит смотреть на цель</param>
         private void MoveAlongPath(float lookDist)
         {
+            if (path == null)
+                return;
+
             if (path.status != NavMeshPathStatus.PathInvalid && path.corners.Length > 1)
             {
                 if (Vector3.Distance(GetMainTransform().position, _AITargeting.CurrentActivity.target.position) > lookDist)
@@ -251,9 +254,9 @@ namespace Sampo.AI
             }
             else
             {
-                _AITargeting.ModifyActionOf(_AITargeting.CurrentActivity.target, new NoPathCondition(10));
+                _AITargeting.ModifyAllActionsOf(_AITargeting.CurrentActivity.target, new NoPathCondition(10));
 
-                var closest = NavMeshCalculations.Instance.GetCell(NavMeshCalcFrom.position);
+                var closest = NavMeshCalculations.Instance.GetCell(CalcFrom.position);
                 moveTargetPos = closest.Center();
                 _AITargeting.MovingAgent.MoveIteration(moveTargetPos);
             }
@@ -281,7 +284,7 @@ namespace Sampo.AI
         #endregion
 
         #region virtual functions
-        protected Transform GetMainTransform()
+        public Transform GetMainTransform()
         {
             if (!_AITargeting)
                 _AITargeting = GetComponent<TargetingUtilityAI>();

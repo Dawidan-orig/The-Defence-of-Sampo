@@ -30,11 +30,16 @@ namespace Sampo.AI.Movement
         private Rigidbody rb;
 
         private NavMeshPath savedPath;
-
+        #region Unity
         private void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
             rb = GetComponent<Rigidbody>();
+        }
+
+        private void OnEnable()
+        {
+            ResetAgent();
         }
 
         private void Start()
@@ -43,8 +48,8 @@ namespace Sampo.AI.Movement
             desireLookDir.y = 0;
 
             countFrom = transform;
-            if (TryGetComponent(out AIBehaviourBase ai) && ai.NavMeshCalcFrom)
-                countFrom = ai.NavMeshCalcFrom;
+            if (TryGetComponent(out AIBehaviourBase ai) && ai.CalcFrom)
+                countFrom = ai.CalcFrom;
 
             agent.autoRepath = false;
 
@@ -79,7 +84,7 @@ namespace Sampo.AI.Movement
         {
             if (!agent.enabled)
             {
-                if (Physics.Raycast(countFrom.position, Vector3.down, toGroundHeight, terrainMask))
+                if (Utilities.VisualizedRaycast(countFrom.position, Vector3.down,out _, toGroundHeight, terrainMask))
                 {
                     ResetAgent();
                 }
@@ -90,36 +95,29 @@ namespace Sampo.AI.Movement
         {
             DisableAgent();
         }
-
-        private void OnEnable()
-        {
-            ResetAgent();
-        }
-
+        #endregion
         void IMovingAgent.ExternalForceMacros()
         {
             DisableAgent();
         }
 
+        #region control
         void DisableAgent()
         {
             rb.isKinematic = false;
             agent.enabled = false;
         }
-
         void ResetAgent()
         {
             rb.isKinematic = true;
             agent.enabled = true;
         }
-
         public void MoveIteration(Vector3 newPos)
         {
             Vector3 dir = (newPos - countFrom.position).normalized;
             dir.y = 0;
             MoveIteration(newPos, newPos + dir);
         }
-
         public void MoveIteration(Vector3 newPos, Vector3 lookPos)
         {
             this.lookPos = lookPos;
@@ -139,7 +137,6 @@ namespace Sampo.AI.Movement
             if (agent.isOnNavMesh)
                 agent.destination = newPos;
         }
-
         public void PassPath(NavMeshPath path)
         {
             if (agent.isOnNavMesh)
@@ -147,7 +144,6 @@ namespace Sampo.AI.Movement
             else
                 savedPath = path;
         }
-
         public bool IsNearObstacle(Vector3 desiredMovement, out Vector3 obstacleNormal)
         {
             Vector3 bottom = countFrom.position + Vector3.down * transform.GetComponent<AliveBeing>().vital.bounds.size.y / 2;
@@ -180,5 +176,6 @@ namespace Sampo.AI.Movement
 
             return wallHit || !stepFloorHit;
         }
+        #endregion
     }
 }

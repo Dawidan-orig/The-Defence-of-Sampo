@@ -1,3 +1,4 @@
+using Sampo.Core.JournalLogger;
 using Sampo.Weaponry;
 using System;
 using System.Collections;
@@ -7,8 +8,13 @@ using UnityEngine;
 
 namespace Sampo.AI.Humans
 {
+    /// <summary>
+    /// Умеет выбирать оружие относительно их настроек
+    /// </summary>
     public class MultiweaponUnit : AIBehaviourBase
     {
+        //TODO : Если пуст - добавить NullUnitKit через Resources
+
         // Пример MultiweaponUnit'а
         // Можно атаковать магией,
         // Можно действовать - активировать способность заморозки
@@ -76,13 +82,21 @@ namespace Sampo.AI.Humans
         }
         private AIBehaviourBase ChooseBestWeapon()
         {
+            string dataToDebugLog = "Выбор лучшего оружия:\n";
+
             //Event не успевает удалить действие у TargetingAI,
             // а тут уже происходит выбор по target=null
             if (CurrentActivity.target == null)
+            {
+                dataToDebugLog += "Отмена, цели нет";
+                LoggerSingleton.DebugLog(dataToDebugLog, gameObject);
                 return currentBehaviour;
+            }
 
             List<AIBehaviourBase> behavioursSorted = behaviours.Where(beh => beh.IsTargetPassing(CurrentActivity.target))
                 .ToList();
+
+            dataToDebugLog += "Для цели " + CurrentActivity.target.name + "\n";
 
             //TODO : Костыльная затычка. Следует исправить.
             // behavioursSorted = null почему-то, но не всегда. 
@@ -92,6 +106,12 @@ namespace Sampo.AI.Humans
 
             if (behavioursSorted.Count > 1)
                 behavioursSorted.Sort((beh1, beh2) => beh2.GetCurrentWeaponPoints().CompareTo(beh1.GetCurrentWeaponPoints()));
+
+            foreach(var behaviour in behavioursSorted) 
+            {
+                dataToDebugLog += behaviour.GetType().ToString() + "->" + behaviour.GetCurrentWeaponPoints() + "\n";
+            }
+            LoggerSingleton.DebugLog(dataToDebugLog, gameObject, CurrentActivity.target.gameObject);
 
             return behavioursSorted[0];
         }

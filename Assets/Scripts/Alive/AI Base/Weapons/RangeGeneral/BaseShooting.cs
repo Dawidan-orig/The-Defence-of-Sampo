@@ -149,7 +149,7 @@ namespace Sampo.Weaponry.Ranged
                 color = Color.white;
 
             Vector3 dir = (to - from).normalized;
-            Utilities.VisualisedRaycast(from,
+            Utilities.VisualizedRaycast(from,
                     dir,
                     out hit,
                     (to - from).magnitude,

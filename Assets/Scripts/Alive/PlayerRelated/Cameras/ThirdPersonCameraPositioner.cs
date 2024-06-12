@@ -134,7 +134,7 @@ namespace Sampo.Player.CameraControls
             if (color == null)
                 color = Color.white;
 
-            bool res = Utilities.VisualisedRaycast(from,
+            bool res = Utilities.VisualizedRaycast(from,
                     (to - from).normalized,
                     out hit,
                     (to - from).magnitude,

@@ -1,3 +1,4 @@
+using Sampo.AI;
 using Sampo.Melee;
 using Sampo.Weaponry.Melee;
 using System;

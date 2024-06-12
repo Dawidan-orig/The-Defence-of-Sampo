@@ -7,9 +7,7 @@ namespace Sampo.AI.Humans.Ranged
     public class UnitWithGun : AIBehaviourBase
     {
         public BaseShooting weapon;
-
         public override Tool BehaviourWeapon => weapon;
-
         protected override void Awake()
         {
             base.Awake();
@@ -31,12 +29,10 @@ namespace Sampo.AI.Humans.Ranged
                 weapon.Shoot(target.position);
             }
         }
-
         public override Transform GetRightHandTarget()
         {
             return weapon.transform;
         }
-
         public override void AssignPoints(int points)
         {
             base.AssignPoints(points);
@@ -45,7 +41,6 @@ namespace Sampo.AI.Humans.Ranged
 
             //TODO DESIGN
         }
-
         public override Vector3 RelativeRetreatMovement()
         {
             const float RANGE_EDGE_MODIFIER = 0.8f;
@@ -59,7 +54,6 @@ namespace Sampo.AI.Humans.Ranged
 
             return outDir + Vector3.right;
         }
-
         public override int GetCurrentWeaponPoints()
         {
             float range = weapon.GetRange();

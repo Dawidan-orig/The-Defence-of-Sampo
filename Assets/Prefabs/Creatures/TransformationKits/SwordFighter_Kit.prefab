@@ -1,65 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3542971800529871203
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8197137852532871274}
-  - component: {fileID: 4301689229086048700}
-  m_Layer: 6
-  m_Name: RightHand
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8197137852532871274
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3542971800529871203}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.401, y: 0, z: 0.145}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2647289840722049105}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4301689229086048700
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3542971800529871203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7c643220423b09438ea5b29014f378e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  host: {fileID: 0}
-  additionalMeleeReach: 0
-  alive:
-    serializedVersion: 2
-    m_Bits: 0
-  structures:
-    serializedVersion: 2
-    m_Bits: 0
-  cooldownBetweenAttacks: 1
-  damageMultiplier: 1
-  noDamageTime: 0.5
-  rightHandHandle: {fileID: 0}
-  _collision_blade: []
-  _collision_alive: []
-  body: {fileID: 0}
-  audioSource: {fileID: 0}
 --- !u!1 &6331035052159812569
 GameObject:
   m_ObjectHideFlags: 0
@@ -85,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 6331035052159812569}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.8, y: 1, z: 12.4}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -117,7 +57,7 @@ Transform:
   m_GameObject: {fileID: 6972888829174678272}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.8, y: 1, z: 12.4}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -179,7 +119,6 @@ Transform:
   m_Children:
   - {fileID: 3529802195451688515}
   - {fileID: 3521898452228561578}
-  - {fileID: 8197137852532871274}
   - {fileID: 1729313659644912510}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -200,7 +139,7 @@ MonoBehaviour:
   blade_as_stuff: 0
   ignoredDistance: 10
   ignoredImpulse: 5
-  checker: {fileID: 0}
+  checker: {fileID: 3582402100724833679}
   vital: {fileID: 0}
   ignored: []
   controlled: []
@@ -262,6 +201,7 @@ MonoBehaviour:
   toGroundDist: 0.3
   distanceInfluence: 1
   congestionInfluence: 1
+  _hasCongestion: 1
   weapon: {fileID: 3529802196489267887}
   defaultWeapon: {fileID: 0}
   baseReachDistance: 1

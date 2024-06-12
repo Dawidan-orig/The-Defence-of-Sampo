@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Alchemy.Inspector;
 using System.Linq;
+using Sampo.Core.JournalLogger;
 
 namespace Sampo.Building.Transformators
 {
@@ -36,10 +37,12 @@ namespace Sampo.Building.Transformators
 
         public void Interact(Transform interactor)
         {
-            //TODO : Logger сюда
+            string dataToDebugLog = "Взаимодействие от " + interactor.name + "\n";
+
             if (createdUnits.Contains(interactor.gameObject))
             {
-                Debug.LogWarning("Попытка добавить такое же поведение", transform);
+                dataToDebugLog += "Попытка добавить такое же поведение";
+                LoggerSingleton.DebugLog(dataToDebugLog, gameObject, interactor.gameObject);
                 return;
             }
 
@@ -50,7 +53,7 @@ namespace Sampo.Building.Transformators
                 multiweapon.AddNewBehaviour(TransformationKitPrefab);
             else 
             {
-                Debug.Log("Преобразование константного юнита в MultiweaponUnit");
+                dataToDebugLog += "Преобразование константного юнита в MultiweaponUnit\n";
                 AIBehaviourBase directBehaviour = interactor.GetComponent<AIBehaviourBase>();
                 Destroy(directBehaviour);
                 multiweapon = interactor.gameObject.AddComponent<MultiweaponUnit>();
@@ -67,6 +70,8 @@ namespace Sampo.Building.Transformators
             if (!interactor.gameObject.TryGetComponent<OnDestroyNotifier>(out var comp))
                 comp = interactor.gameObject.AddComponent<OnDestroyNotifier>();
             comp.onDestroy += UpdateConnectedUnits;
+
+            LoggerSingleton.DebugLog(dataToDebugLog, gameObject, interactor.gameObject);
         }
 
         //TODO : Сделать интерфейс для этого

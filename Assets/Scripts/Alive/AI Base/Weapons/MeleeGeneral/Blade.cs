@@ -1,3 +1,4 @@
+using Sampo.AI;
 using UnityEngine;
 
 
@@ -15,15 +16,12 @@ namespace Sampo.Weaponry.Melee
         private Transform handle;
 
         [Header("lookonly")]
-        public Vector3 AngularVelocityEuler;
-        public Faction faction;
-        
+        public Vector3 AngularVelocityEuler;        
 
         [Header("Visuals")]
         public ParticleSystem sparkles;
 
         public Transform Handle { get => handle; private set => handle = value; }
-
         public Transform DamageFrom => _host;
 
         public struct Border
@@ -31,12 +29,6 @@ namespace Sampo.Weaponry.Melee
             public Vector3 posUp;
             public Vector3 posDown;
             public Vector3 direction;
-        }
-
-        protected override void Awake()
-        {
-            base.Awake();
-            faction = GetComponent<Faction>();
         }
 
         private void Start()

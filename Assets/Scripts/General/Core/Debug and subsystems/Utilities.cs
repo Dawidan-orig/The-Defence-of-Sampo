@@ -48,7 +48,7 @@ public class Utilities
 
         return result;
     }
-    public static bool VisualisedRaycast(Vector3 origin, Vector3 direction, out RaycastHit hit, float maxDistance, LayerMask? layerMask = null, bool drawHit = true, Color? color = null, float duration = 0, bool visualise = true)
+    public static bool VisualizedRaycast(Vector3 origin, Vector3 direction, out RaycastHit hit, float maxDistance, LayerMask? layerMask = null, bool drawHit = true, Color? color = null, float duration = 0, bool visualise = true)
     {
         if (color == null)
             color = Color.white;
@@ -74,7 +74,7 @@ public class Utilities
     }
     public static bool VisualisedRaycast(Vector3 origin, Vector3 direction, float maxDistance, out RaycastHit hit, out float angle, LayerMask layerMask,  Color? color = null, float duration = 0, bool drawAngle = true, bool drawHit = true, bool visualise = true)
     {
-        bool result = VisualisedRaycast(origin, direction, out hit, maxDistance, layerMask, drawHit, color, duration, visualise);
+        bool result = VisualizedRaycast(origin, direction, out hit, maxDistance, layerMask, drawHit, color, duration, visualise);
 
         if (color == null)
             color = Color.white;

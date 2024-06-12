@@ -11,13 +11,9 @@ namespace Sampo.AI
 
     //TODO : Refactor, этот класс подвергся очень большому количеству изменений и тут осталось много мусора
 
-    //TODO!!! : Добавить Logger или другую систему логирования.
-    // Надо понимать, что происходит с каждым юнитом в пределах Editor'а.
-
     [SelectionBase]
     [RequireComponent(typeof(IMovingAgent))]
     [RequireComponent(typeof(Faction))]
-    [RequireComponent(typeof(AIBehaviourBase))]
     public class TargetingUtilityAI : MonoBehaviour
     // ИИ, ставящий приоритеты выполнения действий
     // Использует StateMachine в качестве исполнителя
@@ -218,7 +214,7 @@ namespace Sampo.AI
 
             if (collision.gameObject.TryGetComponent<IDamageDealer>(out var dDealer))
                 //TODO : Перейти на универсальый Condition, работающий на времени
-                ModifyActionOf(dDealer.DamageFrom, new RespondToAttackCondition(TIME_OF_BEING_ANGRY));
+                ModifyAllActionsOf(dDealer.DamageFrom, new RespondToAttackCondition(TIME_OF_BEING_ANGRY));
         }
 
         protected virtual void OnDisable()
@@ -389,7 +385,7 @@ namespace Sampo.AI
         /// Обновление всех связанных с целью задач
         /// </summary>
         /// <param name="withCondition">Динамическое условие, что применяется на все задачи</param>
-        public void ModifyActionOf(Transform target, BaseAICondition withCondition)
+        public void ModifyAllActionsOf(Transform target, BaseAICondition withCondition)
         {
             AIAction? best = null;
             foreach (var action in _possibleActions)
@@ -399,6 +395,10 @@ namespace Sampo.AI
 
                 if (action.target == target)
                 {
+                    if(withCondition is Sampo.AI.Conditions.Orders.OrderBase order) 
+                    {
+                        order.SetActionBackling(action);
+                    }
                     action.Modify(withCondition);
                     if (action.TotalWeight > best.Value.TotalWeight)
                     {
