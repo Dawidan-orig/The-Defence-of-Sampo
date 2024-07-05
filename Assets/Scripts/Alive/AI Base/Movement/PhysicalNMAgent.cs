@@ -84,7 +84,7 @@ namespace Sampo.AI.Movement
         {
             if (!agent.enabled)
             {
-                if (Utilities.VisualizedRaycast(countFrom.position, Vector3.down,out _, toGroundHeight, terrainMask))
+                if (Utilities.VisualizedRaycast(countFrom.position, Vector3.down,out var t, toGroundHeight, terrainMask))
                 {
                     ResetAgent();
                 }
