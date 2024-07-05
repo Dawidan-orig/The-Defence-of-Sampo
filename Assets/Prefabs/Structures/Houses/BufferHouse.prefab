@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7616468700809761091}
   - component: {fileID: 9003573586697308956}
-  - component: {fileID: 8681995764900493944}
   - component: {fileID: 30361608913014697}
   - component: {fileID: 975673156300585467}
   - component: {fileID: 4030649228125903508}
@@ -57,20 +56,6 @@ MonoBehaviour:
   interactionRange: 5
   releasePos: {fileID: 8837066927094183628}
   contained: []
---- !u!114 &8681995764900493944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1003059208348422353}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ftype: 1
-  isAvailableForSelfFaction: 1
 --- !u!65 &30361608913014697
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -105,6 +90,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ai_weight: 20
+  _ftype: 0
+  isAvailableForSelfFaction: 0
   health: 500
   connectedObjects: []
   remainsPrefab: {fileID: 0}

@@ -154,7 +154,11 @@ namespace Sampo.AI.Monsters.Spider
                 leg.moveSpeed = moveSpeed;
                 leg.legMovement = legMovement;
                 leg.legLength = legsLength;
-                leg.limb.GetComponent<AliveBeing>().mainBody = mainBody;
+                var legAliveComp = leg.GetComponent<AliveBeing>();
+                legAliveComp.brainBody = mainBody;
+                legAliveComp.vital = leg.limb.GetComponent<Collider>();
+
+
             }
         }
     }

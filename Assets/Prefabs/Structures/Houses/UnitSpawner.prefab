@@ -41,7 +41,6 @@ GameObject:
   m_Component:
   - component: {fileID: 544531541066524720}
   - component: {fileID: 8647043655154147854}
-  - component: {fileID: 5993732787712275109}
   - component: {fileID: 888304070303691479}
   - component: {fileID: 2998435419778882976}
   - component: {fileID: 1762636211110524952}
@@ -88,20 +87,6 @@ MonoBehaviour:
   limitAddition: 10
   transfromSpawnPos: {fileID: 828726681102639149}
   toSpawn: 0
---- !u!114 &5993732787712275109
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7515095292285438615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ftype: 1
-  isAvailableForSelfFaction: 0
 --- !u!114 &888304070303691479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,6 +100,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ai_weight: 1
+  _ftype: 0
+  isAvailableForSelfFaction: 0
   health: 200
   connectedObjects: []
   remainsPrefab: {fileID: 0}

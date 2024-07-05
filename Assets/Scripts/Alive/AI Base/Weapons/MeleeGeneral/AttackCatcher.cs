@@ -55,9 +55,9 @@ namespace Sampo.Weaponry
                 if (!thing) // Пропускаем только что удалённые объекты
                     continue;
 
-                if (thing.TryGetComponent(out Faction f))
+                if (thing.TryGetComponent(out AITarget f))
                 {
-                    if (!f.IsWillingToAttack(GetComponent<Faction>().FactionType))
+                    if (!f.IsWillingToAttack(GetComponent<AITarget>().FactionType))
                         continue;
                 }
 

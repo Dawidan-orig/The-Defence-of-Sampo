@@ -35,8 +35,8 @@ namespace Sampo.Abilities
                 if (c.transform == user)
                     continue;
 
-                if (c.TryGetComponent<Faction>(out _))
-                    if (!c.transform.GetComponent<Faction>().IsWillingToAttack(user.GetComponent<Faction>().FactionType))
+                if (c.TryGetComponent<AITarget>(out _))
+                    if (!c.transform.GetComponent<AITarget>().IsWillingToAttack(user.GetComponent<AITarget>().FactionType))
                         continue;
 
                 if (c.TryGetComponent<IMovingAgent>(out var agent))

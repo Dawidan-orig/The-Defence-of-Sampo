@@ -3,6 +3,11 @@ using Sampo.AI;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Это временный скрипт для спавна врагов.
+/// В скором времени он будет заменён на TODO : интерфейс спавна волн
+/// </summary>
+[SelectionBase]
 public class LouhaBird_WaveSpawn : MonoBehaviour
 // Этот компонент отвечает за управление Птицы Лоухи, когда она ещё не является боссом и непосредственно не сражается.
 // Она просто раскидывает волны.
@@ -110,7 +115,7 @@ public class LouhaBird_WaveSpawn : MonoBehaviour
             float progressFraction = 1 / (float)WaveHandler.Instance.GetAmountOfUnitsToSpawn();
             if (flightProgress > lastSpawnProgress + progressFraction)
             {
-                GameObject unit = WaveHandler.Instance.GetSpawnedUnit(transform.position, GetComponent<Faction>().FactionType, transform.rotation);
+                GameObject unit = WaveHandler.Instance.GetSpawnedUnit(transform.position, GetComponent<AITarget>().FactionType, transform.rotation);
                 unit.GetComponent<Rigidbody>().AddForce(Vector3.up * 10);
                 lastSpawnProgress = flightProgress;
             }

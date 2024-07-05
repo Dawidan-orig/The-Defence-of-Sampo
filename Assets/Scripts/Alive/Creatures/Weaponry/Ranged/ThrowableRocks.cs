@@ -41,10 +41,7 @@ namespace Sampo.Weaponry.Ranged
                 (shootPoint.forward + shootPoint.up).normalized * actualPower,
                 ForceMode.VelocityChange);
 
-            Faction BFac;
-            if (!bullet.TryGetComponent(out BFac))
-                BFac = bullet.AddComponent<Faction>();
-            BFac.ChangeFactionCompletely(_host.GetComponent<Faction>().FactionType);
+            bullet.GetComponent<AITarget>().ChangeFactionCompletely(GetHostFaction());
 
             Physics.IgnoreCollision(GetComponent<Collider>(), bullet.GetComponent<Collider>());
             Physics.IgnoreCollision(_host.GetComponent<Collider>(), bullet.GetComponent<Collider>());

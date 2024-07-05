@@ -79,13 +79,13 @@ namespace Sampo.AI
                 bool prev = value;
                 _hasCongestion = prev;
                 if (prev == true && value == false)
-                    UtilityAI_Manager.Instance.ChangeCongestion(
-                    CurrentActivity.target.GetComponent<Interactable_UtilityAI>(),
+                    AITargetManager.Instance.ChangeCongestion(
+                    CurrentActivity.target.GetComponent<AITarget>(),
                     -VisiblePowerPoints);
 
                 if (prev == false && value == true)
-                    UtilityAI_Manager.Instance.ChangeCongestion(
-                    CurrentActivity.target.GetComponent<Interactable_UtilityAI>(),
+                    AITargetManager.Instance.ChangeCongestion(
+                    CurrentActivity.target.GetComponent<AITarget>(),
                     VisiblePowerPoints);
             }
         }
@@ -313,13 +313,13 @@ namespace Sampo.AI
         {
             bool res = true;
 
-            Faction other = target.GetComponent<Faction>();
+            AITarget other = target.GetComponent<AITarget>();
 
-            if (!other.IsWillingToAttack(GetMainTransform().GetComponent<Faction>().FactionType) || target == transform)
+            if (!other.IsWillingToAttack(GetMainTransform().GetComponent<AITarget>().FactionType) || target == transform)
                 res = false;
 
             if (other.TryGetComponent(out AliveBeing b))
-                if (b.mainBody == transform)
+                if (b.brainBody == transform)
                     res = false;
 
             return res;
@@ -327,9 +327,9 @@ namespace Sampo.AI
         /// <summary>
         /// Предоставляет словарь всех доступных объектов взаимодействия из менеджера
         /// </summary>
-        public virtual Dictionary<Interactable_UtilityAI, int> GetActionsDictionary()
+        public virtual Dictionary<AITarget, int> GetActionsDictionary()
         {
-            return UtilityAI_Manager.Instance.GetAllInteractions(GetMainTransform().GetComponent<Faction>());
+            return AITargetManager.Instance.GetAllInteractions(GetMainTransform().GetComponent<AITarget>());
         }
         /// <summary>
         /// Определяет точку, куда следует отступать

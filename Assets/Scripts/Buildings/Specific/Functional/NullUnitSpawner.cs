@@ -1,3 +1,4 @@
+using Alchemy.Inspector;
 using Sampo.Core;
 using Sampo.Player.Economy;
 using System.Collections;
@@ -11,11 +12,10 @@ namespace Sampo.Building.Spawners
     /// </summary>
     public class NullUnitSpawner : BuildableStructure, IInteractable
     {
-        //TODO? : Сделать специальный атрибут самостоятельно,
-        //Который выкидывает exception если поля не заполнены через Unity
-        //Либо Alchemy
+        //TODO? : Gizmo для отображение появляемого юнита
         public float frequency = 10;
         public int limitAddition = 10;
+        [Required]
         public Transform transfromSpawnPos;
 
         [SerializeField]

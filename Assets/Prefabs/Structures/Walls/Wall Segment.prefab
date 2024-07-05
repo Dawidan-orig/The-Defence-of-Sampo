@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4831676572148590778}
   - component: {fileID: 6712094276796079291}
   - component: {fileID: 6855238967901636762}
-  - component: {fileID: 5225495289652867716}
   - component: {fileID: 7995300049902568807}
   - component: {fileID: 3180210769476882773}
   m_Layer: 0
@@ -52,6 +51,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   possibleHeightToBuild: 0.6
   progressToBuild: 0
+  isBuilt: 0
   column: {fileID: 7718003252390213863}
   mainObject: {fileID: 0}
   prefabSample: {fileID: 8287606115815141095}
@@ -71,19 +71,6 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0.5, z: 0.5}
   m_TimeToStationary: 0.5
---- !u!114 &5225495289652867716
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1193116036391079041}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ftype: 0
 --- !u!114 &7995300049902568807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,6 +84,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ai_weight: 50
+  _ftype: 0
+  isAvailableForSelfFaction: 0
   health: 50
   connectedObjects: []
   remainsPrefab: {fileID: 0}

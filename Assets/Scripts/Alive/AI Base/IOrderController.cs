@@ -7,5 +7,5 @@ using System.Collections.Generic;
 public interface IOrderController
 {
     public List<TargetingUtilityAI> GetOrderedUnits();
-    public abstract bool GetOrderStatus(Interactable_UtilityAI of);
+    public abstract bool GetOrderStatus(AITarget of);
 }

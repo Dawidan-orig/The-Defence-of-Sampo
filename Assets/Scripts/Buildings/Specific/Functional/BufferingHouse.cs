@@ -33,7 +33,7 @@ namespace Sampo.Building
         {
             if (contained.Count >= bufferingAmount)
             {
-                GetComponent<Faction>().IsAvailableForSelfFaction = false;
+                GetComponent<AITarget>().IsAvailableForSelfFaction = false;
                 return;
             }
 
@@ -57,7 +57,7 @@ namespace Sampo.Building
             obj.SetActive(true);
 
             if (contained.Count <= bufferingAmount)            
-                GetComponent<Faction>().IsAvailableForSelfFaction = false;
+                GetComponent<AITarget>().IsAvailableForSelfFaction = true;
         }
 
         public void ReleaseAll()

@@ -1,7 +1,9 @@
+using Sampo.AI;
 using UnityEngine;
 
 namespace Sampo.Weaponry.Ranged
 {
+    [RequireComponent(typeof(AITarget))]
     public class BulletBase : MonoBehaviour, IDamageDealer
     {
         public GameObject instantiatedOnDestroy;

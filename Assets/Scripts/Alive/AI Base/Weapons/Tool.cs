@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Sampo.Weaponry
 {
-    [RequireComponent(typeof(Faction))]
     public class Tool : MonoBehaviour
     {
         [SerializeField]
@@ -18,18 +17,13 @@ namespace Sampo.Weaponry
             set
             {
                 _host = value;
-                if (_host == null)
+                if (_host != null)
                 {
-                    GetComponent<Faction>().ChangeFactionCompletely(Faction.FType.aggressive);
-                }
-                else
-                {
-                    GetComponent<Faction>().ChangeFactionCompletely(_host.GetComponent<Faction>().FactionType);
                     Physics.IgnoreCollision(GetComponent<Collider>(), _host.GetComponent<IDamagable>().Vital);
                 }
             }
         }
-
+        public FactionType GetHostFaction() { return _host.GetComponent<AITarget>().FactionType; }
         public virtual float GetRange() { return additionalMeleeReach; }
     }
 }

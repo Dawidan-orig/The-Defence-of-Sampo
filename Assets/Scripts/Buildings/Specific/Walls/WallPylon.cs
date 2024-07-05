@@ -22,7 +22,7 @@ namespace Sampo.Building
             if (otherWall)
             {
                 var wall = Instantiate(wallSegmentPrefab, transform.position, Quaternion.identity, transform);
-                wall.GetComponent<Faction>().ChangeFactionCompletely(GetComponent<Faction>().FactionType);
+                wall.GetComponent<AITarget>().ChangeFactionCompletely(GetComponent<AITarget>().FactionType);
                 wall.GetComponent<WallSegment>().ArrangeSegment(otherWall.transform.position, wallSegmentPrefab, transform);                
             }
 

@@ -69,9 +69,6 @@ PrefabInstance:
       addedObject: {fileID: 965353691075733226}
     - targetCorrespondingSourceObject: {fileID: 1070634600600016, guid: ca2d20238ddb6b84396d108c5968cb3f, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7970662874048395448}
-    - targetCorrespondingSourceObject: {fileID: 1070634600600016, guid: ca2d20238ddb6b84396d108c5968cb3f, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 8127096824719478341}
     - targetCorrespondingSourceObject: {fileID: 1070634600600016, guid: ca2d20238ddb6b84396d108c5968cb3f, type: 3}
       insertIndex: -1
@@ -119,20 +116,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   possibleHeightToBuild: 0.5
   progressToBuild: 0
+  isBuilt: 0
   wallSegmentPrefab: {fileID: 1193116036391079041, guid: 6536d76c5434f0c40b2c3bc6d69e8b22, type: 3}
---- !u!114 &7970662874048395448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4089940892180772777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ftype: 1
+  shouldFocus: 1
+  wallToConnect: {fileID: 0}
 --- !u!114 &8127096824719478341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,6 +133,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ai_weight: 30
+  _ftype: 0
+  isAvailableForSelfFaction: 0
   health: 100
   connectedObjects: []
   remainsPrefab: {fileID: 0}

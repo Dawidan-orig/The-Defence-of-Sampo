@@ -96,7 +96,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2090390282454193909}
   - component: {fileID: 7033485070939488888}
-  - component: {fileID: 2359355757760768037}
   m_Layer: 6
   m_Name: RightHand
   m_TagString: Untagged
@@ -147,20 +146,6 @@ MonoBehaviour:
   _collision_alive: []
   body: {fileID: 0}
   audioSource: {fileID: 0}
---- !u!114 &2359355757760768037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3375333874970042204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ftype: 0
-  isAvailableForSelfFaction: 0
 --- !u!1 &6166585230114025203
 GameObject:
   m_ObjectHideFlags: 0
@@ -174,7 +159,6 @@ GameObject:
   - component: {fileID: 5586541267540761048}
   - component: {fileID: 1579277658286590084}
   - component: {fileID: 6457755934751162684}
-  - component: {fileID: 1831915311733266628}
   - component: {fileID: 806366685081612289}
   - component: {fileID: 3837791418764087138}
   - component: {fileID: 3464873321032151638}
@@ -482,20 +466,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1831915311733266628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6166585230114025203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ftype: 2
-  isAvailableForSelfFaction: 0
 --- !u!114 &806366685081612289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -509,9 +479,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ai_weight: 1
+  _ftype: 0
+  isAvailableForSelfFaction: 0
   health: 700
   vital: {fileID: 6457755934751162684}
-  mainBody: {fileID: 0}
+  brainBody: {fileID: 0}
   root: {fileID: 0}
 --- !u!114 &3837791418764087138
 MonoBehaviour:

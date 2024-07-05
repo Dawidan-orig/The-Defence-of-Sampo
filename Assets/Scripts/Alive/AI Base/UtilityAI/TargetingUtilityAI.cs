@@ -13,7 +13,7 @@ namespace Sampo.AI
 
     [SelectionBase]
     [RequireComponent(typeof(IMovingAgent))]
-    [RequireComponent(typeof(Faction))]
+    [RequireComponent(typeof(AITarget))]
     public class TargetingUtilityAI : MonoBehaviour
     // ИИ, ставящий приоритеты выполнения действий
     // Использует StateMachine в качестве исполнителя
@@ -69,8 +69,8 @@ namespace Sampo.AI
                 if (behaviour.HasCongestion)
                     enemiesAmountSubstraction =
                         Mathf.RoundToInt(
-                            UtilityAI_Manager.Instance.GetCongestion(
-                                target.GetComponent<Interactable_UtilityAI>())
+                            AITargetManager.Instance.GetCongestion(
+                                target.GetComponent<AITarget>())
                             * behaviour.congestionInfluence);
 
                 _totalWeight = baseWeight - distanceSubstraction - enemiesAmountSubstraction;
@@ -177,8 +177,8 @@ namespace Sampo.AI
 
         protected virtual void Start()
         {
-            UtilityAI_Manager.Instance.NewAdded += FetchNewActivityFromManager;
-            UtilityAI_Manager.Instance.NewRemoved += RemoveActivityGotFromManager;
+            AITargetManager.Instance.NewAdded += FetchNewActivityFromManager;
+            AITargetManager.Instance.NewRemoved += RemoveActivityGotFromManager;
 
             _noAction = new AIAction(this);
 
@@ -219,11 +219,11 @@ namespace Sampo.AI
 
         protected virtual void OnDisable()
         {
-            UtilityAI_Manager.Instance.NewAdded -= FetchNewActivityFromManager;
-            UtilityAI_Manager.Instance.NewRemoved -= RemoveActivityGotFromManager;
+            AITargetManager.Instance.NewAdded -= FetchNewActivityFromManager;
+            AITargetManager.Instance.NewRemoved -= RemoveActivityGotFromManager;
             if (_currentActivity.target && BehaviourAI.HasCongestion)
-                UtilityAI_Manager.Instance.ChangeCongestion(
-                    _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
+                AITargetManager.Instance.ChangeCongestion(
+                    _currentActivity.target.GetComponent<AITarget>(),
                     -BehaviourAI.VisiblePowerPoints);
             NullifyActivity();
             AIActive = false;
@@ -240,7 +240,7 @@ namespace Sampo.AI
             var dict = beh.GetActionsDictionary();
             foreach (var kvp in dict)
             {
-                Interactable_UtilityAI target = kvp.Key;
+                AITarget target = kvp.Key;
                 int weight = kvp.Value;
 
                 if (!beh.IsTargetPassing(target.transform))
@@ -253,9 +253,9 @@ namespace Sampo.AI
         /// Добавляем новое действия из менеджера
         /// Это может быть новый созданный объект взаимодействия, например
         /// </summary>
-        private void FetchNewActivityFromManager(object sender, UtilityAI_Manager.UAIData e)
+        private void FetchNewActivityFromManager(object sender, AITargetManager.UAIData e)
         {
-            Interactable_UtilityAI target = e.newInteractable.Key;
+            AITarget target = e.newInteractable.Key;
             int weight = e.newInteractable.Value;
 
             if (!BehaviourAI.IsTargetPassing(target.transform))
@@ -270,7 +270,7 @@ namespace Sampo.AI
         /// Удаляем активность по событию из менеджера
         /// Например, какой-то объект перестал существовать
         /// </summary>
-        private void RemoveActivityGotFromManager(object sender, UtilityAI_Manager.UAIData e)
+        private void RemoveActivityGotFromManager(object sender, AITargetManager.UAIData e)
         {
             AIAction similar = _possibleActions.Find(item => item.target == e.newInteractable.Key.transform);
 
@@ -323,13 +323,13 @@ namespace Sampo.AI
         private void ChangeAction(AIAction to)
         {
             if (!IsNoActionCurrently() && _currentActivity.target && BehaviourAI.HasCongestion) //Убираем влияние текущей цели
-                UtilityAI_Manager.Instance.ChangeCongestion(
-                    _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
+                AITargetManager.Instance.ChangeCongestion(
+                    _currentActivity.target.GetComponent<AITarget>(),
                     -BehaviourAI.VisiblePowerPoints);
             _currentActivity = to;
             if (BehaviourAI.HasCongestion)
-                UtilityAI_Manager.Instance.ChangeCongestion(
-                    _currentActivity.target.GetComponent<Interactable_UtilityAI>(),
+                AITargetManager.Instance.ChangeCongestion(
+                    _currentActivity.target.GetComponent<AITarget>(),
                     BehaviourAI.VisiblePowerPoints);
 
             ChangedToNewAction?.Invoke(to, new EventArgs());

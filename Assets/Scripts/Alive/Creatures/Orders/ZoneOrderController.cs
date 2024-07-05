@@ -15,14 +15,15 @@ namespace Sampo.AI.Conditions.Orders
         /// <summary>
         /// Функция влияния в пределах зоны
         /// </summary>
-        public Func<Interactable_UtilityAI, int> orderPowerForTransform;
+        public Func<AITarget, int> orderPowerForTransform;
 
         [SerializeField]
         List<TargetingUtilityAI> unitsWithOrder;
         [SerializeField]
-        List<Interactable_UtilityAI> orderTargets;
+        List<AITarget> orderTargets;
+        AITarget cashedTargetComp;
 
-        public int GetOrderPower(Interactable_UtilityAI @for)
+        public int GetOrderPower(AITarget @for)
         {
             return orderPowerForTransform.Invoke(@for);
         }
@@ -39,7 +40,7 @@ namespace Sampo.AI.Conditions.Orders
             return unitsWithOrder;
         }
 
-        public bool GetOrderStatus(Interactable_UtilityAI of)
+        public bool GetOrderStatus(AITarget of)
         {
             return orderTargets.Contains(of);
         }
@@ -48,22 +49,22 @@ namespace Sampo.AI.Conditions.Orders
         #region unity
         private void Awake()
         {
+            cashedTargetComp = GetComponent<AITarget>();
             unitsWithOrder = new();
             orderTargets = new();
+            //TODO : Заменить на AnimationCurve
             orderPowerForTransform = ((@for) =>
-            (int)(GetComponent<Collider>().bounds.extents.magnitude - Vector3.Distance(transform.position, @for.transform.position)));
+            (int)(GetComponent<Collider>().bounds.extents.magnitude - Vector3.Distance(transform.position, @for.transform.position)) + cashedTargetComp.ai_weight);
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if(other.gameObject.TryGetComponent(out Interactable_UtilityAI entered)) 
+            if(other.gameObject.TryGetComponent(out AITarget entered)) 
             {
                 foreach(var unit in unitsWithOrder) 
                 {
-                    //TODO : Внедрить фракцию в TargetingUAI, чтобы не делать эти танцы с бубном
-                    //TODO : Внедрить фракцию и в Interactable, там всё равно Require стоит
                     //TODO : Переписать все вызовы фракций везде, чтобы получать кэшированный компонент, а не делать вызов
-                    if(unit.GetComponent<Faction>().IsWillingToAttack(entered.GetComponent<Faction>().FactionType)) 
+                    if(unit.GetComponent<AITarget>().IsWillingToAttack(entered.FactionType)) 
                     {
                         unit.ModifyAllActionsOf(entered.transform,
                             new PriorityActionOrder(GetOrderPower));
@@ -73,7 +74,7 @@ namespace Sampo.AI.Conditions.Orders
         }
         private void OnTriggerExit(Collider other)
         {
-            if (other.gameObject.TryGetComponent(out TargetingUtilityAI exited))
+            if (other.gameObject.TryGetComponent(out AITarget exited))
             {
 
             }

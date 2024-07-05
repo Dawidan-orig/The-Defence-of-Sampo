@@ -47,7 +47,7 @@ namespace Sampo.Building.Transformators
             }
 
             if (createdUnits.Count > unitLimit-1)            
-                GetComponent<Faction>().IsAvailableForSelfFaction = false;            
+                GetComponent<AITarget>().IsAvailableForSelfFaction = false;            
 
             if(interactor.TryGetComponent(out MultiweaponUnit multiweapon))
                 multiweapon.AddNewBehaviour(TransformationKitPrefab);
@@ -81,7 +81,7 @@ namespace Sampo.Building.Transformators
             int removed = createdUnits.RemoveAll(unit => unit == null) + 1;
             if (removed > 0 && requestUnits)
             {
-                GetComponent<Faction>().IsAvailableForSelfFaction = true;
+                GetComponent<AITarget>().IsAvailableForSelfFaction = true;
                 BuildingsManager.Instance.RequestNullUnits(this, removed);
             }
         }

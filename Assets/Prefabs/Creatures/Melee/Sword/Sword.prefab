@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3518550695108105117}
   - component: {fileID: 3518550695108105088}
   - component: {fileID: 3518550695108105091}
-  - component: {fileID: 4524884976226258829}
   - component: {fileID: 3518550695108105090}
   - component: {fileID: 9199667154433759553}
   m_Layer: 7
@@ -73,7 +72,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27519155f11a5324f88e21d2e7274604, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  host: {fileID: 0}
+  _host: {fileID: 0}
   additionalMeleeReach: 0
   alive:
     serializedVersion: 2
@@ -97,21 +96,7 @@ MonoBehaviour:
   downerPoint: {fileID: 3518550696206137202}
   handle: {fileID: 3518550695537259928}
   AngularVelocityEuler: {x: 0, y: 0, z: 0}
-  faction: {fileID: 0}
   sparkles: {fileID: 0}
---- !u!114 &4524884976226258829
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3518550695108105116}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ftype: 0
 --- !u!54 &3518550695108105090
 Rigidbody:
   m_ObjectHideFlags: 0

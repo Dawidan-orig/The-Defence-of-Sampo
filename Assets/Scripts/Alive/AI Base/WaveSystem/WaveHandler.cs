@@ -48,17 +48,13 @@ namespace Sampo
         [SerializeField]
         private List<GameObject> unitPrefabsToSpawn = new List<GameObject>();
 
-        public GameObject GetSpawnedUnit(Vector3 onPosition, Faction.FType ofFactionType, Quaternion withRotation = default)
+        public GameObject GetSpawnedUnit(Vector3 onPosition, FactionType ofFactionType, Quaternion withRotation = default)
         {
             if (unitPrefabsToSpawn.Count == 0)
                 return null;
 
-            bool activeSave = unitPrefabsToSpawn[0].activeSelf;
-            unitPrefabsToSpawn[0].SetActive(false);
             GameObject unit = Instantiate(unitPrefabsToSpawn[0], onPosition, withRotation, container);
-            unit.GetComponent<Faction>().ChangeFactionCompletely(ofFactionType);
-            unit.SetActive(activeSave);
-            unitPrefabsToSpawn[0].SetActive(activeSave);
+            unit.GetComponent<AITarget>().ChangeFactionCompletely(ofFactionType);
             unitPrefabsToSpawn.RemoveAt(0);
             return unit;
         }

@@ -1024,7 +1024,6 @@ GameObject:
   - component: {fileID: 2901471402356923130}
   - component: {fileID: 2687963404015155845}
   - component: {fileID: 8149509274429226194}
-  - component: {fileID: 2133985426681608148}
   - component: {fileID: 5072331520620561110}
   - component: {fileID: 3743604981802368088}
   - component: {fileID: 2118354975803688040}
@@ -1204,23 +1203,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ai_weight: 30
+  _ftype: 2
+  isAvailableForSelfFaction: 0
   health: 2000
   vital: {fileID: 3743604981802368088}
-  mainBody: {fileID: 0}
+  brainBody: {fileID: 0}
   root: {fileID: 7070418557163671830}
---- !u!114 &2133985426681608148
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2395078813691770050}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ftype: 1
 --- !u!54 &5072331520620561110
 Rigidbody:
   m_ObjectHideFlags: 0

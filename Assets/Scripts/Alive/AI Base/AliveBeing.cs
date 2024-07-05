@@ -3,13 +3,14 @@ using UnityEngine;
 
 namespace Sampo.AI
 {
-    public class AliveBeing : Interactable_UtilityAI, IDamagable
+    public class AliveBeing : AITarget, IDamagable
     {
         public float health = 100;
         [Tooltip("Коллайдер, которые регистрирует получение урона")]
         public Collider vital;
         [Tooltip("Этот объект определяет ту часть тела, в которой расположен TargetingUtilityAI (Мозг)")]
-        public Transform mainBody;
+        //TODO : Refactor, заменить transfrom на TargetingAI
+        public Transform brainBody;
         [Tooltip("Этот объект будет удалён, когда здоровье опустится ниже 100")]
         public Transform root;
 
@@ -20,8 +21,8 @@ namespace Sampo.AI
             if (GetComponents<Collider>().Length == 1)
                 vital = GetComponent<Collider>();
 
-            if (mainBody == null)
-                mainBody = transform;
+            if (brainBody == null)
+                brainBody = transform;
             if (root == null)
                 root = transform;
         }

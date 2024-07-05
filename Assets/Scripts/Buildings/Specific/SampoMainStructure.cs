@@ -81,8 +81,8 @@ namespace Sampo.Building
                 + transform.forward * FORWARD * sizingCollider.bounds.extents.z;
             GameObject res = Instantiate(prefab, spawnPos, Quaternion.identity);
 
-            if (res.TryGetComponent<Faction>(out var f)) //TODO : Сделать short-hand для этого, одну функцию, что принимает два параметра. Применить везде. Слишком часто используется (DRY).
-                f.ChangeFactionCompletely(sizingCollider.transform.GetComponent<Faction>().FactionType);
+            if (res.TryGetComponent<AITarget>(out var f)) //TODO : Сделать short-hand для этого, одну функцию, что принимает два параметра. Применить везде. Слишком часто используется (DRY).
+                f.ChangeFactionCompletely(sizingCollider.transform.GetComponent<AITarget>().FactionType);
 
             return res;
         }

@@ -17,12 +17,12 @@ namespace Sampo.AI.Conditions.Orders
         public override int WeightInfluence => currentPoints;
 
         protected Transform backlingTarget;
-        protected Interactable_UtilityAI backlingSelf;
+        protected AITarget backlingSelf;
 
         public void SetActionBackling(TargetingUtilityAI.AIAction actionBacklink) 
         {
             backlingTarget = actionBacklink.target;
-            backlingSelf = actionBacklink.behaviour.GetMainTransform().GetComponent<Interactable_UtilityAI>();
+            backlingSelf = actionBacklink.behaviour.GetMainTransform().GetComponent<AITarget>();
         }
 
         public void ExternalModify(int pointsAdded, IOrderController from) 

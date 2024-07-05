@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Sampo.Building
 {
-    public class DestructableStructure : Interactable_UtilityAI, IDamagable
+    public class DestructableStructure : AITarget, IDamagable
     {
         public float health = 10000;
         public List<GameObject> connectedObjects = new List<GameObject>();

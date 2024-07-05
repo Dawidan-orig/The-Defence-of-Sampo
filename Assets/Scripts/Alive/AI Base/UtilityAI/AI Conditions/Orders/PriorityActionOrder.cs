@@ -12,11 +12,11 @@ namespace Sampo.AI.Conditions.Orders
     public class PriorityActionOrder : OrderBase
     {
         int additionalPrioritization;
-        Func<Interactable_UtilityAI,int> influenceLogic;
+        Func<AITarget,int> influenceLogic;
         public override int WeightInfluence => base.WeightInfluence + additionalPrioritization;
 
         /// <param name="influenceLogic">Функция, которая возвращает добавночную силу к очкам</param>
-        public PriorityActionOrder(Func<Interactable_UtilityAI, int> influenceLogic) 
+        public PriorityActionOrder(Func<AITarget, int> influenceLogic) 
         {
             additionalPrioritization = WeightInfluence;
             this.influenceLogic = influenceLogic;
@@ -26,7 +26,7 @@ namespace Sampo.AI.Conditions.Orders
         {
             if(influenceLogic != null)
                 additionalPrioritization = (int)Mathf.Clamp(
-                    influenceLogic.Invoke(backlingTarget.GetComponent<Interactable_UtilityAI>()),
+                    influenceLogic.Invoke(backlingTarget.GetComponent<AITarget>()),
                     Mathf.NegativeInfinity,
                     Variable_Provider.emotionalPointsLayer);
         }

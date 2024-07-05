@@ -84,7 +84,7 @@ namespace Sampo.Abilities
 
             slash.GetComponent<Tool>().Host = user;
 
-            slash.GetComponent<Faction>().ChangeFactionCompletely(user.GetComponent<Faction>().FactionType);
+            slash.GetComponent<AITarget>().ChangeFactionCompletely(user.GetComponent<AITarget>().FactionType);
 
             Rigidbody body = slash.GetComponent<Rigidbody>();
 

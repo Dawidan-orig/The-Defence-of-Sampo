@@ -12,12 +12,12 @@ using UnityEngine;
 public class NullUnit : AIBehaviourBase
 {
     public override Tool BehaviourWeapon => null;
-    public override Dictionary<Interactable_UtilityAI, int> GetActionsDictionary()
+    public override Dictionary<AITarget, int> GetActionsDictionary()
     {
-        var input = UtilityAI_Manager.Instance.GetSameFactionInteractions(GetMainTransform().gameObject.GetComponent<Faction>());
+        var input = AITargetManager.Instance.GetSameFactionInteractions(GetMainTransform().gameObject.GetComponent<AITarget>());
 
         var res = input
-            .Where(kvp => kvp.Key.GetComponent<Faction>().IsAvailableForSelfFaction)
+            .Where(kvp => kvp.Key.GetComponent<AITarget>().IsAvailableForSelfFaction)
             .Select(kvp => new { kvp.Key, val = kvp.Value})
             //.Select(kvp.Key.TryGetComponent(out BuildableStructure _) ? kvp.val * 3 : kvp.val) 
             .ToDictionary(t => t.Key, t => t.val);
@@ -28,13 +28,13 @@ public class NullUnit : AIBehaviourBase
     {
         bool res = true;
 
-        Faction other = target.GetComponent<Faction>();
+        AITarget other = target.GetComponent<AITarget>();
 
         if (!other.IsAvailableForSelfFaction || target == transform)
             res = false;
 
         if (other.TryGetComponent(out AliveBeing b))
-            if (b.mainBody == transform)
+            if (b.brainBody == transform)
                 res = false;
 
         return res;

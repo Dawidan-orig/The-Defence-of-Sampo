@@ -31,7 +31,7 @@ namespace Sampo.Building
 
         private void Awake()
         {
-            if (TryGetComponent(out Interactable_UtilityAI interact))
+            if (TryGetComponent(out AITarget interact))
                 interact.enabled = false;
         }
 
@@ -61,7 +61,7 @@ namespace Sampo.Building
             {
                 Build();
 
-                if(TryGetComponent(out Interactable_UtilityAI interact))                
+                if(TryGetComponent(out AITarget interact))                
                     interact.enabled = true;
 
                 isBuilt = true;

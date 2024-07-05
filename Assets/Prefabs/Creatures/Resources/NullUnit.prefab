@@ -12,12 +12,12 @@ GameObject:
   - component: {fileID: 8078203381029455239}
   - component: {fileID: 1579277658286590084}
   - component: {fileID: 6457755934751162684}
-  - component: {fileID: 1831915311733266628}
   - component: {fileID: 806366685081612289}
   - component: {fileID: 3837791418764087138}
   - component: {fileID: 3464873321032151638}
   - component: {fileID: 2498818268452375569}
   - component: {fileID: 1015069394030362810}
+  - component: {fileID: 1096302916970229339}
   m_Layer: 6
   m_Name: NullUnit
   m_TagString: Untagged
@@ -62,6 +62,9 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   toGroundDist: 0.3
+  distanceInfluence: 1
+  congestionInfluence: 1
+  _hasCongestion: 1
 --- !u!54 &1579277658286590084
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -112,20 +115,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1831915311733266628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6166585230114025203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ftype: 1
-  isAvailableForSelfFaction: 0
 --- !u!114 &806366685081612289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,6 +128,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ai_weight: 1
+  _ftype: 1
+  isAvailableForSelfFaction: 0
   health: 700
   vital: {fileID: 6457755934751162684}
   mainBody: {fileID: 0}
@@ -209,15 +200,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef89be94fd9256a40afca2caf7b5d264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _AIActive: 1
-  distanceWeightMultiplier: 1
-  hasCongestion: 1
+  AIActive: 1
   _currentActivity:
     target: {fileID: 0}
     name: 
-    actWith: {fileID: 0}
+    behaviour: {fileID: 0}
     _totalWeight: 0
   _possibleActions: []
+--- !u!114 &1096302916970229339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6166585230114025203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbe495d8e416d404f834e00550670a76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ai_weight: 1
+  _ftype: 0
+  isAvailableForSelfFaction: 0
 --- !u!1001 &261701640518159192
 PrefabInstance:
   m_ObjectHideFlags: 0

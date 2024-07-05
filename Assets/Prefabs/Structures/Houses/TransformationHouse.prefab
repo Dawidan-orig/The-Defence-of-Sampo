@@ -95,7 +95,6 @@ GameObject:
   - component: {fileID: 1728107365678632011}
   - component: {fileID: 2125682248258309612}
   - component: {fileID: 6510398072594887699}
-  - component: {fileID: 3015710332918304387}
   - component: {fileID: 9086344078788441216}
   - component: {fileID: 3108711757716894565}
   m_Layer: 0
@@ -136,6 +135,7 @@ MonoBehaviour:
   possibleHeightToBuild: 0.1
   progressToBuild: -1
   isBuilt: 0
+  requestUnits: 0
   interactionRange: 2
   unitLimit: 5
   TransformationKitPrefab: {fileID: 8076466354686635130, guid: 6e9893dc919e73f4790281552f95982c, type: 3}
@@ -161,20 +161,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 2.5, z: 1}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &3015710332918304387
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3150004897952796988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ftype: 1
-  isAvailableForSelfFaction: 1
 --- !u!114 &9086344078788441216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,6 +174,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ai_weight: 30
+  _ftype: 0
+  isAvailableForSelfFaction: 0
   health: 10000
   connectedObjects: []
   remainsPrefab: {fileID: 0}

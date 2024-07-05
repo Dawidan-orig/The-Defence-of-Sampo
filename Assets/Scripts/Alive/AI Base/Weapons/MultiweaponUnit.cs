@@ -163,9 +163,9 @@ namespace Sampo.AI.Humans
         {
             return currentBehaviour.GetRightHandTarget();
         }
-        public override Dictionary<Interactable_UtilityAI, int> GetActionsDictionary()
+        public override Dictionary<AITarget, int> GetActionsDictionary()
         {
-            Dictionary<Interactable_UtilityAI, int> res = new();
+            Dictionary<AITarget, int> res = new();
 
             foreach (var beh in behaviours)
                 foreach (var kvp in beh.GetActionsDictionary())

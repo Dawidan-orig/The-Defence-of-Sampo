@@ -73,7 +73,7 @@ namespace Sampo.Building
                         WallSegment nextWall = go.GetComponent<WallSegment>();
                         nextWall.mainObject = mainObject;
                         nextWall.prefabSample = prefabSample;
-                        nextWall.GetComponent<Faction>().ChangeFactionCompletely(mainObject.GetComponent<Faction>().FactionType);
+                        nextWall.GetComponent<AITarget>().ChangeFactionCompletely(mainObject.GetComponent<AITarget>().FactionType);
                         nextWall.ArrangeSegment(newPos, to);
                         return true;
                     }
@@ -96,12 +96,9 @@ namespace Sampo.Building
             {
                 DisplaceSegment(hit.point);
                 Vector3 newPos = hit.point;
-                var prefabFaction = prefabSample.GetComponent<Faction>();
-                prefabFaction.ChangeFactionCompletely(mainObject.GetComponent<Faction>().FactionType);
 
                 GameObject go = Instantiate(prefabSample, newPos, Quaternion.identity, mainObject);
-
-                prefabFaction.ChangeFactionCompletely(Faction.FType.neutral);
+                go.GetComponent<AITarget>().ChangeFactionCompletely(mainObject.GetComponent<AITarget>().FactionType);
                 WallSegment nextWall = go.GetComponent<WallSegment>();
                 nextWall.mainObject = mainObject;
                 nextWall.prefabSample = prefabSample;
