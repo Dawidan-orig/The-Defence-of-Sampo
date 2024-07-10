@@ -29,6 +29,9 @@ namespace Sampo.AI
         IMovingAgent _movingAgent;
         private AIAction _noAction;
         private AIBehaviourBase _behaviourAI;
+        private AITarget _targetComp; // Казалось бы, не должно быть его здесь. Но. AITarget'ов много разных видов
+                                  // - и живые есть, и строения, и ещё бог знает что будет потом.
+                                  // Потому и зависимость, потому и не вливаю. А контроллировать смену фракции нужно.
         public AIAction CurrentActivity { get => _currentActivity; }
         public IMovingAgent MovingAgent { get => _movingAgent; set => _movingAgent = value; }
         //TODO? : В идеале вообще убрать отсюда BehaviourAI для избегания Tight Coupling'а
@@ -167,6 +170,8 @@ namespace Sampo.AI
 
         protected virtual void Awake()
         {
+            _targetComp = GetComponent<AITarget>();
+            _targetComp.factionChanged += RefreshCompletely;
             _movingAgent = GetComponent<IMovingAgent>();
         }
 
@@ -194,8 +199,6 @@ namespace Sampo.AI
                 return;
             }
 
-            //TODO? : Стоит тут ещё сделать корутин-паузу при успехе секунд на 5,
-            // чтоб не грузил пустыми действиями.
             if (_currentActivity == _noAction)
                 SelectBestActivityIfAny();
         }
@@ -231,6 +234,25 @@ namespace Sampo.AI
         #endregion
 
         #region actions
+        /// <summary>
+        /// Полностью обновляет локальные данные.
+        /// Это достаточно тяжёлая функция, а потому лучше её использовать как можно реже
+        /// </summary>
+        public void RefreshCompletely() 
+        {
+            _possibleActions.Clear();
+            var dict = AITargetManager.Instance.GetAllInteractions(_targetComp);
+            foreach (var kvp in dict)
+            {
+                AITarget target = kvp.Key;
+                int weight = kvp.Value;
+
+                if (!BehaviourAI.IsTargetPassing(target.transform))
+                    return;
+
+                AddNewPossibleAction(target.transform, weight, target.transform.name, BehaviourAI);
+            }
+        }
         /// <summary>
         /// Добавляем новые действия в runtime, связанные с поведением
         /// </summary>
@@ -409,11 +431,6 @@ namespace Sampo.AI
             if (best?.TotalWeight > CurrentActivity.TotalWeight)
                 ChangeAction(best.Value);
         }
-
-        /// <summary>
-        /// Проверка, что в данный момент требуется выбрать новое состояние
-        /// </summary>
-        /// <returns></returns>
 
         private void OnDrawGizmos()
         {

@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 namespace Sampo.AI
@@ -8,16 +9,17 @@ namespace Sampo.AI
     {
         public int ai_weight = 1;
 
-        [SerializeField]
-        [Alchemy.Inspector.ReadOnly]
-        private FactionType _currentFaction = FactionType.none;
+        public System.Action factionChanged;
+
+        //[Alchemy.Inspector.HideInPlayMode]
+        [SerializeField]  private FactionType _currentFaction = FactionType.none;
         public FactionType FactionType { get => _currentFaction; }
         public bool IsAvailableForSelfFaction
         {
             get => isAvailableForSelfFaction;
 
             set
-            {
+            {                
                 bool prev = isAvailableForSelfFaction;
                 isAvailableForSelfFaction = value;
 
@@ -69,6 +71,8 @@ foreach (Renderer renderer in visuals)
             AITargetManager.Instance.RemoveFromFaction(_currentFaction, this);
             _currentFaction = newFactionType;
             AITargetManager.Instance.AddAsNewInteractable(this);
+
+            factionChanged?.Invoke();
 
             /*
              * _ftype = newFactionType;

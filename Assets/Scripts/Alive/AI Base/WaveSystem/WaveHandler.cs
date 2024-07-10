@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Sampo
 {
-    [ExecuteInEditMode]
     public class WaveHandler : MonoBehaviour
     {
         private static WaveHandler _instance;
