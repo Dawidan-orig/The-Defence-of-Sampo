@@ -9539,37 +9539,6 @@ MonoBehaviour:
   ai_weight: 9999999
   _currentFaction: 0
   isAvailableForSelfFaction: 0
---- !u!1 &570005499
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 570005500}
-  m_Layer: 0
-  m_Name: Cells positions
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &570005500
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 570005499}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 927423864}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &570134023
 GameObject:
   m_ObjectHideFlags: 0
@@ -12249,6 +12218,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1226281759}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &715848563
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 715848564}
+  m_Layer: 0
+  m_Name: Cells positions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &715848564
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 715848563}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 927423864}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &718991488
 GameObject:
@@ -15920,7 +15920,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 570005500}
+  - {fileID: 715848564}
   m_Father: {fileID: 1302229133}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &927423865
@@ -15942,14 +15942,14 @@ MonoBehaviour:
     m_Center: {x: 0, y: -1, z: 0}
     m_Extent: {x: 600, y: 250, z: 600}
   octreeCells:
-    rid: 2804532240105340944
+    rid: 2804532240105340946
   _clusters: []
-  _cellTransformContainer: {fileID: 570005499}
+  _cellTransformContainer: {fileID: 715848563}
   drawOctTree: 1
   references:
     version: 2
     RefIds:
-    - rid: 2804532240105340944
+    - rid: 2804532240105340946
       type: {class: OctTree, ns: , asm: SampoCore}
       data: 
 --- !u!1 &943121018
@@ -38709,9 +38709,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1624014821278472606, guid: e43fa9b06358fbd498c2502814eab243, type: 3}
+      propertyPath: m_Radius
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 3535705344480803869, guid: e43fa9b06358fbd498c2502814eab243, type: 3}
       propertyPath: m_Name
       value: ShootingTower
+      objectReference: {fileID: 0}
+    - target: {fileID: 6875652382678028111, guid: e43fa9b06358fbd498c2502814eab243, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 6.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -38876,10 +38884,6 @@ PrefabInstance:
     - target: {fileID: 7070418557163671830, guid: 1b8bad2a41496294dbf9340ff9219d51, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8149509274429226194, guid: 1b8bad2a41496294dbf9340ff9219d51, type: 3}
-      propertyPath: _currentFaction
-      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
