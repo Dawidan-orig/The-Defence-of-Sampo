@@ -38717,6 +38717,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ShootingTower
       objectReference: {fileID: 0}
+    - target: {fileID: 3535705344480803869, guid: e43fa9b06358fbd498c2502814eab243, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6875652382678028111, guid: e43fa9b06358fbd498c2502814eab243, type: 3}
       propertyPath: m_LocalPosition.y
       value: 6.5
