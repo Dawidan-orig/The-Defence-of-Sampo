@@ -1,5 +1,5 @@
-using Sampo;
-using Sampo.AI;
+using WingedCore;
+using WingedCore.AI;
 using System.Collections.Generic;
 using UnityEngine;
 

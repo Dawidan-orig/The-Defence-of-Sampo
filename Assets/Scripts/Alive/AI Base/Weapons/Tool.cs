@@ -1,7 +1,8 @@
-using Sampo.AI;
+using WingedCore.AI;
+using WingedCore.Core;
 using UnityEngine;
 
-namespace Sampo.Weaponry
+namespace WingedCore.Weaponry
 {
     public class Tool : MonoBehaviour
     {

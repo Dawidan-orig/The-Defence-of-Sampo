@@ -1,8 +1,8 @@
 using Cinemachine;
-using Sampo.Building;
+using WingedCore.Building;
 using UnityEngine;
 
-namespace Sampo.Player
+namespace WingedCore.Player
 {
     public class BuildingCameraPositioner : MonoBehaviour
     {

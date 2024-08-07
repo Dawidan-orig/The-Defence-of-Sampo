@@ -1,9 +1,9 @@
-using Sampo.AI;
-using System.Collections;
+using WingedCore.AI;
 using System.Collections.Generic;
 using UnityEngine;
+using WingedCore.Core;
 
-namespace Sampo.Building
+namespace WingedCore.Building
 {
     public class DestructableStructure : AITarget, IDamagable
     {

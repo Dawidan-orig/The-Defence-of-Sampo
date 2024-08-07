@@ -1,4 +1,4 @@
-using Sampo.Core.Shaderworks;
+using WingedCore.Core.Shaderworks;
 using UnityEditor;
 using UnityEngine;
 

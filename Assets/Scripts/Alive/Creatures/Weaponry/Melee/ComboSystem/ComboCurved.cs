@@ -1,7 +1,7 @@
 using Dreamteck.Splines;
 using System;
 
-namespace Sampo.Melee.Combos
+namespace WingedCore.Weaponry.Melee.Combos
 {
     [Serializable]
     public class ComboCurved : ComboBase

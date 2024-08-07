@@ -1,7 +1,8 @@
 using UnityEditor;
 using UnityEngine;
+using WingedCore.Core;
 
-namespace Sampo.AI
+namespace WingedCore.AI
 {
     public class AliveBeing : AITarget, IDamagable
     {

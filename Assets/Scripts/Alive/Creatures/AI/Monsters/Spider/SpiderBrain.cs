@@ -1,8 +1,8 @@
-using Sampo.AI.Monsters.Spider;
-using Sampo.Weaponry;
+using WingedCore.AI.Monsters.Spider;
+using WingedCore.Weaponry;
 using UnityEngine;
 
-namespace Sampo.AI.Monsters
+namespace WingedCore.AI.Monsters
 {
     [SelectionBase]
     public class SpiderBrain : AIBehaviourBase

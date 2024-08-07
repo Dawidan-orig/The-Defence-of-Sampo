@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
-namespace Sampo.Core.VFX
+namespace WingedCore.Core.VFX
 {
     public class VisualEffectEnd : MonoBehaviour
     {

@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Sampo.Core
+namespace WingedCore.Core
 {
     public class NavMeshCalculations : MonoBehaviour
     {

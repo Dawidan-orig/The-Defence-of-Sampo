@@ -1,10 +1,9 @@
-using Sampo.AI;
-using Sampo.Weaponry;
-using Sampo.Weaponry.Melee;
+using WingedCore.Weaponry;
+using WingedCore.Weaponry.Melee;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.Melee
+namespace WingedCore.AI.Humans.Melee
 {
 
     public abstract class MeleeFighter : AIBehaviourBase

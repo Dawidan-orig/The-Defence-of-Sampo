@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.Melee.Combos
+namespace WingedCore.Weaponry.Melee.Combos
 {
     public class ComboChain : IEnumerator
     {

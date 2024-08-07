@@ -1,8 +1,8 @@
-using Sampo.AI;
+using WingedCore.AI;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Sampo.AI.Movement
+namespace WingedCore.AI.Movement
 {
     [RequireComponent(typeof(NavMeshAgent))]
     public class PhysicalNMAgent : MonoBehaviour, IMovingAgent

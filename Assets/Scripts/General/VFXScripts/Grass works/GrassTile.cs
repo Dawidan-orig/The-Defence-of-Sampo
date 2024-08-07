@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-namespace Sampo.Core.Shaderworks
+namespace WingedCore.Core.Shaderworks
 {
     [ExecuteAlways]
     [SelectionBase]

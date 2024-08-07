@@ -1,10 +1,10 @@
-using Sampo.Core.JournalLogger.Behaviours;
+using WingedCore.Core.JournalLogger.Behaviours;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Sampo.Core.JournalLogger.Editor
+namespace WingedCore.Core.JournalLogger.Editor
 {
     [CustomPropertyDrawer(typeof(JournalComponent.LoggerData))]
     public class LoggedData_Drawer : PropertyDrawer

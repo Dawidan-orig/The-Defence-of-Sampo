@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.Abilities
+namespace WingedCore.Abilities
 {
     public class AblitySystem : MonoBehaviour
     {

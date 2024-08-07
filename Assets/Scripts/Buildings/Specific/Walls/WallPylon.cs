@@ -1,9 +1,9 @@
-using Sampo.AI;
+using WingedCore.AI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.Building
+namespace WingedCore.Building
 {
     public class WallPylon : BuildableStructure
     {

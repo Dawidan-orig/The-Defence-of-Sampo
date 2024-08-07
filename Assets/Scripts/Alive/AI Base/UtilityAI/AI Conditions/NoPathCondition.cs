@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.AI;
 
-namespace Sampo.AI.Conditions
+namespace WingedCore.AI.Conditions
 {
     public class NoPathCondition : BaseAICondition
     {

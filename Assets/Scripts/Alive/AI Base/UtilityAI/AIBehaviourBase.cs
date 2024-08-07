@@ -1,12 +1,12 @@
-using Sampo.AI.Conditions;
-using Sampo.Core;
-using Sampo.Weaponry;
+using WingedCore.AI.Conditions;
+using WingedCore.Core;
+using WingedCore.Weaponry;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using static Sampo.AI.TargetingUtilityAI;
+using static WingedCore.AI.TargetingUtilityAI;
 
-namespace Sampo.AI
+namespace WingedCore.AI
 {
     public abstract class AIBehaviourBase : MonoBehaviour, IPointsDistribution, IAnimationProvider
     {
@@ -211,7 +211,7 @@ namespace Sampo.AI
             moveTargetPos = closestPos;
 
             if (CurrentActivity.behaviour.BehaviourWeapon
-                is Sampo.Weaponry.Ranged.BaseShooting shooting) // »щем лучшую позицию дл€ стрельбы
+                is WingedCore.Weaponry.Ranged.BaseShooting shooting) // »щем лучшую позицию дл€ стрельбы
             {
                 moveTargetPos = shooting.NavMeshClosestAviableToShoot(_AITargeting.CurrentActivity.target);
             }

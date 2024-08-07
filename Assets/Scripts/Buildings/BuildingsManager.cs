@@ -1,5 +1,5 @@
-using Sampo.Building.Spawners;
-using Sampo.Core;
+using WingedCore.Building.Spawners;
+using WingedCore.Core;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;

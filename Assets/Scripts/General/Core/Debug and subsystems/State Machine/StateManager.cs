@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 //https://www.youtube.com/watch?v=qsIiFsddGV4
 
-namespace Sampo.AI
+namespace WingedCore.AI
 {
     public class StateManager<EState> : MonoBehaviour where EState : Enum
     {

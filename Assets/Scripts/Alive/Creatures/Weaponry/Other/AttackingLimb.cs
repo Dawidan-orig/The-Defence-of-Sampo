@@ -1,9 +1,10 @@
-using Sampo.AI;
-using Sampo.Weaponry.Melee;
+using WingedCore.AI;
+using WingedCore.Weaponry.Melee;
 using System;
 using UnityEngine;
+using WingedCore.Core;
 
-namespace Sampo.Weaponry.Special
+namespace WingedCore.Weaponry.Special
 {
     public class AttackingLimb : MeleeTool
     {

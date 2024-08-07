@@ -1,10 +1,10 @@
-using Sampo.Core;
+using WingedCore.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.AI.Conditions.Orders
+namespace WingedCore.AI.Conditions.Orders
 {
     /// <summary>
     /// Приказ, изменяющий свою силу в runtime

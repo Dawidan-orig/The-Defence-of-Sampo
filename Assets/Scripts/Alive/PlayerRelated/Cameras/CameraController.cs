@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.Player {
+namespace WingedCore.Player {
     public class CameraController : MonoBehaviour
     {
         public CinemachineVirtualCamera FirstPerson;

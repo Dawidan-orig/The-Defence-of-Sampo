@@ -1,10 +1,11 @@
-using Sampo.AI;
-using Sampo.Player;
-using Sampo.Weaponry;
+using WingedCore.AI;
+using WingedCore.Player;
+using WingedCore.Weaponry;
 using System;
 using UnityEngine;
+using WingedCore.Core;
 
-namespace Sampo.Abilities
+namespace WingedCore.Abilities
 {
     [Serializable]
     public class ProceedingSlash : Ability

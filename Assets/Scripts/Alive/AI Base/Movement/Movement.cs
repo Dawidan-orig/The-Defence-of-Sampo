@@ -1,4 +1,4 @@
-using Sampo.AI;
+using WingedCore.AI;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;

@@ -1,9 +1,9 @@
 using Cinemachine;
-using Sampo.Core;
-using Sampo.Weaponry;
+using WingedCore.Core;
+using WingedCore.Weaponry;
 using UnityEngine;
 
-namespace Sampo.Player.CameraControls
+namespace WingedCore.Player.CameraControls
 {
     public class ThirdPersonCameraPositioner : MonoBehaviour
     {

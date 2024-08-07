@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sampo.Core.Shaderworks
+namespace WingedCore.Core.Shaderworks
 {
     [ExecuteAlways]
     [SelectionBase]

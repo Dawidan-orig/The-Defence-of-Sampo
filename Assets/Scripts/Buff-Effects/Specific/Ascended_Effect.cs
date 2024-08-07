@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using WingedCore.AI;
 
 [Serializable]
 public class Ascended_Effect : UniversalEffect

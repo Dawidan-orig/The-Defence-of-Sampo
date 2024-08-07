@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.Core.JournalLogger.Behaviours
+namespace WingedCore.Core.JournalLogger.Behaviours
 {
     /// <summary>
     /// Компонент для индивидуального логирования

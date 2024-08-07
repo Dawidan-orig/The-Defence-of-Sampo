@@ -1,4 +1,4 @@
-using Sampo.GUI;
+using WingedCore.GUI;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;

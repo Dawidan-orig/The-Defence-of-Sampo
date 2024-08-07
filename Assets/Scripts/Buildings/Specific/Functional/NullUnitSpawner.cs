@@ -1,10 +1,10 @@
 using Alchemy.Inspector;
-using Sampo.Core;
-using Sampo.Player.Economy;
+using WingedCore.Core;
+using WingedCore.Player.Economy;
 using System.Collections;
 using UnityEngine;
 
-namespace Sampo.Building.Spawners
+namespace WingedCore.Building.Spawners
 {
     /// <summary>
     /// Дом, из которого появляются юниты-пустышки.

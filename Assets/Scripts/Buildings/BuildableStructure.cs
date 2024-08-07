@@ -1,9 +1,9 @@
-using Sampo.AI;
-using Sampo.Core.JournalLogger;
+using WingedCore.AI;
+using WingedCore.Core.JournalLogger;
 using UnityEngine;
 
 
-namespace Sampo.Building
+namespace WingedCore.Building
 {
     /// <summary>
     /// Класс для всех построек.

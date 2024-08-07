@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using WingedCore.AI.Humans.Melee;
 
-namespace Sampo.Melee.Combos
+namespace WingedCore.Weaponry.Melee.Combos
 {
     [Serializable]
     public abstract class ComboBase

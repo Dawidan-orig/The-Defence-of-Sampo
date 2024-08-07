@@ -1,7 +1,7 @@
-using Sampo.Core.JournalLogger.Behaviours;
+using WingedCore.Core.JournalLogger.Behaviours;
 using UnityEngine;
 
-namespace Sampo.Core.JournalLogger
+namespace WingedCore.Core.JournalLogger
 {
     /// <summary>
     /// Система логированиая, которая позволяет привязывать логи к конкретным объектам.

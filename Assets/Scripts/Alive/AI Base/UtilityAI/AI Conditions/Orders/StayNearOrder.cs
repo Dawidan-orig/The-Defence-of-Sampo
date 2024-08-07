@@ -1,10 +1,10 @@
-using Sampo.AI.Conditions;
-using Sampo.Core;
+using WingedCore.AI.Conditions;
+using WingedCore.Core;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.AI.Conditions.Orders
+namespace WingedCore.AI.Conditions.Orders
 {
     /// <summary>
     /// Приказ держаться поблизости объекта

@@ -1,4 +1,4 @@
-using Sampo.AI;
+using WingedCore.AI;
 using System.Collections.Generic;
 /// <summary>
 /// Интерфейс для всех внешних контроллеров приказов,

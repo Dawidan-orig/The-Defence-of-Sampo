@@ -1,7 +1,7 @@
-using Sampo.Weaponry.Special;
+using WingedCore.Weaponry.Special;
 using UnityEngine;
 
-namespace Sampo.AI.Monsters.Spider
+namespace WingedCore.AI.Monsters.Spider
 {
     public class SpiderLegControl : MonoBehaviour
     {

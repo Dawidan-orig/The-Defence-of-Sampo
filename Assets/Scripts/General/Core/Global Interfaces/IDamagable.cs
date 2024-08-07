@@ -2,15 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IDamagable
+namespace WingedCore.Core
 {
-    public abstract Collider Vital {get; }
-    public enum DamageType 
+    public interface IDamagable
     {
-        sharp,
-        blunt,
-        thermal
-    }
+        public abstract Collider Vital { get; }
+        public enum DamageType
+        {
+            sharp,
+            blunt,
+            thermal
+        }
 
-    public abstract void Damage(float harm, DamageType damage);
+        public abstract void Damage(float harm, DamageType damage);
+    }
 }

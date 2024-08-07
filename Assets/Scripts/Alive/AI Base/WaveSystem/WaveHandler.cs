@@ -1,9 +1,9 @@
-using Sampo.AI;
+using WingedCore.AI;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Sampo
+namespace WingedCore
 {
     public class WaveHandler : MonoBehaviour
     {

@@ -1,8 +1,7 @@
-using Sampo.AI;
 using UnityEngine;
+using WingedCore.Core;
 
-
-namespace Sampo.Weaponry.Melee
+namespace WingedCore.Weaponry.Melee
 {
     [RequireComponent(typeof(Rigidbody))]
     public class Blade : MeleeTool, IDamageDealer

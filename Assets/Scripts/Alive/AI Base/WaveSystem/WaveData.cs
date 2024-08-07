@@ -1,7 +1,7 @@
-using Sampo.AI;
+using WingedCore.AI;
 using UnityEngine;
 
-namespace Sampo
+namespace WingedCore
 {
     [CreateAssetMenu(fileName = "New Wave Pallete", menuName = "Scriptable/Wave Data", order = 0)]
     public class WaveData : ScriptableObject

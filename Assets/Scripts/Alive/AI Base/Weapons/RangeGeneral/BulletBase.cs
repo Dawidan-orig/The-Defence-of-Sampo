@@ -1,7 +1,8 @@
-using Sampo.AI;
+using WingedCore.AI;
 using UnityEngine;
+using WingedCore.Core;
 
-namespace Sampo.Weaponry.Ranged
+namespace WingedCore.Weaponry.Ranged
 {
     [RequireComponent(typeof(AITarget))]
     public class BulletBase : MonoBehaviour, IDamageDealer

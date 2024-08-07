@@ -1,8 +1,9 @@
 using Cinemachine;
-using Sampo.Player.CameraControls;
+using WingedCore.Player.CameraControls;
 using UnityEngine;
+using WingedCore.Core;
 
-namespace Sampo.Player
+namespace WingedCore.Player
 {
 
     [RequireComponent(typeof(Movement))]

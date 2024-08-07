@@ -1,12 +1,10 @@
-using Sampo.AI;
-using Sampo.Melee;
-using Sampo.Weaponry.Melee;
+using WingedCore.AI;
+using WingedCore.Weaponry.Melee;
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
-namespace Sampo.Weaponry
+namespace WingedCore.Weaponry
 {
     public class AttackCatcher : MonoBehaviour
     {

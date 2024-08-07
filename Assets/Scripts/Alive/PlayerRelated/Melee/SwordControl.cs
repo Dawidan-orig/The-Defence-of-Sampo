@@ -1,10 +1,10 @@
-using Sampo.Weaponry;
-using Sampo.Weaponry.Melee;
+using WingedCore.Weaponry;
+using WingedCore.Weaponry.Melee;
 using System;
 using UnityEngine;
 
 
-namespace Sampo.Player
+namespace WingedCore.Player
 {
     [RequireComponent(typeof(AttackCatcher))]
     public class SwordControl : MonoBehaviour

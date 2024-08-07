@@ -1,14 +1,14 @@
-using Sampo.AI;
-using Sampo.AI.Humans;
-using Sampo.Core;
+using WingedCore.AI;
+using WingedCore.AI.Humans;
+using WingedCore.Core;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Alchemy.Inspector;
 using System.Linq;
-using Sampo.Core.JournalLogger;
+using WingedCore.Core.JournalLogger;
 
-namespace Sampo.Building.Transformators
+namespace WingedCore.Building.Transformators
 {
     /// <summary>
     /// Базовый класс для всех зданий-преобразователей пустых юнитов

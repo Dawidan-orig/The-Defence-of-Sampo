@@ -1,11 +1,11 @@
 using Codice.Client.BaseCommands.BranchExplorer;
-using Sampo.AI;
-using Sampo.Core;
-using Sampo.Player.Economy;
+using WingedCore.AI;
+using WingedCore.Core;
+using WingedCore.Player.Economy;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.Building
+namespace WingedCore.Building
 {
     /*TODO : Эта штука должна как-то понимать, когда надо выпустить NullUnit'ов,
      * Для этого надо будет сделать систему менеджмента экономики

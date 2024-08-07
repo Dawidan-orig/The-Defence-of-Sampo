@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.AI.Conditions.Orders
+namespace WingedCore.AI.Conditions.Orders
 {
     /// <summary>
     /// Контроллирует приказы в соответствии с назначеной зоной коллайдером

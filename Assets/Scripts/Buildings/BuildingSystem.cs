@@ -1,10 +1,10 @@
-using Sampo;
+using WingedCore;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Sampo.Building
+namespace WingedCore.Building
 {
     
     public class BuildingSystem : MonoBehaviour

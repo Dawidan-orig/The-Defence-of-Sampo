@@ -1,8 +1,8 @@
-using Sampo.Player;
+using WingedCore.Player;
 using System;
 using UnityEngine;
 
-namespace Sampo.Abilities
+namespace WingedCore.Abilities
 {
     [Serializable]
     public class WindSlide : Ability

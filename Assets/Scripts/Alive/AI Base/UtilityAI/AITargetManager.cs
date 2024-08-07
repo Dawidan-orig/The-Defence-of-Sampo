@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Alchemy.Serialization;
-using Sampo.Core.JournalLogger;
+using WingedCore.Core.JournalLogger;
 
-namespace Sampo.AI
+namespace WingedCore.AI
 {
     /// <summary>
     /// Собирает все объекты на сцене,

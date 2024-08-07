@@ -1,6 +1,6 @@
 using System;
 
-namespace Sampo.AI.Conditions
+namespace WingedCore.AI.Conditions
 {
     public class RespondToAttackCondition : BaseAICondition
     {

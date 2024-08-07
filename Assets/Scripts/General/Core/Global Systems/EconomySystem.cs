@@ -1,9 +1,9 @@
-using Sampo.Core;
+using WingedCore.Core;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Sampo.Player.Economy
+namespace WingedCore.Player.Economy
 {
     public class EconomySystem : MonoBehaviour
     {

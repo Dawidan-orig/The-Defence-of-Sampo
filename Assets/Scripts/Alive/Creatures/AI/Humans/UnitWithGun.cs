@@ -1,8 +1,8 @@
-using Sampo.Weaponry;
-using Sampo.Weaponry.Ranged;
+using WingedCore.Weaponry;
+using WingedCore.Weaponry.Ranged;
 using UnityEngine;
 
-namespace Sampo.AI.Humans.Ranged
+namespace WingedCore.AI.Humans.Ranged
 {
     public class UnitWithGun : AIBehaviourBase
     {

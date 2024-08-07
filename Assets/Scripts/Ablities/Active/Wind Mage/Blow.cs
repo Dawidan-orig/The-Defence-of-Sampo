@@ -1,8 +1,8 @@
-using Sampo.AI;
+using WingedCore.AI;
 using System;
 using UnityEngine;
 
-namespace Sampo.Abilities
+namespace WingedCore.Abilities
 {
     [Serializable]
     public class Blow : Ability

@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using WingedCore.Weaponry.Melee;
 
-namespace Sampo.Weaponry.Melee.Sword
+namespace WingedCore.AI.Humans.Melee.Sword
 {
     [Serializable]
     public class SwordFighter_SwingingState : SwordFighter_BaseState

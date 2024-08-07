@@ -1,4 +1,4 @@
-namespace Sampo.Weaponry.Melee.Sword
+namespace WingedCore.AI.Humans.Melee.Sword
 {
     public class SwordFighter_StateFactory
     {

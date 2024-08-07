@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.Core
+namespace WingedCore.Core
 {
     public interface IInteractable
     {

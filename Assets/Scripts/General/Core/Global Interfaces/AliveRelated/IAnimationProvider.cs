@@ -2,13 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IAnimationProvider
+namespace WingedCore.Core
 {
-    public abstract Vector3 GetLookTarget();
+    public interface IAnimationProvider
+    {
+        public abstract Vector3 GetLookTarget();
 
-    public abstract Transform GetRightHandTarget();
+        public abstract Transform GetRightHandTarget();
 
-    public abstract bool IsGrounded();
+        public abstract bool IsGrounded();
 
-    public abstract bool IsInJump();
+        public abstract bool IsInJump();
+    }
 }

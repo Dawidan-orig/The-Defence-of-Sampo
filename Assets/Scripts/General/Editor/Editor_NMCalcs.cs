@@ -1,4 +1,4 @@
-using Sampo.Core;
+using WingedCore.Core;
 using UnityEditor;
 using UnityEngine;
 

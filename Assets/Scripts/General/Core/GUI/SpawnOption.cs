@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.GUI
+namespace WingedCore.GUI
 {
     [CreateAssetMenu(fileName = "Spawnable Buyable", menuName = "Scriptable/Player/Spawnable", order = 0)]
     public class SpawnOption : ScriptableObject

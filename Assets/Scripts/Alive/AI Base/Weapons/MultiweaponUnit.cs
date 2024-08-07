@@ -1,12 +1,12 @@
-using Sampo.Core.JournalLogger;
-using Sampo.Weaponry;
+using WingedCore.Core.JournalLogger;
+using WingedCore.Weaponry;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Sampo.AI.Humans
+namespace WingedCore.AI.Humans
 {
     /// <summary>
     /// ”меет выбирать оружие относительно их настроек

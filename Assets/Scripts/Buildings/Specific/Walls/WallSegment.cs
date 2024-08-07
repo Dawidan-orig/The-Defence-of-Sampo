@@ -1,10 +1,10 @@
-using Sampo.AI;
+using WingedCore.AI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.Building
+namespace WingedCore.Building
 {
     public class WallSegment : BuildableStructure
     {

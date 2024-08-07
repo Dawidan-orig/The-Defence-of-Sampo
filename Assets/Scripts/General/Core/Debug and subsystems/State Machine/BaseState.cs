@@ -2,7 +2,7 @@ using System;
 
 //https://www.youtube.com/watch?v=qsIiFsddGV4
 
-namespace Sampo.AI
+namespace WingedCore.AI
 {
     public abstract class BaseState<EState> where EState : Enum
     {

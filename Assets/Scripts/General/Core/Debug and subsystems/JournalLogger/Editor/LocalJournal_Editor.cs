@@ -1,9 +1,9 @@
-using Sampo.Core.JournalLogger.Behaviours;
+using WingedCore.Core.JournalLogger.Behaviours;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Sampo.Core.JournalLogger.Editor
+namespace WingedCore.Core.JournalLogger.Editor
 {
     [CustomEditor(typeof(JournalComponent))]
     public class LocalJournal_Editor : UnityEditor.Editor

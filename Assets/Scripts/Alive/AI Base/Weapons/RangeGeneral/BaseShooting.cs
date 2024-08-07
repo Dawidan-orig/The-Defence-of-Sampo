@@ -1,11 +1,11 @@
-using Sampo.AI;
-using Sampo.Core;
-using Sampo.Weaponry.Ranged;
+using WingedCore.AI;
+using WingedCore.Core;
+using WingedCore.Weaponry.Ranged;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.Weaponry.Ranged
+namespace WingedCore.Weaponry.Ranged
 {
     //TODO : Пока что это - DirectShooting. Его надо переписать на реальный, абстрактный BaseShooting
     public class BaseShooting : Tool

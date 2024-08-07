@@ -1,11 +1,11 @@
-﻿using Sampo.AI.Conditions;
-using Sampo.AI.Humans;
-using Sampo.Core;
+﻿using WingedCore.AI.Conditions;
+using WingedCore.AI.Humans;
+using WingedCore.Core;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.AI
+namespace WingedCore.AI
 {
     // TODO (Сложное!) : Поиск ближайших укрытий при массированном обстреле
 
@@ -417,7 +417,7 @@ namespace Sampo.AI
 
                 if (action.target == target)
                 {
-                    if(withCondition is Sampo.AI.Conditions.Orders.OrderBase order) 
+                    if(withCondition is WingedCore.AI.Conditions.Orders.OrderBase order) 
                     {
                         order.SetActionBackling(action);
                     }

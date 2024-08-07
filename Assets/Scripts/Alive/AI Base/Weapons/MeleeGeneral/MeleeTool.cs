@@ -1,8 +1,9 @@
-using Sampo.Melee;
 using System;
 using UnityEngine;
+using WingedCore.AI.Humans.Melee;
+using WingedCore.Core;
 
-namespace Sampo.Weaponry.Melee
+namespace WingedCore.Weaponry.Melee
 {
     public class MeleeTool : Tool
     {
@@ -18,6 +19,7 @@ namespace Sampo.Weaponry.Melee
         AudioClip[] _collision_blade;
         [SerializeField]
         AudioClip[] _collision_alive; //TODO DESIGN : это, возможно, лучше инвертировать в зависимости. Разные живые (Особенно монстры) имеют разные звуки ранений
+        // Можно использовать Playables
 
         [Header("lookonly")]
         public Rigidbody body;

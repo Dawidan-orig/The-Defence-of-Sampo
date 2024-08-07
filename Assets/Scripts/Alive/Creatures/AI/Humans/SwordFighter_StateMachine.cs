@@ -1,10 +1,9 @@
-using Sampo.Melee;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using WingedCore.Weaponry;
 
-namespace Sampo.Weaponry.Melee.Sword
+namespace WingedCore.AI.Humans.Melee.Sword
 {
     [RequireComponent(typeof(AttackCatcher))]
     public class SwordFighter_StateMachine : MeleeFighter

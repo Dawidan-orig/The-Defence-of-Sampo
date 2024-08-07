@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Sampo.AI
+namespace WingedCore.AI
 {
     public class AITarget : MonoBehaviour
     // Предоставляет менеджеру вес GameObject'а, делая его одной из возможных целей UtilityAI.

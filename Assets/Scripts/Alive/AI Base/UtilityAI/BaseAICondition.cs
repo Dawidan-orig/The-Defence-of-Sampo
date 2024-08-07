@@ -1,6 +1,6 @@
 using System;
 
-namespace Sampo.AI.Conditions
+namespace WingedCore.AI.Conditions
 {
     /// <summary>
     /// ƒинамическое условие дл€ »», которое обновл€етс€ независимо от него же и позвол€ет контроллировать активности

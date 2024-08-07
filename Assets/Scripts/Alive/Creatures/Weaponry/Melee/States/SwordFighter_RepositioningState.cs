@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Sampo.Weaponry.Melee.Sword
+namespace WingedCore.AI.Humans.Melee.Sword
 {
     [Serializable]
     public class SwordFighter_RepositioningState : SwordFighter_BaseState

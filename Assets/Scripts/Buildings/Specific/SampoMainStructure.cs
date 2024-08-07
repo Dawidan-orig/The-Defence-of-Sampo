@@ -1,13 +1,13 @@
-using Sampo.AI;
-using Sampo.Core;
-using Sampo.GUI;
-using Sampo.Player.Economy;
+using WingedCore.AI;
+using WingedCore.Core;
+using WingedCore.GUI;
+using WingedCore.Player.Economy;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
-namespace Sampo.Building
+namespace WingedCore.Building
 {
     public class SampoMainStructure : MonoBehaviour, IInteractable
     {

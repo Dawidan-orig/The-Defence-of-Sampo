@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IDamageDealer
+namespace WingedCore.Core
 {
-    public Transform DamageFrom { get;}
+    public interface IDamageDealer
+    {
+        public Transform DamageFrom { get; }
+    }
 }

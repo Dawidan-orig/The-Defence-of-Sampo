@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.AI.Monsters.Spider
+namespace WingedCore.AI.Monsters.Spider
 {
     public class LegsHarmoniser : MonoBehaviour
     {

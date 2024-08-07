@@ -2,15 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OneTimeCollision : MonoBehaviour
+namespace WingedCore.Core
 {
-    public LayerMask ignored;
-
-    private void OnCollisionEnter(Collision collision)
+    public class OneTimeCollision : MonoBehaviour
     {
-        if (((1 << collision.gameObject.layer) & ignored) != 0)
-            return;
+        public LayerMask ignored;
 
-        Destroy(gameObject);
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (((1 << collision.gameObject.layer) & ignored) != 0)
+                return;
+
+            Destroy(gameObject);
+        }
     }
 }

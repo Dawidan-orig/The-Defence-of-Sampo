@@ -1,12 +1,12 @@
 using Alchemy.Inspector;
-using Sampo.AI;
-using Sampo.Weaponry.Ranged;
+using WingedCore.AI;
+using WingedCore.Weaponry.Ranged;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Sampo.Building.Towers
+namespace WingedCore.Building.Towers
 {
     /// <summary>
     /// Башня, работающая относительно области действия - коллайдера.

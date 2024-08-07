@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Sampo.Core
+namespace WingedCore.Core
 {
     public class Variable_Provider : MonoBehaviour
     {

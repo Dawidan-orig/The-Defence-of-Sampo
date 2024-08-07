@@ -1,7 +1,7 @@
-using Sampo.AI;
+using WingedCore.AI;
 using UnityEngine;
 
-namespace Sampo.Weaponry.Ranged
+namespace WingedCore.Weaponry.Ranged
 {
     public class ThrowableRocks : BaseShooting
     {

@@ -1,5 +1,5 @@
-using Sampo.AI;
-using Sampo.Weaponry;
+using WingedCore.AI;
+using WingedCore.Weaponry;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
