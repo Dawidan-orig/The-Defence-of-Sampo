@@ -39,7 +39,8 @@ namespace BPS
 						for (int i = 0; i < secondaryTypeList.Count; i++) {
 							if (m_scripts.Find (x => x.m_type == secondaryTypeList [i]) == null) {
 								Scripts script = new Scripts (secondaryTypeList [i]);
-								secondaryScriptsList.Add (script);
+								if(IsPassing(script))
+									secondaryScriptsList.Add (script);
 							}
 						}
 						DoResearchOnTypes (ref secondaryScriptsList);
@@ -105,20 +106,29 @@ namespace BPS
 				
 		}
 
+		bool IsPassing(Scripts script) 
+		{
+            bool namespaceResult = true;
+            foreach (string s in _namespaces)
+            {
+                namespaceResult &= script.m_type.Namespace != s;
+            }
+            bool nameResult = true;
+            foreach (string s in _typeNames)
+            {
+                nameResult &= script.m_type.Name != s;
+            }
+
+			return namespaceResult && nameResult;
+        }
+
 		void CreateScriptsList (ref List<Type> monos)
 		{
 			m_scripts = new List<Scripts> ();
 			for (int i = 0; i < monos.Count; i++) {
 				Scripts script = new Scripts (monos [i]);
-				bool namespaceResult = true;
-				foreach (string s in _namespaces) {
-					namespaceResult &= script.m_type.Namespace != s;
-				}
-				bool nameResult = true;
-				foreach (string s in _typeNames) {
-					nameResult &= script.m_type.Name != s;
-				}
-				if (namespaceResult && nameResult) {
+
+				if (IsPassing(script)) {
 					
 					m_scripts.Add (script);
 				}

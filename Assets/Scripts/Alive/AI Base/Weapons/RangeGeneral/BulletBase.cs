@@ -4,7 +4,6 @@ using WingedCore.Core;
 
 namespace WingedCore.Weaponry.Ranged
 {
-    [RequireComponent(typeof(AITarget))]
     public class BulletBase : MonoBehaviour, IDamageDealer
     {
         public GameObject instantiatedOnDestroy;
