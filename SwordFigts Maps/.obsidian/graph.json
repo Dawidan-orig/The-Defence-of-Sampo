@@ -1,11 +1,11 @@
 {
   "collapse-filter": false,
-  "search": "",
+  "search": "-tag:#Собиратель",
   "showTags": false,
   "showAttachments": false,
   "hideUnresolved": false,
   "showOrphans": true,
-  "collapse-color-groups": true,
+  "collapse-color-groups": false,
   "colorGroups": [
     {
       "query": "tag:#Собиратель  ",
@@ -22,10 +22,10 @@
       }
     },
     {
-      "query": "path:Планировка tag:#Доделать",
+      "query": "path:\"Систематика и описания/Триада Баланса/Юниты/Контр-Система\"  ",
       "color": {
         "a": 1,
-        "rgb": 16514816
+        "rgb": 7602355
       }
     },
     {
@@ -55,27 +55,6 @@
         "a": 1,
         "rgb": 5526240
       }
-    },
-    {
-      "query": "path:Планировка tag:#Проблемно",
-      "color": {
-        "a": 1,
-        "rgb": 14701138
-      }
-    },
-    {
-      "query": "path:Планировка tag:#ВозможноДоделать",
-      "color": {
-        "a": 1,
-        "rgb": 5419488
-      }
-    },
-    {
-      "query": "tag:Сделано path:Планировка",
-      "color": {
-        "a": 1,
-        "rgb": 65297
-      }
     }
   ],
   "collapse-display": false,
@@ -88,6 +67,6 @@
   "repelStrength": 10.9147609147609,
   "linkStrength": 1,
   "linkDistance": 30,
-  "scale": 0.44009703167663,
-  "close": false
+  "scale": 0.96816215508282,
+  "close": true
 }
