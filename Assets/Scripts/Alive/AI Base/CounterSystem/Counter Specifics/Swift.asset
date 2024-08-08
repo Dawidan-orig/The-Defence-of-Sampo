@@ -10,12 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 990b9b0a46db8624fa293f801c334825, type: 3}
-  m_Name: Ranged
+  m_Name: Swift
   m_EditorClassIdentifier: 
-  counterWho:
-  - counterWho: {fileID: 11400000, guid: 860df20cade6b6b4283ee28601a03be0, type: 2}
-    counterRating: 3
-  - counterWho: {fileID: 11400000, guid: c7fc38b72463283459225febbe38060d, type: 2}
-    counterRating: 2
-  - counterWho: {fileID: 11400000, guid: 2754c76c722b8204ea69344aae8b1c4f, type: 2}
-    counterRating: 2
+  __alchemySerializationData_WingedCore_AI_CounterSystem_CounterNode:
+    counterWho:
+      isCreated: 1
+      data: '[]'
+    unityObjectReferences: []

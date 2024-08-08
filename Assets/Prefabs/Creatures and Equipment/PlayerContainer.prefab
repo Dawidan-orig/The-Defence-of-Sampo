@@ -1024,6 +1024,8 @@ GameObject:
   - component: {fileID: 2901471402356923130}
   - component: {fileID: 2687963404015155845}
   - component: {fileID: 8149509274429226194}
+  - component: {fileID: 1789166653878866503}
+  - component: {fileID: 7217191176934197708}
   - component: {fileID: 5072331520620561110}
   - component: {fileID: 3743604981802368088}
   - component: {fileID: 2118354975803688040}
@@ -1068,7 +1070,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   usedMainHand: {fileID: 7048942964612578113}
   swordControl: {fileID: 0}
-  mouseDeltaForSwing: 1500
+  mouseDeltaForSwing: 750
   reachLength: 1
   castToWeaponSpaceK: 500
   _prevMouse: {x: 0, y: 0, z: 0}
@@ -1209,6 +1211,36 @@ MonoBehaviour:
   vital: {fileID: 3743604981802368088}
   brainBody: {fileID: 0}
   root: {fileID: 7070418557163671830}
+--- !u!114 &1789166653878866503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2395078813691770050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c67325d249865a74a82c5f77c8873268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effects: []
+--- !u!114 &7217191176934197708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2395078813691770050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5e65aac10b33184d819d869298157f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containedTagsRoles:
+  - {fileID: 11400000, guid: 2197fe6da0fa5314891007b3bdd7bd6d, type: 2}
+  - {fileID: 11400000, guid: 2754c76c722b8204ea69344aae8b1c4f, type: 2}
+  - {fileID: 11400000, guid: f242884a299848d469fe61246935ca50, type: 2}
+  - {fileID: 11400000, guid: 9997a3048083fc14892ac0af91d84e8c, type: 2}
 --- !u!54 &5072331520620561110
 Rigidbody:
   m_ObjectHideFlags: 0

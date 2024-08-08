@@ -1,0 +1,155 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 569acaeab3e241e47875407eea9a6ca5, type: 3}
+  m_Name: CounterMap
+  m_EditorClassIdentifier: 
+  allNodesInput:
+  - {fileID: 11400000, guid: 833ab1bdebbd81148b9ddc4718f6567a, type: 2}
+  - {fileID: 11400000, guid: f0b20c607ef6ce44191a2416c89f572b, type: 2}
+  - {fileID: 11400000, guid: 357f8735731154f48be6c89014dbb114, type: 2}
+  - {fileID: 11400000, guid: d489db09878779c49b8f7d3dd3891b9c, type: 2}
+  - {fileID: 11400000, guid: 5acc373c2a9d76040906800510f7b4ae, type: 2}
+  - {fileID: 11400000, guid: 210963f41c6e6454d82ac80c84726474, type: 2}
+  - {fileID: 11400000, guid: 8fc1cdb186f049d42a90d9447261e37e, type: 2}
+  - {fileID: 11400000, guid: c7fc38b72463283459225febbe38060d, type: 2}
+  - {fileID: 11400000, guid: 2a4a037b3d6aec14cbc1a72ff2b4cf66, type: 2}
+  - {fileID: 11400000, guid: db545cf86a857d3468e15012e7331c37, type: 2}
+  - {fileID: 11400000, guid: 9997a3048083fc14892ac0af91d84e8c, type: 2}
+  - {fileID: 11400000, guid: 860df20cade6b6b4283ee28601a03be0, type: 2}
+  - {fileID: 11400000, guid: 5ee20a3a836b51340a819789286e028f, type: 2}
+  - {fileID: 11400000, guid: f62c164e939dafb48b428d939d68eb5c, type: 2}
+  - {fileID: 11400000, guid: adf5889644b45004a9d1ed000635bc44, type: 2}
+  - {fileID: 11400000, guid: c7615678129ea9b40bccb526f54866f1, type: 2}
+  - {fileID: 11400000, guid: 3c2d78032ac07e6488cc1be49c62c287, type: 2}
+  - {fileID: 11400000, guid: 9599a04a3aec23a49b2a3c1dc3a696ba, type: 2}
+  - {fileID: 11400000, guid: af6a220afe6f43344844651d2a54103d, type: 2}
+  - {fileID: 11400000, guid: 2754c76c722b8204ea69344aae8b1c4f, type: 2}
+  - {fileID: 11400000, guid: 211bf6f5c01106647a33a4c37ac0a99e, type: 2}
+  - {fileID: 11400000, guid: 4b7cc538cc3484d46bcc5d55fb1c5a37, type: 2}
+  - {fileID: 11400000, guid: 2197fe6da0fa5314891007b3bdd7bd6d, type: 2}
+  - {fileID: 11400000, guid: af9d7e5a3f7614243bdc59fb95b4a11d, type: 2}
+  - {fileID: 11400000, guid: 863ebec3aa4a4c84e868f330a7a58091, type: 2}
+  - {fileID: 11400000, guid: 329c5cf12d3cd30428d590a2c1cd7df2, type: 2}
+  - {fileID: 11400000, guid: df27c4c05f14ea248b9b39a11bb2c51b, type: 2}
+  - {fileID: 11400000, guid: b3d6e88202e925d479e5b43507d45a65, type: 2}
+  - {fileID: 11400000, guid: f242884a299848d469fe61246935ca50, type: 2}
+  __alchemySerializationData_WingedCore_AI_CounterSystem_CounterSystem:
+    loadedCounters:
+      isCreated: 1
+      data: "[\n    {\n        \"Key\": 0,\n        \"Value\": [\n            {\n               
+        \"Key\": 1,\n                \"Value\": 2\n            },\n            {\n               
+        \"Key\": 2,\n                \"Value\": 2\n            },\n            {\n               
+        \"Key\": 3,\n                \"Value\": 2\n            },\n            {\n               
+        \"Key\": 4,\n                \"Value\": 2\n            },\n            {\n               
+        \"Key\": 5,\n                \"Value\": 2\n            },\n            {\n               
+        \"Key\": 6,\n                \"Value\": 2\n            },\n            {\n               
+        \"Key\": 7,\n                \"Value\": 2\n            }\n        ]\n   
+        },\n    {\n        \"Key\": 8,\n        \"Value\": [\n            {\n               
+        \"Key\": 2,\n                \"Value\": 5\n            }\n        ]\n   
+        },\n    {\n        \"Key\": 9,\n        \"Value\": [\n            {\n               
+        \"Key\": 0,\n                \"Value\": 5\n            }\n        ]\n   
+        },\n    {\n        \"Key\": 10,\n        \"Value\": [\n            {\n               
+        \"Key\": 11,\n                \"Value\": 5\n            },\n            {\n               
+        \"Key\": 12,\n                \"Value\": 3\n            },\n            {\n               
+        \"Key\": 13,\n                \"Value\": 2\n            },\n            {\n               
+        \"Key\": 14,\n                \"Value\": 3\n            },\n            {\n               
+        \"Key\": 3,\n                \"Value\": 2\n            },\n            {\n               
+        \"Key\": 4,\n                \"Value\": 2\n            },\n            {\n               
+        \"Key\": 15,\n                \"Value\": 2\n            }\n        ]\n   
+        },\n    {\n        \"Key\": 16,\n        \"Value\": []\n    },\n    {\n       
+        \"Key\": 17,\n        \"Value\": []\n    },\n    {\n        \"Key\": 6,\n       
+        \"Value\": []\n    },\n    {\n        \"Key\": 12,\n        \"Value\": []\n   
+        },\n    {\n        \"Key\": 18,\n        \"Value\": [\n            {\n               
+        \"Key\": 19,\n                \"Value\": 3\n            }\n        ]\n   
+        },\n    {\n        \"Key\": 5,\n        \"Value\": []\n    },\n    {\n       
+        \"Key\": 14,\n        \"Value\": []\n    },\n    {\n        \"Key\": 13,\n       
+        \"Value\": []\n    },\n    {\n        \"Key\": 20,\n        \"Value\": [\n           
+        {\n                \"Key\": 21,\n                \"Value\": 3\n           
+        },\n            {\n                \"Key\": 19,\n                \"Value\":
+        2\n            },\n            {\n                \"Key\": 13,\n               
+        \"Value\": 2\n            },\n            {\n                \"Key\": 14,\n               
+        \"Value\": 2\n            },\n            {\n                \"Key\": 11,\n               
+        \"Value\": 2\n            }\n        ]\n    },\n    {\n        \"Key\": 4,\n       
+        \"Value\": []\n    },\n    {\n        \"Key\": 19,\n        \"Value\": [\n           
+        {\n                \"Key\": 22,\n                \"Value\": 2\n           
+        },\n            {\n                \"Key\": 7,\n                \"Value\":
+        3\n            }\n        ]\n    },\n    {\n        \"Key\": 23,\n       
+        \"Value\": []\n    },\n    {\n        \"Key\": 22,\n        \"Value\": [\n           
+        {\n                \"Key\": 3,\n                \"Value\": 2\n           
+        },\n            {\n                \"Key\": 2,\n                \"Value\":
+        2\n            },\n            {\n                \"Key\": 1,\n               
+        \"Value\": 1.5\n            }\n        ]\n    },\n    {\n        \"Key\":
+        24,\n        \"Value\": []\n    },\n    {\n        \"Key\": 11,\n       
+        \"Value\": [\n            {\n                \"Key\": 1,\n               
+        \"Value\": 1.5\n            },\n            {\n                \"Key\": 17,\n               
+        \"Value\": 2\n            },\n            {\n                \"Key\": 3,\n               
+        \"Value\": 1.5\n            },\n            {\n                \"Key\": 2,\n               
+        \"Value\": 1.5\n            }\n        ]\n    },\n    {\n        \"Key\":
+        25,\n        \"Value\": [\n            {\n                \"Key\": 21,\n               
+        \"Value\": 3\n            },\n            {\n                \"Key\": 17,\n               
+        \"Value\": 4\n            },\n            {\n                \"Key\": 24,\n               
+        \"Value\": 5\n            },\n            {\n                \"Key\": 16,\n               
+        \"Value\": 0.2\n            }\n        ]\n    },\n    {\n        \"Key\":
+        26,\n        \"Value\": []\n    },\n    {\n        \"Key\": 7,\n        \"Value\":
+        [\n            {\n                \"Key\": 6,\n                \"Value\":
+        3\n            },\n            {\n                \"Key\": 2,\n               
+        \"Value\": 2\n            },\n            {\n                \"Key\": 3,\n               
+        \"Value\": 2\n            },\n            {\n                \"Key\": 4,\n               
+        \"Value\": 2\n            },\n            {\n                \"Key\": 5,\n               
+        \"Value\": 2\n            }\n        ]\n    },\n    {\n        \"Key\": 1,\n       
+        \"Value\": []\n    },\n    {\n        \"Key\": 3,\n        \"Value\": [\n           
+        {\n                \"Key\": 13,\n                \"Value\": 5\n           
+        },\n            {\n                \"Key\": 12,\n                \"Value\":
+        3\n            },\n            {\n                \"Key\": 25,\n               
+        \"Value\": 2\n            }\n        ]\n    },\n    {\n        \"Key\": 27,\n       
+        \"Value\": [\n            {\n                \"Key\": 23,\n               
+        \"Value\": 3\n            },\n            {\n                \"Key\": 20,\n               
+        \"Value\": 2\n            }\n        ]\n    },\n    {\n        \"Key\": 28,\n       
+        \"Value\": [\n            {\n                \"Key\": 16,\n               
+        \"Value\": 3\n            },\n            {\n                \"Key\": 24,\n               
+        \"Value\": 2\n            },\n            {\n                \"Key\": 21,\n               
+        \"Value\": 2\n            }\n        ]\n    },\n    {\n        \"Key\": 21,\n       
+        \"Value\": []\n    },\n    {\n        \"Key\": 2,\n        \"Value\": []\n   
+        },\n    {\n        \"Key\": 15,\n        \"Value\": [\n            {\n               
+        \"Key\": 11,\n                \"Value\": 2\n            },\n            {\n               
+        \"Key\": 17,\n                \"Value\": 5\n            }\n        ]\n   
+        }\n]"
+    unityObjectReferences:
+    - {fileID: 11400000, guid: 833ab1bdebbd81148b9ddc4718f6567a, type: 2}
+    - {fileID: 11400000, guid: 2197fe6da0fa5314891007b3bdd7bd6d, type: 2}
+    - {fileID: 11400000, guid: b3d6e88202e925d479e5b43507d45a65, type: 2}
+    - {fileID: 11400000, guid: af9d7e5a3f7614243bdc59fb95b4a11d, type: 2}
+    - {fileID: 11400000, guid: f62c164e939dafb48b428d939d68eb5c, type: 2}
+    - {fileID: 11400000, guid: db545cf86a857d3468e15012e7331c37, type: 2}
+    - {fileID: 11400000, guid: 8fc1cdb186f049d42a90d9447261e37e, type: 2}
+    - {fileID: 11400000, guid: 4b7cc538cc3484d46bcc5d55fb1c5a37, type: 2}
+    - {fileID: 11400000, guid: f0b20c607ef6ce44191a2416c89f572b, type: 2}
+    - {fileID: 11400000, guid: 357f8735731154f48be6c89014dbb114, type: 2}
+    - {fileID: 11400000, guid: d489db09878779c49b8f7d3dd3891b9c, type: 2}
+    - {fileID: 11400000, guid: af6a220afe6f43344844651d2a54103d, type: 2}
+    - {fileID: 11400000, guid: c7fc38b72463283459225febbe38060d, type: 2}
+    - {fileID: 11400000, guid: 860df20cade6b6b4283ee28601a03be0, type: 2}
+    - {fileID: 11400000, guid: 9997a3048083fc14892ac0af91d84e8c, type: 2}
+    - {fileID: 11400000, guid: f242884a299848d469fe61246935ca50, type: 2}
+    - {fileID: 11400000, guid: 5acc373c2a9d76040906800510f7b4ae, type: 2}
+    - {fileID: 11400000, guid: 210963f41c6e6454d82ac80c84726474, type: 2}
+    - {fileID: 11400000, guid: 2a4a037b3d6aec14cbc1a72ff2b4cf66, type: 2}
+    - {fileID: 11400000, guid: adf5889644b45004a9d1ed000635bc44, type: 2}
+    - {fileID: 11400000, guid: 5ee20a3a836b51340a819789286e028f, type: 2}
+    - {fileID: 11400000, guid: df27c4c05f14ea248b9b39a11bb2c51b, type: 2}
+    - {fileID: 11400000, guid: 3c2d78032ac07e6488cc1be49c62c287, type: 2}
+    - {fileID: 11400000, guid: c7615678129ea9b40bccb526f54866f1, type: 2}
+    - {fileID: 11400000, guid: 9599a04a3aec23a49b2a3c1dc3a696ba, type: 2}
+    - {fileID: 11400000, guid: 2754c76c722b8204ea69344aae8b1c4f, type: 2}
+    - {fileID: 11400000, guid: 211bf6f5c01106647a33a4c37ac0a99e, type: 2}
+    - {fileID: 11400000, guid: 863ebec3aa4a4c84e868f330a7a58091, type: 2}
+    - {fileID: 11400000, guid: 329c5cf12d3cd30428d590a2c1cd7df2, type: 2}
