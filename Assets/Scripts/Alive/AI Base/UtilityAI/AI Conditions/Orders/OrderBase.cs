@@ -1,7 +1,3 @@
-using WingedCore.AI.Conditions;
-using WingedCore.Core;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace WingedCore.AI.Conditions.Orders
@@ -13,7 +9,7 @@ namespace WingedCore.AI.Conditions.Orders
     /// </summary>
     public abstract class OrderBase : BaseAICondition
     {
-        private int currentPoints = Variable_Provider.orderPointsLayer;
+        private int currentPoints = WingedCore.DebugSystems.VariableProvider.orderPointsLayer;
         public override int WeightInfluence => currentPoints;
 
         protected Transform backlingTarget;

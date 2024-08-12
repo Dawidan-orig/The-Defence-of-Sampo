@@ -50,7 +50,7 @@ namespace Sampo.Economy
         }
         public void CreateNewNullUnit(Vector3 spawnPos, Quaternion rotation)
         {
-            Instantiate(nullUnitPrefab, spawnPos, rotation, MonoBehaviourSingleton<Variable_Provider>.Instance.unitsContainer);
+            Instantiate(nullUnitPrefab, spawnPos, rotation, MonoBehaviourSingleton<WingedCore.DebugSystems.VariableProvider>.Instance.unitsContainer);
         }
 
         public void RequestNullUnits(IInteractable requestFor, int amount)

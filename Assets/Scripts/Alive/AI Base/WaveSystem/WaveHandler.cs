@@ -15,7 +15,8 @@ namespace WingedCore
         public AnimationCurve wavePointDistribution;
 
         [Header("Constraints")]
-        public const int NORMAL_POINTS = 100; // Норма очков на одного боеспособного юнита, каковым является мечник с такими себе показателями.
+        [Tooltip("Норма очков на одного боеспособного юнита, каковым является, например, обычный мечник с такими себе показателями.")]
+        public const int NORMAL_POINTS = 100;
         public float wave_power = 10000;
         public int units_amount = 100;
 

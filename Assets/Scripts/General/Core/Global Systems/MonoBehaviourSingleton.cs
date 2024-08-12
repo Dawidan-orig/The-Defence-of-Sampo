@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.LowLevel;
-using WingedCore.Core;
+using WingedCore.DebugSystems;
 
 public class MonoBehaviourSingleton<T> : MonoBehaviour
     where T : Component
@@ -26,7 +23,7 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour
                 if (_instance == null)
                 {
                     GameObject obj = new GameObject();
-                    obj.transform.parent = MonoBehaviourSingleton<Variable_Provider>.Instance.singletonsContainer;
+                    obj.transform.parent = MonoBehaviourSingleton<VariableProvider>.Instance.singletonsContainer;
                     obj.hideFlags = HideFlags.DontSave;
                     _instance = obj.AddComponent<T>();
                 }

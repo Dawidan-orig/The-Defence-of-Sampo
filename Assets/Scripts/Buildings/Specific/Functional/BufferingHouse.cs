@@ -52,7 +52,7 @@ namespace WingedCore.Building
             MonoBehaviourSingleton<ResourcesRequestManager>.Instance.RequestNullUnits(this, 1);
 
             obj.transform.SetPositionAndRotation(releasePos.position, releasePos.rotation);
-            obj.transform.parent = MonoBehaviourSingleton<Variable_Provider>.Instance.unitsContainer;
+            obj.transform.parent = MonoBehaviourSingleton<WingedCore.DebugSystems.VariableProvider>.Instance.unitsContainer;
             obj.SetActive(true);
 
             if (contained.Count <= bufferingAmount)            

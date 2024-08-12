@@ -1,5 +1,4 @@
 using UnityEngine;
-using WingedCore.Debug;
 
 namespace WingedCore.AI
 {
@@ -28,7 +27,7 @@ namespace WingedCore.AI
                 else if (value == true && prev == false)
                     MonoBehaviourSingleton<AITargetManager>.Instance.AddAsNewInteractable(this);
 
-                //ToDO : Простое использоваие AITargetManager.Instance.UpdateAIInfo(this);
+                //TODO : Простое использоваие AITargetManager.Instance.UpdateAIInfo(this);
             }
         }
         [SerializeField]
@@ -46,7 +45,7 @@ namespace WingedCore.AI
 #if UNITY_EDITOR
             if (useDebugColors)
             {
-                VariableProvider provider = MonoBehaviourSingleton<VariableProvider>.Instance;
+                WingedCore.DebugSystems.VariableProvider provider = MonoBehaviourSingleton<WingedCore.DebugSystems.VariableProvider>.Instance;
 
                 Material material = null;
 

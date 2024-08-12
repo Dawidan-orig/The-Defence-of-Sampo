@@ -28,7 +28,7 @@ namespace WingedCore.AI.Conditions.Orders
                 additionalPrioritization = (int)Mathf.Clamp(
                     influenceLogic.Invoke(backlingTarget.GetComponent<AITarget>()),
                     Mathf.NegativeInfinity,
-                    Variable_Provider.emotionalPointsLayer);
+                    WingedCore.DebugSystems.VariableProvider.orderPointsLayer);
         }
     }
 }

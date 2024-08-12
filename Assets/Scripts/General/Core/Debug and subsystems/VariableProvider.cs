@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace WingedCore.Debug
+namespace WingedCore.DebugSystems
 {
     public class VariableProvider : MonoBehaviour
     {
