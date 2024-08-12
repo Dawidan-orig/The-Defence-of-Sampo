@@ -47,8 +47,11 @@ namespace WingedCore.AI
         /// <returns></returns>
         public Dictionary<AITarget, int> GetSameFactionInteractions(AITarget forObject)
         {
-            //TODO : Выдаёт данные других фракций, чего быть не должно
+            //TODO! : Выдаёт данные других фракций, чего быть не должно (Проверить)
             Dictionary<AITarget, int> res = new();
+
+            if (forObject.FactionType == FactionType.none)
+                return new Dictionary<AITarget, int>();
 
             int index = faction_IndexMatch[forObject.FactionType];
             foreach (var kvp in _factionsData[index])

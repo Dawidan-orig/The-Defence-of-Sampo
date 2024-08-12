@@ -2,6 +2,7 @@ using Cinemachine;
 using WingedCore.Player.CameraControls;
 using UnityEngine;
 using WingedCore.Core;
+using Alchemy.Inspector;
 
 namespace WingedCore.Player
 {
@@ -9,6 +10,13 @@ namespace WingedCore.Player
     [RequireComponent(typeof(Movement))]
     public class PlayerController : MonoBehaviour, IAnimationProvider
     {
+        [Required]
+        [SerializeField]
+        CinemachineVirtualCamera FirstPerson;
+        [Required]
+        [SerializeField]
+        CinemachineVirtualCamera ThirdPerson;
+
         Movement movement;
 
         public Transform usedMainHand;
@@ -29,9 +37,9 @@ namespace WingedCore.Player
         {
             movement = GetComponent<Movement>();
 
-            CameraController.Instance.ThirdPerson = transform.parent.GetComponentInChildren<ThirdPersonCameraPositioner>().gameObject.GetComponent<CinemachineVirtualCamera>();
-            CameraController.Instance.FirstPerson = transform.parent.GetComponentInChildren<FirstPersonCameraPositioner>().gameObject.GetComponent<CinemachineVirtualCamera>();
-            CameraController.Instance.player = this;
+            MonoBehaviourSingleton<CameraController>.Instance.ThirdPerson = FirstPerson;
+            MonoBehaviourSingleton<CameraController>.Instance.FirstPerson = ThirdPerson;
+            MonoBehaviourSingleton<CameraController>.Instance.player = this;
         }
 
         private void Update()

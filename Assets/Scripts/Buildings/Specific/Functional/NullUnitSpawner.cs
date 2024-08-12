@@ -15,8 +15,10 @@ namespace WingedCore.Building.Spawners
         //TODO? : Gizmo для отображение появляемого юнита
         public float frequency = 10;
         public int limitAddition = 10;
-        [Required]
-        public Transform transfromSpawnPos;
+        public Vector3 spawnPosRelative = Vector3.up;
+        public Quaternion spawnRotRelative = Quaternion.identity;
+
+        public GameObject prefabToSpawn;
 
         [SerializeField]
         private int toSpawn = 0;
@@ -66,7 +68,8 @@ namespace WingedCore.Building.Spawners
         {
             while (toSpawn > 0)
             {
-                MonoBehaviourSingleton<ResourcesRequestManager>.Instance.CreateNewNullUnit(transfromSpawnPos);
+                MonoBehaviourSingleton<ResourcesRequestManager>.Instance.CreateNewNullUnit(
+                    transform.TransformPoint(spawnPosRelative), transform.rotation * spawnRotRelative);
                 toSpawn--;
                 yield return new WaitForSeconds(frequency);
             }
@@ -75,6 +78,29 @@ namespace WingedCore.Building.Spawners
         public float GetInteractionRange()
         {
             throw new System.NotImplementedException();
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            
+
+            if (prefabToSpawn != null)
+            {
+                Mesh res = null;
+                var sMeshRenderer = prefabToSpawn.GetComponentInChildren<SkinnedMeshRenderer>();
+                if (sMeshRenderer.sharedMesh != null)
+                    res = sMeshRenderer.sharedMesh;
+                
+                if(res == null)
+                {
+                    var meshFilter = prefabToSpawn.GetComponentInChildren<MeshFilter>();
+                    if(meshFilter != null)
+                        res = meshFilter.sharedMesh;
+                }
+
+                Gizmos.color = Color.blue;
+                Gizmos.DrawWireMesh(res, transform.TransformPoint(spawnPosRelative), transform.rotation * spawnRotRelative);
+            }
         }
     }
 }

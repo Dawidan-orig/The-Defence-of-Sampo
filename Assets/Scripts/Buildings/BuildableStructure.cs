@@ -1,6 +1,11 @@
 using WingedCore.AI;
 using WingedCore.Core.JournalLogger;
 using UnityEngine;
+using UnityEditor;
+using UnityEditor.Rendering;
+using WingedCore.Core.Utility;
+using Alchemy.Inspector;
+using WingedCore.DebugSystems;
 
 
 namespace WingedCore.Building
@@ -23,7 +28,8 @@ namespace WingedCore.Building
         public int progressToBuild = -1;
 
         protected int _currentProgressToBuild = 0;
-        protected readonly LayerMask ground = 8;
+        [SerializeField, ReadOnly]
+        protected LayerMask ground = 8 + 1;
         [SerializeField]
         private bool isBuilt = false;
         
@@ -31,6 +37,8 @@ namespace WingedCore.Building
 
         private void Awake()
         {
+            ground = MonoBehaviourSingleton<VariableProvider>.Instance.ground;
+
             if (TryGetComponent(out AITarget interact))
                 interact.enabled = false;
         }
@@ -66,6 +74,16 @@ namespace WingedCore.Building
 
                 isBuilt = true;
             }
+        }
+
+        private void OnDrawGizmos()
+        {
+            var array = GetType().ToString().Split('.');
+            string text = array[array.Length - 1];
+            Vector3 resPos = transform.position
+            + Vector3.up * GetComponent<Collider>().bounds.max.y;
+
+            EditorHelper.DrawEditorText(resPos, text);
         }
 
         /// <summary>

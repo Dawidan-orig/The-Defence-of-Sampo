@@ -1068,6 +1068,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa047b4ed1fdcdc4a9b1c2b38a70c266, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FirstPerson: {fileID: 8743272396019332982}
+  ThirdPerson: {fileID: 3306628381763302050}
   usedMainHand: {fileID: 7048942964612578113}
   swordControl: {fileID: 0}
   mouseDeltaForSwing: 750
@@ -1207,6 +1209,7 @@ MonoBehaviour:
   ai_weight: 30
   _currentFaction: 2
   isAvailableForSelfFaction: 0
+  useDebugColors: 0
   health: 2000
   vital: {fileID: 3743604981802368088}
   brainBody: {fileID: 0}

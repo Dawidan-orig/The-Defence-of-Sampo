@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -17,6 +18,17 @@ namespace WingedCore.Core.VFX
         private void Awake()
         {
             connectedVFX = GetComponent<VisualEffect>();
+#if UNITY_EDITOR
+            EditorApplication.playModeStateChanged += OnPlayModeState;
+#endif
+
+            void OnPlayModeState(PlayModeStateChange state)
+            {
+                if (state == PlayModeStateChange.ExitingPlayMode)
+                {
+                    Kill();
+                }
+            }
         }
 
         private void Start()
@@ -33,14 +45,10 @@ namespace WingedCore.Core.VFX
             connectedLight.intensity = Mathf.Lerp(startIntencity,0,Time.time - startTime);
         }
 
-        private void OnApplicationQuit()
-        {
-            Kill();
-        }
-
         private void Kill() 
         {
-            Destroy(gameObject);
+            if(gameObject)
+                Destroy(gameObject);
         }
     }
 }

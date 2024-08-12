@@ -2,12 +2,13 @@ using WingedCore.Building.Spawners;
 using WingedCore.Core;
 using System.Collections.Generic;
 using UnityEngine;
+using WingedCore.AI;
 
 namespace Sampo.Economy
 {
     public class ResourcesRequestManager : MonoBehaviour
     {
-        //TODO : Сделать универсальной, для любой из фракций, а не только для игрока
+        //TODO : Сделать универсальной для любой из фракций, а не только для игрока
 
         [SerializeField]
         private GameObject nullUnitPrefab;
@@ -50,12 +51,13 @@ namespace Sampo.Economy
         }
         public void CreateNewNullUnit(Vector3 spawnPos, Quaternion rotation)
         {
-            Instantiate(nullUnitPrefab, spawnPos, rotation, MonoBehaviourSingleton<WingedCore.DebugSystems.VariableProvider>.Instance.unitsContainer);
+            var unit = Instantiate(nullUnitPrefab, spawnPos, rotation, MonoBehaviourSingleton<WingedCore.DebugSystems.VariableProvider>.Instance.unitsContainer);
+            unit.GetComponent<AITarget>().ChangeFactionCompletely(FactionType.sampo);
         }
 
         public void RequestNullUnits(IInteractable requestFor, int amount)
         {
-            //TODO : Вывод из зданий-буферов 
+            //TODO : Вывод из зданий-буферов (Приоритетнее)
 
             _nullUnitSpawners.Sort((spawner1, spawner2) => spawner2.ToSpawn.CompareTo(spawner1.ToSpawn));
 

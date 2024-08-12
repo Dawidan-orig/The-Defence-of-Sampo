@@ -4,6 +4,7 @@ using System;
 
 namespace WingedCore.AI
 {
+    //TODO : Переменить на StateMachine от Gitamend
     public abstract class BaseState<EState> where EState : Enum
     {
         protected BaseState(EState key)

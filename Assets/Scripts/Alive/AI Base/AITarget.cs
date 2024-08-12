@@ -40,31 +40,16 @@ namespace WingedCore.AI
 #endif
 
         #region Unity
+        private void OnValidate()
+        {
+            DebugChangeColors();
+        }
+
         private void Awake()
         {
-#if UNITY_EDITOR
-            if (useDebugColors)
-            {
-                WingedCore.DebugSystems.VariableProvider provider = MonoBehaviourSingleton<WingedCore.DebugSystems.VariableProvider>.Instance;
-
-                Material material = null;
-
-                switch (_currentFaction)
-                {
-                    case FactionType.sampo: material = provider.friend; break;
-                    case FactionType.enemy: material = provider.enemy; break;
-                    case FactionType.aggressive: material = provider.agro; break;
-                    case FactionType.neutral: material = provider.neutral; break;
-                }
-
-                if (material != null)
-                    foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
-                    {
-                        renderer.sharedMaterial = material;
-                    }
-            }
-#endif
+            DebugChangeColors();
         }
+
         protected virtual void OnEnable()
         {
             if (_currentFaction != FactionType.none)
@@ -94,6 +79,8 @@ namespace WingedCore.AI
              * _ftype = newFactionType;
              * AITargetManager.Instance.UpdateAIInfo(this);
              */
+
+            DebugChangeColors();
         }
 
         public bool IsWillingToAttack(FactionType type)
@@ -101,6 +88,32 @@ namespace WingedCore.AI
             bool comparedFactions = _currentFaction != type; // Ќа будущее, если вдруг захочу какие-нибудь аль€нсы.
 
             return (comparedFactions || _currentFaction == FactionType.aggressive) && _currentFaction != FactionType.neutral;
+        }
+
+        protected virtual void DebugChangeColors() 
+        {
+#if UNITY_EDITOR
+            if (useDebugColors)
+            {
+                WingedCore.DebugSystems.VariableProvider provider = MonoBehaviourSingleton<WingedCore.DebugSystems.VariableProvider>.Instance;
+
+                Material material = null;
+
+                switch (_currentFaction)
+                {
+                    case FactionType.sampo: material = provider.friend; break;
+                    case FactionType.enemy: material = provider.enemy; break;
+                    case FactionType.aggressive: material = provider.agro; break;
+                    case FactionType.neutral: material = provider.neutral; break;
+                }
+
+                if (material != null)
+                    foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+                    {
+                        renderer.sharedMaterial = material;
+                    }
+            }
+#endif
         }
     }
 }

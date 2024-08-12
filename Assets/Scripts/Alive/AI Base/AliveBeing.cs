@@ -13,7 +13,7 @@ namespace WingedCore.AI
         //TODO : Refactor, заменить transfrom на TargetingAI
         public Transform brainBody;
         [Tooltip("Этот объект будет удалён, когда здоровье опустится ниже 100")]
-        public Transform root;
+        public Transform parentToDestroy;
 
         public Collider Vital => vital;
 
@@ -26,8 +26,8 @@ namespace WingedCore.AI
 
             if (brainBody == null)
                 brainBody = transform;
-            if (root == null)
-                root = transform;
+            if (parentToDestroy == null)
+                parentToDestroy = transform;
         }
 
         public void Damage(float harm, IDamagable.DamageType type)
@@ -43,16 +43,46 @@ namespace WingedCore.AI
 
             if (health < 0)
             {
-                if (root == null)
+                if (parentToDestroy == null)
                     Destroy(gameObject);
                 else
-                    Destroy(root.gameObject);
+                    Destroy(parentToDestroy.gameObject);
             }
         }
 
         private void OnDrawGizmos()
         {
             DebugVisualsHelper.CreateTextInWorld(health.ToString(), transform, position: transform.position + GetComponent<Collider>().bounds.size.y / 2 * Vector3.up, color: Color.green);
+        }
+
+        protected override void DebugChangeColors()
+        {
+#if UNITY_EDITOR
+            if (useDebugColors)
+            {
+                WingedCore.DebugSystems.VariableProvider provider = MonoBehaviourSingleton<WingedCore.DebugSystems.VariableProvider>.Instance;
+
+                Material material = null;
+
+                switch (this.FactionType)
+                {
+                    case FactionType.sampo: material = provider.friend; break;
+                    case FactionType.enemy: material = provider.enemy; break;
+                    case FactionType.aggressive: material = provider.agro; break;
+                    case FactionType.neutral: material = provider.neutral; break;
+                }
+
+                Transform highest = parentToDestroy;
+                if (highest == null)
+                    highest = transform;
+
+                if (material != null)
+                    foreach (Renderer renderer in highest.GetComponentsInChildren<Renderer>())
+                    {
+                        renderer.sharedMaterial = material;
+                    }
+            }
+#endif
         }
     }
 }

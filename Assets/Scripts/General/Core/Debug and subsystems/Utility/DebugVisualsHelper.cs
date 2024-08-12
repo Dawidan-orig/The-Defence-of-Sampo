@@ -11,13 +11,13 @@ namespace WingedCore.Core.Utility
             var tMesh = CreateTextInWorld(text, duration: duration, position: position, color: color);
             tMesh.gameObject.AddComponent<TextFlow>();
         }
-        public static TextMeshPro CreateTextInWorld(string text, Transform parent = null, float duration = 0, Vector3 position = default(Vector3), Color? color = null, TextAnchor textAnchor = TextAnchor.MiddleCenter, TextAlignmentOptions textAlignment = TextAlignmentOptions.Center, int fontSize = 40, int sortingOrder = 5000)
+        public static TextMeshPro CreateTextInWorld(string text, Transform parent = null, float duration = 0, Vector3 position = default(Vector3), Color? color = null, TextAnchor textAnchor = TextAnchor.MiddleCenter, TextAlignmentOptions textAlignment = TextAlignmentOptions.Center, int fontSize = 12, int sortingOrder = 5000)
         {
             if (!(EditorApplication.isPlaying && !EditorApplication.isPaused)) return null;
 
             if (color == null) color = Color.white;
 
-            GameObject gameObject = new GameObject("TextMesh of " + (parent ? parent.ToString() : "nothing"), typeof(TextMesh));
+            GameObject gameObject = new GameObject("TextMesh of " + (parent ? parent.ToString() : "nothing"), typeof(TextMeshPro));
             gameObject.AddComponent<TextFaceCamera>();
             Transform transform = gameObject.transform;
             if (parent != null)

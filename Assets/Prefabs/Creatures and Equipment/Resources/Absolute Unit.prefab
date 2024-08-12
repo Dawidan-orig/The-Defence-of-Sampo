@@ -17,7 +17,6 @@ GameObject:
   - component: {fileID: 3464873321032151638}
   - component: {fileID: 2498818268452375569}
   - component: {fileID: 3300596841645366359}
-  - component: {fileID: 5896856806441453529}
   m_Layer: 6
   m_Name: Absolute Unit
   m_TagString: Untagged
@@ -133,11 +132,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ai_weight: 1
-  _ftype: 1
+  _currentFaction: 0
   isAvailableForSelfFaction: 0
+  useDebugColors: 0
   health: 700
   vital: {fileID: 6457755934751162684}
-  mainBody: {fileID: 0}
+  brainBody: {fileID: 0}
   root: {fileID: 0}
 --- !u!114 &3837791418764087138
 MonoBehaviour:
@@ -212,21 +212,6 @@ MonoBehaviour:
     behaviour: {fileID: 0}
     _totalWeight: 0
   _possibleActions: []
---- !u!114 &5896856806441453529
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6166585230114025203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbe495d8e416d404f834e00550670a76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ai_weight: 1
-  _ftype: 0
-  isAvailableForSelfFaction: 0
 --- !u!1001 &261701640518159192
 PrefabInstance:
   m_ObjectHideFlags: 0

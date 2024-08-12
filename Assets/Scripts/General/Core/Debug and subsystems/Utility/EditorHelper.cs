@@ -131,5 +131,17 @@ namespace WingedCore.Core.Utility
                 }
             }
         }
+
+        public static void DrawEditorText(Vector3 pos, string text)
+        {
+            const int TOO_FAR_AWAY = 50;
+
+            Vector3 cameraPos = SceneView.lastActiveSceneView.pivot;
+
+            if (Vector3.Distance(cameraPos, pos) < TOO_FAR_AWAY)
+            {
+                Handles.Label(pos, text);
+            }
+        }
     }
 }

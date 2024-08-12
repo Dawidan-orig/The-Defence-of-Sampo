@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5313159189104285688}
   - component: {fileID: 5691392789278345988}
   - component: {fileID: 4765443147594422496}
+  - component: {fileID: 3487256614579346380}
   m_Layer: 8
   m_Name: SampoPivot
   m_TagString: Untagged
@@ -106,6 +107,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdeeb829b63441243bcf27b12cb543a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3487256614579346380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2126371616621837683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce0fdd3de613edd44957e0931972de6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ai_weight: 1
+  _currentFaction: 0
+  isAvailableForSelfFaction: 0
+  useDebugColors: 0
+  health: 10000
+  connectedObjects: []
+  remainsPrefab: {fileID: 0}
+  vital: {fileID: 0}
+  parentToDestroy: {fileID: 0}
 --- !u!1 &5213452100040817396
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,6 +179,7 @@ MonoBehaviour:
   ai_weight: 1
   _currentFaction: 2
   isAvailableForSelfFaction: 0
+  useDebugColors: 0
   health: 10000
   connectedObjects: []
   remainsPrefab: {fileID: 0}

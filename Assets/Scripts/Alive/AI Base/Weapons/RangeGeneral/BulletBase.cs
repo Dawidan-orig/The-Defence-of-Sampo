@@ -28,7 +28,7 @@ namespace WingedCore.Weaponry.Ranged
                 c.Damage(r.mass * r.velocity.magnitude * damageMultyplier, IDamagable.DamageType.blunt);
             }
 
-            Destroy(gameObject);
+            HandledSelfDestroy();
         }
 
         private void Update()
@@ -36,10 +36,10 @@ namespace WingedCore.Weaponry.Ranged
             if (remainingTime > 0)
                 remainingTime -= Time.deltaTime;
             else
-                Destroy(gameObject);
+                HandledSelfDestroy();
 
             if (Vector3.Distance(startPoint, transform.position) > possibleDistance)
-                Destroy(gameObject);
+                HandledSelfDestroy();
         }
 
         public void SetDamageDealer(Transform dealer)
@@ -47,10 +47,12 @@ namespace WingedCore.Weaponry.Ranged
             _damageSource = dealer;
         }
 
-        private void OnDestroy()
+        private void HandledSelfDestroy() 
         {
             if (instantiatedOnDestroy)
                 Instantiate(instantiatedOnDestroy, transform.position, transform.rotation, null);
+
+            Destroy(gameObject);
         }
     }
 }

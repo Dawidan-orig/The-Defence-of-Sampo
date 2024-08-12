@@ -45,7 +45,6 @@ GameObject:
   - component: {fileID: 1337075179716294770}
   - component: {fileID: 5684543475571988598}
   - component: {fileID: 2927488901703864939}
-  - component: {fileID: 3718258879162872240}
   - component: {fileID: -8020817201850605236}
   m_Layer: 7
   m_Name: WindSlash
@@ -99,7 +98,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 774fb2efcf5a06e4ebb09ced855a11c1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -181,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27519155f11a5324f88e21d2e7274604, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  host: {fileID: 0}
+  _host: {fileID: 0}
   additionalMeleeReach: 0
   alive:
     serializedVersion: 2
@@ -201,21 +200,7 @@ MonoBehaviour:
   downerPoint: {fileID: 3236705765739740930}
   handle: {fileID: 3236705765739740930}
   AngularVelocityEuler: {x: 0, y: 0, z: 0}
-  faction: {fileID: 0}
   sparkles: {fileID: 0}
---- !u!114 &3718258879162872240
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4246658485530221624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e49af75e642eab4b9c7f98e2dd9ac5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ftype: 0
 --- !u!114 &-8020817201850605236
 MonoBehaviour:
   m_ObjectHideFlags: 0
