@@ -72,7 +72,7 @@ namespace WingedCore.AI
                 if (behaviour.HasCongestion)
                     enemiesAmountSubstraction =
                         Mathf.RoundToInt(
-                            AITargetManager.Instance.GetCongestion(
+                            MonoBehaviourSingleton<AITargetManager>.Instance.GetCongestion(
                                 target.GetComponent<AITarget>())
                             * behaviour.congestionInfluence);
 
@@ -182,8 +182,8 @@ namespace WingedCore.AI
 
         protected virtual void Start()
         {
-            AITargetManager.Instance.NewAdded += FetchNewActivityFromManager;
-            AITargetManager.Instance.NewRemoved += RemoveActivityGotFromManager;
+            MonoBehaviourSingleton<AITargetManager>.Instance.NewAdded += FetchNewActivityFromManager;
+            MonoBehaviourSingleton<AITargetManager>.Instance.NewRemoved += RemoveActivityGotFromManager;
 
             _noAction = new AIAction(this);
 
@@ -222,10 +222,10 @@ namespace WingedCore.AI
 
         protected virtual void OnDisable()
         {
-            AITargetManager.Instance.NewAdded -= FetchNewActivityFromManager;
-            AITargetManager.Instance.NewRemoved -= RemoveActivityGotFromManager;
+            MonoBehaviourSingleton<AITargetManager>.Instance.NewAdded -= FetchNewActivityFromManager;
+            MonoBehaviourSingleton<AITargetManager>.Instance.NewRemoved -= RemoveActivityGotFromManager;
             if (_currentActivity.target && BehaviourAI.HasCongestion)
-                AITargetManager.Instance.ChangeCongestion(
+                MonoBehaviourSingleton<AITargetManager>.Instance.ChangeCongestion(
                     _currentActivity.target.GetComponent<AITarget>(),
                     -BehaviourAI.VisiblePowerPoints);
             NullifyActivity();
@@ -241,7 +241,7 @@ namespace WingedCore.AI
         public void RefreshCompletely() 
         {
             _possibleActions.Clear();
-            var dict = AITargetManager.Instance.GetAllInteractions(_targetComp);
+            var dict = MonoBehaviourSingleton<AITargetManager>.Instance.GetAllInteractions(_targetComp);
             foreach (var kvp in dict)
             {
                 AITarget target = kvp.Key;
@@ -345,12 +345,12 @@ namespace WingedCore.AI
         private void ChangeAction(AIAction to)
         {
             if (!IsNoActionCurrently() && _currentActivity.target && BehaviourAI.HasCongestion) //Убираем влияние текущей цели
-                AITargetManager.Instance.ChangeCongestion(
+                MonoBehaviourSingleton<AITargetManager>.Instance.ChangeCongestion(
                     _currentActivity.target.GetComponent<AITarget>(),
                     -BehaviourAI.VisiblePowerPoints);
             _currentActivity = to;
             if (BehaviourAI.HasCongestion)
-                AITargetManager.Instance.ChangeCongestion(
+                MonoBehaviourSingleton<AITargetManager>.Instance.ChangeCongestion(
                     _currentActivity.target.GetComponent<AITarget>(),
                     BehaviourAI.VisiblePowerPoints);
 
@@ -435,7 +435,7 @@ namespace WingedCore.AI
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.black;
-            NavMeshCalculations.Cell cell = NavMeshCalculations.Instance.GetCell(transform.position);
+            NavMeshCalculations.Cell cell = MonoBehaviourSingleton<NavMeshCalculations>.Instance.GetCell(transform.position);
             if (cell == null)
                 return;
 

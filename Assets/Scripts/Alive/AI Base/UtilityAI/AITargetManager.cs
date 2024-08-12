@@ -15,30 +15,6 @@ namespace WingedCore.AI
     [AlchemySerialize]
     public partial class AITargetManager : MonoBehaviour
     {
-        private static AITargetManager _instance;
-        public static AITargetManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<AITargetManager>();
-
-                if (_instance == null)
-                {
-                    GameObject go = new("AI Controlling Singleton");
-                    _instance = go.AddComponent<AITargetManager>();
-                }
-
-                if (EditorApplication.isPlaying)
-                {
-                    _instance.transform.parent = null;
-                    DontDestroyOnLoad(_instance.gameObject);
-                }
-
-                return _instance;
-            }
-        }
-
         //TODO : Перевести в деревья насколько это возможно
         private Dictionary<AITarget, int> _targetedByUnits = new Dictionary<AITarget, int>();
         [AlchemySerializeField, NonSerialized]
@@ -48,6 +24,8 @@ namespace WingedCore.AI
 
         public EventHandler<UAIData> NewAdded;
         public EventHandler<UAIData> NewRemoved;
+
+        public Transform unitsParent;
 
         public class UAIData : EventArgs
         {
@@ -60,18 +38,6 @@ namespace WingedCore.AI
                 this.factionWhereChangeHappened = factionAffected;
             }
         }
-
-        #region Unity
-        private void Awake()
-        {
-            if (_instance == null)
-                _instance = this;
-        }
-        private void OnApplicationQuit()
-        {
-            Destroy(_instance);
-        }
-        #endregion
 
         #region setters-Getters
         /// <summary>
@@ -166,7 +132,7 @@ namespace WingedCore.AI
         {
             if (factionIndex == FactionType.none)
             {
-                LoggerSingleton.DebugLog("Попытка добавить новый объект без фракции:", gameObject, interactable.gameObject);
+                LoggerSystem.DebugLog("Попытка добавить новый объект без фракции:", gameObject, interactable.gameObject);
                 return;
             }
 
@@ -174,7 +140,7 @@ namespace WingedCore.AI
             if (!dict.ContainsKey(interactable))
                 dict.Add(interactable, interactable.ai_weight);
             else
-                LoggerSingleton.DebugLog("Попытка повторно добавить "
+                LoggerSystem.DebugLog("Попытка повторно добавить "
                     + interactable.gameObject.name
                     + " в менеджер", gameObject);
             NewAdded?.Invoke(this, new UAIData(interactable, factionIndex));

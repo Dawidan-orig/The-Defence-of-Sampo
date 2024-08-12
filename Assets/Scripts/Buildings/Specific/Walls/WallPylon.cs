@@ -17,7 +17,7 @@ namespace WingedCore.Building
         protected override void Start()
         {
             base.Start();
-            WallPylon otherWall = wallToConnect ? wallToConnect : BuildingSystem.Instance.CurrentWallInFocus;
+            WallPylon otherWall = wallToConnect ? wallToConnect : MonoBehaviourSingleton<BuildingSystem>.Instance.CurrentWallInFocus;
 
             if (otherWall)
             {
@@ -27,9 +27,9 @@ namespace WingedCore.Building
             }
 
             if (shouldFocus)
-                BuildingSystem.Instance.CurrentWallInFocus = this;
+                MonoBehaviourSingleton<BuildingSystem>.Instance.CurrentWallInFocus = this;
             else
-                BuildingSystem.Instance.CurrentWallInFocus = null;
+                MonoBehaviourSingleton<BuildingSystem>.Instance.CurrentWallInFocus = null;
         }
 
         protected override void Build()

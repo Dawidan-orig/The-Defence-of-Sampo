@@ -1,5 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
 
 namespace WingedCore.Core.Utility
@@ -11,8 +11,10 @@ namespace WingedCore.Core.Utility
             var tMesh = CreateTextInWorld(text, duration: duration, position: position, color: color);
             tMesh.gameObject.AddComponent<TextFlow>();
         }
-        public static TextMesh CreateTextInWorld(string text, Transform parent = null, float duration = 0, Vector3 position = default(Vector3), Color? color = null, TextAnchor textAnchor = TextAnchor.MiddleCenter, TextAlignment textAlignment = TextAlignment.Center, int fontSize = 40, int sortingOrder = 5000)
+        public static TextMeshPro CreateTextInWorld(string text, Transform parent = null, float duration = 0, Vector3 position = default(Vector3), Color? color = null, TextAnchor textAnchor = TextAnchor.MiddleCenter, TextAlignmentOptions textAlignment = TextAlignmentOptions.Center, int fontSize = 40, int sortingOrder = 5000)
         {
+            if (!(EditorApplication.isPlaying && !EditorApplication.isPaused)) return null;
+
             if (color == null) color = Color.white;
 
             GameObject gameObject = new GameObject("TextMesh of " + (parent ? parent.ToString() : "nothing"), typeof(TextMesh));
@@ -23,12 +25,10 @@ namespace WingedCore.Core.Utility
             else
                 transform.SetParent(/*utility.transform*/ null);
             transform.position = position;
-            TextMesh textMesh = gameObject.GetComponent<TextMesh>();
-            textMesh.anchor = textAnchor;
+            TextMeshPro textMesh = gameObject.GetComponent<TextMeshPro>();
             textMesh.alignment = textAlignment;
             textMesh.text = text;
             textMesh.fontSize = fontSize;
-            textMesh.characterSize = 0.1f;
             textMesh.color = (Color)color;
             textMesh.GetComponent<MeshRenderer>().sortingOrder = sortingOrder;
             UnityEngine.Object.Destroy(gameObject, duration == 0 ? Time.deltaTime * 2 : duration);

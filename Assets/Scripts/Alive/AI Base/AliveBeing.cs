@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using WingedCore.Core;
 using WingedCore.Core.Utility;
+using WingedCore.Debug;
 
 namespace WingedCore.AI
 {
@@ -17,6 +18,8 @@ namespace WingedCore.AI
         public Transform root;
 
         public Collider Vital => vital;
+
+
 
         private void Awake()
         {
@@ -51,8 +54,7 @@ namespace WingedCore.AI
 
         private void OnDrawGizmos()
         {
-            if (EditorApplication.isPlaying && !EditorApplication.isPaused)
-                DebugVisualsHelper.CreateTextInWorld(health.ToString(), transform, position: transform.position + GetComponent<Collider>().bounds.size.y / 2 * Vector3.up, color: Color.green);
+            DebugVisualsHelper.CreateTextInWorld(health.ToString(), transform, position: transform.position + GetComponent<Collider>().bounds.size.y / 2 * Vector3.up, color: Color.green);
         }
     }
 }

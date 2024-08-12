@@ -14,7 +14,7 @@ public class NullUnit : AIBehaviourBase
     public override Tool BehaviourWeapon => null;
     public override Dictionary<AITarget, int> GetActionsDictionary()
     {
-        var input = AITargetManager.Instance.GetSameFactionInteractions(GetMainTransform().gameObject.GetComponent<AITarget>());
+        var input = MonoBehaviourSingleton<AITargetManager>.Instance.GetSameFactionInteractions(GetMainTransform().gameObject.GetComponent<AITarget>());
 
         var res = input
             .Where(kvp => kvp.Key.GetComponent<AITarget>().IsAvailableForSelfFaction)

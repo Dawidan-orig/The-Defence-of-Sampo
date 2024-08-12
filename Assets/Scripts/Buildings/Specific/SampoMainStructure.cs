@@ -52,7 +52,7 @@ namespace WingedCore.Building
                 VisualElement result = panel.Pick(pointerUI);
 
                 GameObject prefab = menu.ConnectUIToObject(result);
-                if (prefab && Sampo.Economy.EconomySystem.Instance.Spend(prefab.GetComponent<AIBehaviourBase>().VisiblePowerPoints))
+                if (prefab && MonoBehaviourSingleton<Sampo.Economy.EconomySystem>.Instance.Spend(prefab.GetComponent<AIBehaviourBase>().VisiblePowerPoints))
                     SpawnGameObject(prefab);
 
                 Cursor.lockState = CursorLockMode.Locked;

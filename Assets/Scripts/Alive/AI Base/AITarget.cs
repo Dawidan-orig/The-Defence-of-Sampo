@@ -1,5 +1,5 @@
-using UnityEditor;
 using UnityEngine;
+using WingedCore.Debug;
 
 namespace WingedCore.AI
 {
@@ -12,54 +12,71 @@ namespace WingedCore.AI
         public System.Action factionChanged;
 
         //[Alchemy.Inspector.HideInPlayMode]
-        [SerializeField]  private FactionType _currentFaction = FactionType.none;
+        [SerializeField] private FactionType _currentFaction = FactionType.none;
         public FactionType FactionType { get => _currentFaction; }
         public bool IsAvailableForSelfFaction
         {
             get => isAvailableForSelfFaction;
 
             set
-            {                
+            {
                 bool prev = isAvailableForSelfFaction;
                 isAvailableForSelfFaction = value;
 
                 if (value == false && prev == true)
-                    AITargetManager.Instance.RemoveFromFaction(_currentFaction, this);
+                    MonoBehaviourSingleton<AITargetManager>.Instance.RemoveFromFaction(_currentFaction, this);
                 else if (value == true && prev == false)
-                    AITargetManager.Instance.AddAsNewInteractable(this);
+                    MonoBehaviourSingleton<AITargetManager>.Instance.AddAsNewInteractable(this);
 
-                //Просто: AITargetManager.Instance.UpdateAIInfo(this);
+                //ToDO : Простое использоваие AITargetManager.Instance.UpdateAIInfo(this);
             }
         }
         [SerializeField]
         private bool isAvailableForSelfFaction = false;
 
+#if UNITY_EDITOR
+        [Header("Debug")]
+        public bool useDebugColors = false;
+
+#endif
+
         #region Unity
+        private void Awake()
+        {
+#if UNITY_EDITOR
+            if (useDebugColors)
+            {
+                VariableProvider provider = MonoBehaviourSingleton<VariableProvider>.Instance;
+
+                Material material = null;
+
+                switch (_currentFaction)
+                {
+                    case FactionType.sampo: material = provider.friend; break;
+                    case FactionType.enemy: material = provider.enemy; break;
+                    case FactionType.aggressive: material = provider.agro; break;
+                    case FactionType.neutral: material = provider.neutral; break;
+                }
+
+                if (material != null)
+                    foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+                    {
+                        renderer.sharedMaterial = material;
+                    }
+            }
+#endif
+        }
         protected virtual void OnEnable()
         {
             if (_currentFaction != FactionType.none)
-                AITargetManager.Instance.AddAsNewInteractable(this);
-        }
-
-        private void Start()
-        {
-            /*
-var visuals = GetComponentsInChildren<Renderer>();
-foreach (Renderer renderer in visuals)
-    switch (_ftype)
-    {
-        case FType.sampo: renderer.material = Variable_Provider.Instance.sampo; break;
-        case FType.enemy: renderer.material = Variable_Provider.Instance.enemy; break;
-        case FType.aggressive: renderer.material = Variable_Provider.Instance.agro; break;
-    }
-*/
+                MonoBehaviourSingleton<AITargetManager>.Instance.AddAsNewInteractable(this);
         }
 
         protected virtual void OnDisable()
         {
             //TODO : Найти способ не обращаться к Instance, если происходит завершение игры
             if (_currentFaction != FactionType.none)
-                AITargetManager.Instance.RemoveInteractableCompletely(this);
+                MonoBehaviourSingleton<AITargetManager>.Instance.RemoveInteractableCompletely(this);
         }
         #endregion
 
@@ -68,9 +85,9 @@ foreach (Renderer renderer in visuals)
         /// </summary>
         public void ChangeFactionCompletely(FactionType newFactionType)
         {
-            AITargetManager.Instance.RemoveFromFaction(_currentFaction, this);
+            MonoBehaviourSingleton<AITargetManager>.Instance.RemoveFromFaction(_currentFaction, this);
             _currentFaction = newFactionType;
-            AITargetManager.Instance.AddAsNewInteractable(this);
+            MonoBehaviourSingleton<AITargetManager>.Instance.AddAsNewInteractable(this);
 
             factionChanged?.Invoke();
 

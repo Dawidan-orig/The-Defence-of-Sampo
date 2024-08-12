@@ -2,6 +2,7 @@ using Alchemy.Inspector;
 using WingedCore.Core;
 using System.Collections;
 using UnityEngine;
+using Sampo.Economy;
 
 namespace WingedCore.Building.Spawners
 {
@@ -30,12 +31,12 @@ namespace WingedCore.Building.Spawners
 
         private void OnEnable()
         {
-            BuildingsManager.Instance.AddNewSpawner(this);
+            MonoBehaviourSingleton<ResourcesRequestManager>.Instance.AddNewSpawner(this);
         }
         private void OnDestroy()
         {
-            BuildingsManager.Instance.RemoveSpawner(this);
-            BuildingsManager.Instance.NullUnitLimit -= limitAddition;
+            MonoBehaviourSingleton<ResourcesRequestManager>.Instance.RemoveSpawner(this);
+            MonoBehaviourSingleton<ResourcesRequestManager>.Instance.NullUnitLimit -= limitAddition;
         }
 
         public void Interact(Transform interactor)
@@ -50,7 +51,7 @@ namespace WingedCore.Building.Spawners
 
         protected override void Build()
         {
-            BuildingsManager.Instance.NullUnitLimit += limitAddition;
+            MonoBehaviourSingleton<ResourcesRequestManager>.Instance.NullUnitLimit += limitAddition;
         }
 
         public void AddUnitsToSpawn(int amount) 
@@ -65,7 +66,7 @@ namespace WingedCore.Building.Spawners
         {
             while (toSpawn > 0)
             {
-                BuildingsManager.Instance.CreateNewNullUnit(transfromSpawnPos);
+                MonoBehaviourSingleton<ResourcesRequestManager>.Instance.CreateNewNullUnit(transfromSpawnPos);
                 toSpawn--;
                 yield return new WaitForSeconds(frequency);
             }

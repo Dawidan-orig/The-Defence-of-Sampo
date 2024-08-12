@@ -6,7 +6,7 @@ namespace WingedCore.Core.JournalLogger
     /// <summary>
     /// Система логированиая, которая позволяет привязывать логи к конкретным объектам.
     /// </summary>
-    public static class LoggerSingleton
+    public static class LoggerSystem
     {
         public static void Journal(string data, GameObject context) 
         {

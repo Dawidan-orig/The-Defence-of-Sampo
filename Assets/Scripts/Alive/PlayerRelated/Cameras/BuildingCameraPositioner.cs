@@ -51,16 +51,16 @@ namespace WingedCore.Player
             if (Input.GetMouseButtonDown(0))
                 if (PhysicsHelper.GetMouseInWorldCollision(300, out var point))
                 {
-                    Instantiate(BuildingSystem.Instance.ChosenStructureToBuild, point, Quaternion.identity, buildingsParent);
+                    Instantiate(MonoBehaviourSingleton<BuildingSystem>.Instance.ChosenStructureToBuild, point, Quaternion.identity, buildingsParent);
                 }
 
             //TODO : Временное решение, без интерфейса
             for(int i = 0; i < 10; i++) 
             {
                 if (Input.GetKey(KeyCode.Alpha0 + i))
-                { 
-                    BuildingSystem.Instance.ChosenStructureToBuild
-                        = BuildingSystem.Instance.prefabs[i == 0 ? 9 : i-1].GetComponent<BuildableStructure>();
+                {
+                    MonoBehaviourSingleton<BuildingSystem>.Instance.ChosenStructureToBuild
+                        = MonoBehaviourSingleton<BuildingSystem>.Instance.prefabs[i == 0 ? 9 : i-1].GetComponent<BuildableStructure>();
                 }
             }            
         }

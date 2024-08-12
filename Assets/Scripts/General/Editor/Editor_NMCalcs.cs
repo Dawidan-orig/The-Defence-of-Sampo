@@ -12,7 +12,7 @@ public class Editor_NMCalcs : Editor
 
         if(GUILayout.Button("Initialize")) 
         {
-            NavMeshCalculations.Instance.Initialize();
+            MonoBehaviourSingleton<NavMeshCalculations>.Instance.Initialize();
         }
     }
 }

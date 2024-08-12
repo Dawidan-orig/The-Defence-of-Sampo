@@ -9,8 +9,6 @@ namespace WingedCore.Core
 {
     public class NavMeshCalculations : MonoBehaviour
     {
-        private static NavMeshCalculations _instance;
-
         [Min(0)]
         [Tooltip("Минимальная площадь атомарного треугольника")]
         public float MINIMUM_AREA = 30;
@@ -35,29 +33,6 @@ namespace WingedCore.Core
 
         [Header("Debug")]
         public bool drawOctTree = false;
-        public static NavMeshCalculations Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<NavMeshCalculations>();
-
-                if (_instance == null)
-                {
-                    GameObject go = new("NM Calculations");
-                    _instance = go.AddComponent<NavMeshCalculations>();
-                    _instance.Initialize();
-                }
-
-                if (EditorApplication.isPlaying)
-                {
-                    _instance.transform.parent = null;
-                    DontDestroyOnLoad(_instance.gameObject);
-                }
-
-                return _instance;
-            }
-        }
 
         #region data structures
         [Serializable]
@@ -403,10 +378,9 @@ namespace WingedCore.Core
             octreeCells.LateUpdate();
         }*/
 
-        [InitializeOnLoadMethod]
         public static void InitLoad()
         {
-            Instance.Initialize();
+            MonoBehaviourSingleton<NavMeshCalculations>.Instance.Initialize();
         }
 
         public void Initialize()
@@ -767,7 +741,7 @@ namespace WingedCore.Core
             }
         }
 
-        public static int CellCount() => _instance._cells.Length;
+        public static int CellCount() => MonoBehaviourSingleton<NavMeshCalculations>.Instance._cells.Length;
 
         private static float TriangleArea(Vector3[] triangle)
         {

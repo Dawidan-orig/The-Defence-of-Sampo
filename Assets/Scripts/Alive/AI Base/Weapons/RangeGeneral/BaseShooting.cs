@@ -78,7 +78,7 @@ namespace WingedCore.Weaponry.Ranged
             delta.x = 0; delta.z = 0;
             float height = delta.magnitude + _host.GetComponent<AliveBeing>().vital.bounds.size.y / 2;
 
-            NavMeshCalculations.Cell start = NavMeshCalculations.Instance.GetCell(target.position);
+            NavMeshCalculations.Cell start = MonoBehaviourSingleton<NavMeshCalculations>.Instance.GetCell(target.position);
 
             List<NavMeshCalculations.Cell> toCheck = new() { start };
             List<NavMeshCalculations.Cell> alreadyChecked = new();

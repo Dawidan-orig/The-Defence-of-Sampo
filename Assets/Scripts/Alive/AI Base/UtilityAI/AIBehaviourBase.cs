@@ -80,12 +80,12 @@ namespace WingedCore.AI
                 bool prev = value;
                 _hasCongestion = prev;
                 if (prev == true && value == false)
-                    AITargetManager.Instance.ChangeCongestion(
+                    MonoBehaviourSingleton<AITargetManager>.Instance.ChangeCongestion(
                     CurrentActivity.target.GetComponent<AITarget>(),
                     -VisiblePowerPoints);
 
                 if (prev == false && value == true)
-                    AITargetManager.Instance.ChangeCongestion(
+                    MonoBehaviourSingleton<AITargetManager>.Instance.ChangeCongestion(
                     CurrentActivity.target.GetComponent<AITarget>(),
                     VisiblePowerPoints);
             }
@@ -257,7 +257,7 @@ namespace WingedCore.AI
             {
                 _AITargeting.ModifyAllActionsOf(_AITargeting.CurrentActivity.target, new NoPathCondition(10));
 
-                var closest = NavMeshCalculations.Instance.GetCell(CalcFrom.position);
+                var closest = MonoBehaviourSingleton<NavMeshCalculations>.Instance.GetCell(CalcFrom.position);
                 moveTargetPos = closest.Center();
                 _AITargeting.MovingAgent.MoveIteration(moveTargetPos);
             }
@@ -330,7 +330,7 @@ namespace WingedCore.AI
         /// </summary>
         public virtual Dictionary<AITarget, int> GetActionsDictionary()
         {
-            return AITargetManager.Instance.GetAllInteractions(GetMainTransform().GetComponent<AITarget>());
+            return MonoBehaviourSingleton<AITargetManager>.Instance.GetAllInteractions(GetMainTransform().GetComponent<AITarget>());
         }
         /// <summary>
         /// Определяет точку, куда следует отступать

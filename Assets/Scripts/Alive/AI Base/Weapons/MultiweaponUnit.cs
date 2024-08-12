@@ -89,7 +89,7 @@ namespace WingedCore.AI.Humans
             if (CurrentActivity.target == null)
             {
                 dataToDebugLog += "Отмена, цели нет";
-                LoggerSingleton.DebugLog(dataToDebugLog, gameObject);
+                LoggerSystem.DebugLog(dataToDebugLog, gameObject);
                 return currentBehaviour;
             }
 
@@ -111,7 +111,7 @@ namespace WingedCore.AI.Humans
             {
                 dataToDebugLog += behaviour.GetType().ToString() + "->" + behaviour.GetCurrentWeaponPoints() + "\n";
             }
-            LoggerSingleton.DebugLog(dataToDebugLog, gameObject, CurrentActivity.target.gameObject);
+            LoggerSystem.DebugLog(dataToDebugLog, gameObject, CurrentActivity.target.gameObject);
 
             return behavioursSorted[0];
         }

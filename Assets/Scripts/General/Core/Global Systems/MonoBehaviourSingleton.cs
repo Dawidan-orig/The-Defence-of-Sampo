@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.LowLevel;
+using WingedCore.Core;
 
 public class MonoBehaviourSingleton<T> : MonoBehaviour
     where T : Component
@@ -20,12 +21,13 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour
                     _instance = objs[0];
                 if (objs.Length > 1)
                 {
-                    Debug.LogError("There is more than one " + typeof(T).Name + " in the scene.");
+                    Debug.LogError("Среди всех активных сцен есть больше одного " + typeof(T).Name);
                 }
                 if (_instance == null)
                 {
                     GameObject obj = new GameObject();
-                    obj.hideFlags = HideFlags.HideAndDontSave;
+                    obj.transform.parent = MonoBehaviourSingleton<Variable_Provider>.Instance.singletonsContainer;
+                    obj.hideFlags = HideFlags.DontSave;
                     _instance = obj.AddComponent<T>();
                 }
             }

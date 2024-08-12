@@ -7,30 +7,6 @@ namespace Sampo.Economy
 {
     public class EconomySystem : MonoBehaviour
     {
-        private static EconomySystem _instance;
-        public static EconomySystem Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<EconomySystem>();
-
-                if (_instance == null)
-                {
-                    GameObject go = new("Economy");
-                    _instance = go.AddComponent<EconomySystem>();
-                }
-
-                if (EditorApplication.isPlaying)
-                {
-                    _instance.transform.parent = null;
-                    DontDestroyOnLoad(_instance.gameObject);
-                }
-
-                return _instance;
-            }
-        }
-
         //TODO UI : Окно (Панель) экономики.
         [SerializeField]
         private int hunting = 500;
@@ -60,6 +36,8 @@ namespace Sampo.Economy
 
         public bool Spend(int amount)
         {
+            WingedCore.Core.JournalLogger.LoggerSystem.DebugLog("Spent " + amount + "of all resources", gameObject);
+
             if (Overall > amount)
             {
                 Overall -= amount;

@@ -37,7 +37,7 @@ namespace WingedCore.Building
 
         protected virtual void Start()
         {
-            transform.parent = BuildingSystem.Instance.structureParent;
+            transform.parent = MonoBehaviourSingleton<BuildingSystem>.Instance.structureParent;
 
             const float MAX_DISTANCE = 100;
             if (Physics.Raycast(transform.position + Vector3.up * possibleHeightToBuild, Vector3.down, out var hit, MAX_DISTANCE, ground))
@@ -45,7 +45,7 @@ namespace WingedCore.Building
                 if (Vector3.Distance(transform.position, hit.point) > possibleHeightToBuild)
                 {
                     transform.position = hit.point + Vector3.down * possibleHeightToBuild/2;
-                    LoggerSingleton.DebugLog("Опускаю строение вниз на землю", gameObject);
+                    LoggerSystem.DebugLog("Опускаю строение вниз на землю", gameObject);
                 }
             }
             else

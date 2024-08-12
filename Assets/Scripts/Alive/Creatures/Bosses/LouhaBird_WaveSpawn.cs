@@ -113,10 +113,10 @@ public class LouhaBird_WaveSpawn : MonoBehaviour
             if (flightProgress > 1) // Если так вышло, что сбились с курса и текущая точка чёрт знает где
                 flightProgress = 1 / flightProgress;
 
-            float progressFraction = 1 / (float)WaveHandler.Instance.GetAmountOfUnitsToSpawn();
+            float progressFraction = 1 / (float)MonoBehaviourSingleton<WaveHandler>.Instance.GetAmountOfUnitsToSpawn();
             if (flightProgress > lastSpawnProgress + progressFraction)
             {
-                GameObject unit = WaveHandler.Instance.GetSpawnedUnit(transform.position, GetComponent<AITarget>().FactionType, transform.rotation);
+                GameObject unit = MonoBehaviourSingleton<WaveHandler>.Instance.GetSpawnedUnit(transform.position, GetComponent<AITarget>().FactionType, transform.rotation);
                 unit.GetComponent<Rigidbody>().AddForce(Vector3.up * 10);
                 lastSpawnProgress = flightProgress;
             }
@@ -161,6 +161,6 @@ public class LouhaBird_WaveSpawn : MonoBehaviour
 
         moves.Push(actualMovement);
 
-        WaveHandler.Instance.UsePrefabPallete();
+        MonoBehaviourSingleton<WaveHandler>.Instance.UseRandomPrefabPallete();
     }
 }

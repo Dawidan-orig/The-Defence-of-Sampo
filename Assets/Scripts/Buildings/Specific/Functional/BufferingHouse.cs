@@ -2,6 +2,7 @@ using WingedCore.AI;
 using WingedCore.Core;
 using System.Collections.Generic;
 using UnityEngine;
+using Sampo.Economy;
 
 namespace WingedCore.Building
 {
@@ -24,7 +25,7 @@ namespace WingedCore.Building
         protected override void Build()
         {
             contained = new List<GameObject>();
-            BuildingsManager.Instance.RequestNullUnits(this, bufferingAmount);
+            MonoBehaviourSingleton<ResourcesRequestManager>.Instance.RequestNullUnits(this, bufferingAmount);
         }
 
         public void Contain(GameObject obj)
@@ -48,10 +49,10 @@ namespace WingedCore.Building
                 return;
             }
 
-            BuildingsManager.Instance.RequestNullUnits(this, 1);
+            MonoBehaviourSingleton<ResourcesRequestManager>.Instance.RequestNullUnits(this, 1);
 
             obj.transform.SetPositionAndRotation(releasePos.position, releasePos.rotation);
-            obj.transform.parent = Variable_Provider.Instance.unitsContainer;
+            obj.transform.parent = MonoBehaviourSingleton<Variable_Provider>.Instance.unitsContainer;
             obj.SetActive(true);
 
             if (contained.Count <= bufferingAmount)            

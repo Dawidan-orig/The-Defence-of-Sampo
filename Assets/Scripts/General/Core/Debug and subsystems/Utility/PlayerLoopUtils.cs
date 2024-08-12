@@ -62,8 +62,6 @@ namespace WingedCore.Core.Utility.Deep
             {
                 PrintSubsystem(subsystem, sb, 0);
             }
-
-            Debug.Log(sb.ToString());
         }
         static void PrintSubsystem(PlayerLoopSystem system, StringBuilder sb, int level) 
         {

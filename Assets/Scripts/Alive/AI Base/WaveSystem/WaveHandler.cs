@@ -7,30 +7,6 @@ namespace WingedCore
 {
     public class WaveHandler : MonoBehaviour
     {
-        private static WaveHandler _instance;
-        [HideInInspector]
-        public static WaveHandler Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = FindObjectOfType<WaveHandler>();
-                if (_instance == null)
-                {
-                    GameObject go = new("Wave Controlling Singleton");
-                    _instance = go.AddComponent<WaveHandler>();
-                }
-
-                if (EditorApplication.isPlaying)
-                {
-                    _instance.transform.parent = null;
-                    DontDestroyOnLoad(_instance.gameObject);
-                }
-
-                return _instance;
-            }
-        }
-
         [Header("Setup")]
         public Transform container;
         [Tooltip("Волны, что используются исключительно в Editor и являют собой заранее созданные палитры")]
@@ -85,7 +61,7 @@ namespace WingedCore
             }
         }
 
-        public void UsePrefabPallete() // используем заранее созданные палитры юнитов
+        public void UseRandomPrefabPallete() // используем заранее созданные палитры юнитов
         {
             unitPrefabsToSpawn.Clear();
             int chosenPalleteIndex = Random.Range(0, prefabPalletes.Count);

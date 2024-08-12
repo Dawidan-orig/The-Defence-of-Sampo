@@ -7,6 +7,7 @@ using UnityEngine;
 using Alchemy.Inspector;
 using System.Linq;
 using WingedCore.Core.JournalLogger;
+using Sampo.Economy;
 
 namespace WingedCore.Building.Transformators
 {
@@ -42,7 +43,7 @@ namespace WingedCore.Building.Transformators
             if (createdUnits.Contains(interactor.gameObject))
             {
                 dataToDebugLog += "Попытка добавить такое же поведение";
-                LoggerSingleton.DebugLog(dataToDebugLog, gameObject, interactor.gameObject);
+                LoggerSystem.DebugLog(dataToDebugLog, gameObject, interactor.gameObject);
                 return;
             }
 
@@ -71,10 +72,10 @@ namespace WingedCore.Building.Transformators
                 comp = interactor.gameObject.AddComponent<OnDestroyNotifier>();
             comp.onDestroy += UpdateConnectedUnits;
 
-            LoggerSingleton.DebugLog(dataToDebugLog, gameObject, interactor.gameObject);
+            LoggerSystem.DebugLog(dataToDebugLog, gameObject, interactor.gameObject);
         }
 
-        //TODO : Сделать интерфейс для этого
+        //TODO : Сделать UI интерфейс относительно этого
         private void UpdateConnectedUnits(object sender, EventArgs _) 
         {
             createdUnits.Remove((GameObject)sender);
@@ -82,19 +83,19 @@ namespace WingedCore.Building.Transformators
             if (removed > 0 && requestUnits)
             {
                 GetComponent<AITarget>().IsAvailableForSelfFaction = true;
-                BuildingsManager.Instance.RequestNullUnits(this, removed);
+                MonoBehaviourSingleton<ResourcesRequestManager>.Instance.RequestNullUnits(this, removed);
             }
         }
 
         public void PlayerInteract()
         {
-            //TODO : Настройка через интерфейс
+            //TODO : Настройка через UI интерфейс
         }
 
         protected override void Build()
         {
             if(requestUnits)
-                BuildingsManager.Instance.RequestNullUnits(this, unitLimit);
+                MonoBehaviourSingleton<ResourcesRequestManager>.Instance.RequestNullUnits(this, unitLimit);
         }
 
         public float GetInteractionRange()
