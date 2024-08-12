@@ -2,6 +2,7 @@ using Cinemachine;
 using WingedCore.Core;
 using WingedCore.Weaponry;
 using UnityEngine;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.Player.CameraControls
 {
@@ -134,7 +135,7 @@ namespace WingedCore.Player.CameraControls
             if (color == null)
                 color = Color.white;
 
-            bool res = Utilities.VisualizedRaycast(from,
+            bool res = RaycastHelper.VisualizedRaycast(from,
                     (to - from).normalized,
                     out hit,
                     (to - from).magnitude,

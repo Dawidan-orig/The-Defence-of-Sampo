@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using static WingedCore.AI.TargetingUtilityAI;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.AI
 {
@@ -179,10 +180,10 @@ namespace WingedCore.AI
         {
             // Раз уж близко - обновлять надо чаще, чтобы перемещение было ровнее
             if (Vector3.Distance(repathLastTargetPos, _AITargeting.CurrentActivity.target.position) < GetTotalRange() * 2
-                && !Utilities.ValueInArea(repathLastTargetPos, _AITargeting.CurrentActivity.target.position, RECALC_DIFF / 7))
+                && !MathHelper.ValueInArea(repathLastTargetPos, _AITargeting.CurrentActivity.target.position, RECALC_DIFF / 7))
                 Repath();
 
-            if (!Utilities.ValueInArea(repathLastTargetPos, _AITargeting.CurrentActivity.target.position, RECALC_DIFF))
+            if (!MathHelper.ValueInArea(repathLastTargetPos, _AITargeting.CurrentActivity.target.position, RECALC_DIFF))
                 Repath();
         }
         /// <summary>

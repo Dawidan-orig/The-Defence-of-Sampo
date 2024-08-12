@@ -5,6 +5,7 @@ using UnityEngine;
 public class MonoBehaviourSingleton<T> : MonoBehaviour
     where T : Component
 {
+    //TODO : Перевести всё на этот синглтон.
     private static T _instance;
     public static T Instance
     {

@@ -1,7 +1,6 @@
 using WingedCore.AI;
 using WingedCore.Core;
 using WingedCore.GUI;
-using WingedCore.Player.Economy;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -53,7 +52,7 @@ namespace WingedCore.Building
                 VisualElement result = panel.Pick(pointerUI);
 
                 GameObject prefab = menu.ConnectUIToObject(result);
-                if (prefab && EconomySystem.Instance.Spend(prefab.GetComponent<AIBehaviourBase>().VisiblePowerPoints))
+                if (prefab && Sampo.Economy.EconomySystem.Instance.Spend(prefab.GetComponent<AIBehaviourBase>().VisiblePowerPoints))
                     SpawnGameObject(prefab);
 
                 Cursor.lockState = CursorLockMode.Locked;

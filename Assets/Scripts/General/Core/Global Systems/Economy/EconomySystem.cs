@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace WingedCore.Player.Economy
+namespace Sampo.Economy
 {
     public class EconomySystem : MonoBehaviour
     {

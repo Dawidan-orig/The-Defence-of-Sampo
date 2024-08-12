@@ -2,6 +2,7 @@ using WingedCore.Weaponry;
 using WingedCore.Weaponry.Melee;
 using System;
 using UnityEngine;
+using WingedCore.Core.Utility;
 
 
 namespace WingedCore.Player
@@ -304,7 +305,7 @@ namespace WingedCore.Player
                  + new Vector3(0, Mathf.Lerp(relativeHeightFrom, relativeHeightTo, _moveProgress), 0);
             }
 
-            Utilities.DrawSphere(bladeHandle.position, duration: 0.5f);
+            DebugVisualsHelper.DrawSphere(bladeHandle.position, duration: 0.5f);
 
             if (_moveProgress >= 1)
             {

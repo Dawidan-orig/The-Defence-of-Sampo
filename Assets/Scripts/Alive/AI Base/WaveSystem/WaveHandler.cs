@@ -98,8 +98,6 @@ namespace WingedCore
         public void FormProceduralPalette() // Создаём сбалансированную палитру юнитов процедурно
         {
             unitPrefabsToSpawn.Clear();
-
-            //TODO (Когда будет много систем, пока что - ядерная бомба) : Процедурная палитра из наборов правил
         }
     }
 }

@@ -29,7 +29,7 @@ namespace WingedCore.Core
             }
         }
 
-        public Material sampo;
+        public Material friend;
         public Material enemy;
         public Material agro;
 

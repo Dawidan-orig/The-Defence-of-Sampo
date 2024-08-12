@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Animations.Rigging;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.Core
 {
@@ -184,12 +185,12 @@ namespace WingedCore.Core
             }
 
 
-            if (Utilities.ValueInArea(_speedToPass, Vector3.zero, 0.01f) && !firstPassInIdle && _airAnimationProgress <= 0)
+            if (MathHelper.ValueInArea(_speedToPass, Vector3.zero, 0.01f) && !firstPassInIdle && _airAnimationProgress <= 0)
             {
                 controlled.Play(idleAnimationHash);
                 firstPassInIdle = true;
             }
-            else if (!Utilities.ValueInArea(_speedToPass, Vector3.zero, 0.01f) || _airAnimationProgress > 0)
+            else if (!MathHelper.ValueInArea(_speedToPass, Vector3.zero, 0.01f) || _airAnimationProgress > 0)
             {
 
                 firstPassInIdle = false;

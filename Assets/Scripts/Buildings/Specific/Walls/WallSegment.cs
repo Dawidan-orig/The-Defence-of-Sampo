@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.Building
 {
@@ -37,7 +38,7 @@ namespace WingedCore.Building
                 throw new StackOverflowException("Слишком много итераций создания стен");
             }
 
-            if (Utilities.ValueInArea(transform.position, to, CLOSE_ENOUGH))
+            if (MathHelper.ValueInArea(transform.position, to, CLOSE_ENOUGH))
                 return;            
 
             to.y = from.y;
@@ -57,7 +58,7 @@ namespace WingedCore.Building
 
             float HEIGHT = 10f;
 
-            while(!Utilities.ValueInArea(current, to, CLOSE_ENOUGH)) 
+            while(!MathHelper.ValueInArea(current, to, CLOSE_ENOUGH)) 
             {
                 current += (to - from).normalized * resolution;
 

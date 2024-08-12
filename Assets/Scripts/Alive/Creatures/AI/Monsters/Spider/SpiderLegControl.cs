@@ -1,5 +1,6 @@
 using WingedCore.Weaponry.Special;
 using UnityEngine;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.AI.Monsters.Spider
 {
@@ -97,10 +98,9 @@ namespace WingedCore.AI.Monsters.Spider
         private void OnDrawGizmos()
         {
             Vector3 legRelativePoint = (transform.rotation * Quaternion.Inverse(initialRot)) * toLegDir * legLength;
-            Utilities.VisualizedRaycast(transform.position + legRelativePoint,
-                (Vector3.down * legLength - legRelativePoint).normalized, out _,
-                legLength, walkable);
-            Utilities.VisualizedRaycast(transform.position, legRelativePoint, out _, legLength, walkable);
+            Gizmos.DrawRay(transform.position + legRelativePoint,
+                (Vector3.down * legLength - legRelativePoint).normalized);
+            Gizmos.DrawRay(transform.position, legRelativePoint);
         }
     }
 }

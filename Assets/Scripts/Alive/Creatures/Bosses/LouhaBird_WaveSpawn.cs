@@ -2,6 +2,7 @@ using WingedCore;
 using WingedCore.AI;
 using System.Collections.Generic;
 using UnityEngine;
+using WingedCore.Core.Utility;
 
 /// <summary>
 /// Это временный скрипт для спавна врагов.
@@ -73,7 +74,7 @@ public class LouhaBird_WaveSpawn : MonoBehaviour
         if (toStartMovementSequence == Vector3.zero && currentMovement == null && moves.Count != 0)
         {
             currentMovement = moves.Pop();
-            if (!Utilities.ValueInArea(currentMovement.Value.From, flatPos, CLOSE_ENOUGH))
+            if (!MathHelper.ValueInArea(currentMovement.Value.From, flatPos, CLOSE_ENOUGH))
                 toStartMovementSequence = currentMovement.Value.From;
         }
         else if (toStartMovementSequence == Vector3.zero && currentMovement != null)
@@ -95,14 +96,14 @@ public class LouhaBird_WaveSpawn : MonoBehaviour
     {
         toStartMovementSequence.y = 0;
 
-        if (!Utilities.ValueInArea(flatPos, toStartMovementSequence, closeEnoughtDistance))
+        if (!MathHelper.ValueInArea(flatPos, toStartMovementSequence, closeEnoughtDistance))
             agent.MoveIteration(toStartMovementSequence);
         else
             toStartMovementSequence = Vector3.zero;
     }
     private void Moving_Chain(Vector3 flatPos, float closeEnoughtDistance)
     {
-        if (!Utilities.ValueInArea(flatPos, currentMovement.Value.To, closeEnoughtDistance))
+        if (!MathHelper.ValueInArea(flatPos, currentMovement.Value.To, closeEnoughtDistance))
         {
             agent.MoveIteration(currentMovement.Value.To);
 

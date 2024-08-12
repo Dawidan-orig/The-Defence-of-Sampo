@@ -1,6 +1,7 @@
 using Cinemachine;
 using WingedCore.Building;
 using UnityEngine;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.Player
 {
@@ -48,7 +49,7 @@ namespace WingedCore.Player
         private void CheckInputs()
         {
             if (Input.GetMouseButtonDown(0))
-                if (Utilities.GetMouseInWorldCollision(out var point))
+                if (PhysicsHelper.GetMouseInWorldCollision(300, out var point))
                 {
                     Instantiate(BuildingSystem.Instance.ChosenStructureToBuild, point, Quaternion.identity, buildingsParent);
                 }

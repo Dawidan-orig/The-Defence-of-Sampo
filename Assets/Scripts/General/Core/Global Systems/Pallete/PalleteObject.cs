@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using WingedCore.Core.Utility;
 
 [Serializable]
 public struct PalleteObject
@@ -35,8 +36,8 @@ public struct PalleteObject
     {
         if (obj is not PalleteObject casted) return false;
 
-        return Utilities.ValueInArea(casted.left, left,0.00001f) &&
-            Utilities.ValueInArea(casted.right, right, 0.00001f);
+        return MathHelper.ValueInArea(casted.left, left,0.00001f) &&
+            MathHelper.ValueInArea(casted.right, right, 0.00001f);
     }
 
     public override int GetHashCode()

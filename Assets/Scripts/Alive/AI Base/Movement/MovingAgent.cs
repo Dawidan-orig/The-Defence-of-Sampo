@@ -1,6 +1,7 @@
 using WingedCore.AI;
 using UnityEngine;
 using UnityEngine.AI;
+using WingedCore.Core.Utility;
 
 [RequireComponent(typeof(Movement))]
 public class MovingAgent : MonoBehaviour, IMovingAgent
@@ -97,7 +98,7 @@ public class MovingAgent : MonoBehaviour, IMovingAgent
         dir = Quaternion.Inverse(countFrom.rotation) * dir;
         Vector2 input = new Vector2(dir.z, dir.x);
 
-        Utilities.DrawArrow(countFrom.position, newPos);
+        DebugVisualsHelper.DrawArrow(countFrom.position, newPos);
 
         if (Vector3.Distance(newPos, countFrom.position) < walkToTargetDist)
             movement.PassInputDirect(input, Movement.SpeedType.walk, false);

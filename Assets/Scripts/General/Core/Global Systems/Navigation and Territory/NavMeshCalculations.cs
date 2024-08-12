@@ -219,11 +219,6 @@ namespace WingedCore.Core
                     {
                         Debug.Log(first + " " + second);
 
-                        int i = 0;
-                        if (EditorApplication.isPlaying)
-                            foreach (Vector3 vector in _vectorFormers)
-                                Utilities.CreateFlowText(i++.ToString(), 1, vector);
-
                         cell.Draw(Color.red, 100);
                         Draw(Color.red, 100);
                         Debug.LogError("ѕри поглощении нарисованного треугольника не нашлось внешней вершины (Error Pause, чтобы увидеть)");
@@ -289,13 +284,9 @@ namespace WingedCore.Core
             }
             public void Draw(Vector3 offset, Color color, float duration)
             {
-                int i = 0;
                 Vector3 prev = Vector3.zero;
                 foreach (var former in _vectorFormers)
-                {
-                    if (EditorApplication.isPlaying)
-                        Utilities.CreateFlowText(i++.ToString(), 1, former + offset, color);
-
+                { 
                     if (prev == Vector3.zero) { prev = former; continue; }
 
                     Debug.DrawLine(offset + prev, offset + former, color, duration);

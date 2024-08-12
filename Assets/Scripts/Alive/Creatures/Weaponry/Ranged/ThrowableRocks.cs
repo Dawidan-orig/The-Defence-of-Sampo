@@ -1,5 +1,6 @@
 using WingedCore.AI;
 using UnityEngine;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.Weaponry.Ranged
 {
@@ -134,7 +135,7 @@ namespace WingedCore.Weaponry.Ranged
 
 
 
-            bool res = Utilities.ValueInArea(hit.point, to, 0.1f) || (hit.transform == possibleTarget && possibleTarget != null);
+            bool res = MathHelper.ValueInArea(hit.point, to, 0.1f) || (hit.transform == possibleTarget && possibleTarget != null);
 
             if (res)
                 Debug.DrawLine(from, to, Color.green, 0);

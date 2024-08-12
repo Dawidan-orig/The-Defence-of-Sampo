@@ -5,7 +5,7 @@ namespace WingedCore.Abilities
 {
     public class AblitySystem : MonoBehaviour
     {
-        //TODO dep. Player : добавление новых способностей hardcoded в Awake, а через внешнюю систему. Сделать это, когда будет готова система классов игрока
+        //TODO dep. Player : добавление новых способностей сейчас hardcoded в Awake, а через внешнюю систему. Сделать это, когда будет готова система классов игрока
         public List<Ability> abilities;
         public LayerMask Collidables;
 

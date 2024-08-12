@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using WingedCore.Core;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.AI
 {
@@ -37,7 +38,7 @@ namespace WingedCore.AI
             else if (type == IDamagable.DamageType.thermal)
                 health -= harm;
 
-            Utilities.CreateFlowText(Mathf.RoundToInt(harm).ToString(), 5, transform.position, new Color(0.3f, 0, 0, 0.3f));
+            DebugVisualsHelper.CreateFlowText(Mathf.RoundToInt(harm).ToString(), 5, transform.position, new Color(0.3f, 0, 0, 0.3f));
 
             if (health < 0)
             {
@@ -51,7 +52,7 @@ namespace WingedCore.AI
         private void OnDrawGizmos()
         {
             if (EditorApplication.isPlaying && !EditorApplication.isPaused)
-                Utilities.CreateTextInWorld(health.ToString(), transform, position: transform.position + GetComponent<Collider>().bounds.size.y / 2 * Vector3.up, color: Color.green);
+                DebugVisualsHelper.CreateTextInWorld(health.ToString(), transform, position: transform.position + GetComponent<Collider>().bounds.size.y / 2 * Vector3.up, color: Color.green);
         }
     }
 }

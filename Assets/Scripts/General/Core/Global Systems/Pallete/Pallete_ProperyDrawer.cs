@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using WingedCore.Core.Utility;
 
 [CustomPropertyDrawer(typeof(Pallete))]
 public class Pallete_ProperyDrawer : PropertyDrawer
@@ -56,7 +57,7 @@ public class Pallete_ProperyDrawer : PropertyDrawer
 
         //var genericType = fieldInfo.GetType().GetGenericArguments()[0];
         //var used = Pallete.GetActualObjectForSerializedProperty(fieldInfo, property);
-        var used = Utilities.Editor.SerializedPropertyToObject<Pallete>(property);
+        var used = EditorHelper.SerializedPropertyToObject<Pallete>(property);
 
         if (EditorGUI.LinkButton(buttonOffset, "Add new"))
         {

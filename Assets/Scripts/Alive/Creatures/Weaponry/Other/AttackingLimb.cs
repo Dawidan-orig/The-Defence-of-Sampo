@@ -3,6 +3,7 @@ using WingedCore.Weaponry.Melee;
 using System;
 using UnityEngine;
 using WingedCore.Core;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.Weaponry.Special
 {
@@ -25,7 +26,6 @@ namespace WingedCore.Weaponry.Special
                     if (otherLimb.Host == _host)
                         return;
 
-                Utilities.DrawSphere(collision.GetContact(0).point, color: Color.red, duration: 3);
                 alive.Damage(body.velocity.magnitude * body.mass * damageMultiplier, IDamagable.DamageType.sharp);
                 _isDamaging = false;
             }

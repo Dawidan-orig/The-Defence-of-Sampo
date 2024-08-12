@@ -4,6 +4,7 @@ using WingedCore.Weaponry.Ranged;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.Weaponry.Ranged
 {
@@ -57,7 +58,7 @@ namespace WingedCore.Weaponry.Ranged
 
             PenetratingRaycast(from, from + (to - from).normalized * range, out hit, DEBUG_DURATION, DEBUG_COLOR_WRONGHIT);
 
-            bool res = Utilities.ValueInArea(hit.point, to, 0.1f) || (hit.transform == possibleTarget && possibleTarget != null);
+            bool res = MathHelper.ValueInArea(hit.point, to, 0.1f) || (hit.transform == possibleTarget && possibleTarget != null);
 
             if (res)
                 Debug.DrawLine(from, to, DEBUG_COLOR_RIGHTHIT, DEBUG_DURATION);
@@ -147,13 +148,13 @@ namespace WingedCore.Weaponry.Ranged
                 color = Color.white;
 
             Vector3 dir = (to - from).normalized;
-            Utilities.VisualizedRaycast(from,
+            RaycastHelper.VisualizedRaycast(from,
                     dir,
                     out hit,
                     (to - from).magnitude,
                     alive + structures, duration: duration, color: color, visualise: DRAW);
 
-            if (Utilities.ValueInArea(from, to, 0.075f))
+            if (MathHelper.ValueInArea(from, to, 0.075f))
             {
                 return;
             }

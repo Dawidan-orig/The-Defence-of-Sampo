@@ -1,6 +1,7 @@
 using WingedCore.AI;
 using UnityEngine;
 using UnityEngine.AI;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.AI.Movement
 {
@@ -64,7 +65,7 @@ namespace WingedCore.AI.Movement
                 savedPath = null;
             }
 
-            if (lookPos != Vector3.zero && !Utilities.ValueInArea(lookPos, countFrom.position, 0.01f))
+            if (lookPos != Vector3.zero && !MathHelper.ValueInArea(lookPos, countFrom.position, 0.01f))
             {
                 Vector3 lookDir = (lookPos - countFrom.position).normalized;
                 lookDir.y = 0;
@@ -84,7 +85,7 @@ namespace WingedCore.AI.Movement
         {
             if (!agent.enabled)
             {
-                if (Utilities.VisualizedRaycast(countFrom.position, Vector3.down,out var t, toGroundHeight, terrainMask))
+                if (RaycastHelper.VisualizedRaycast(countFrom.position, Vector3.down,out var t, toGroundHeight, terrainMask))
                 {
                     ResetAgent();
                 }
@@ -132,7 +133,7 @@ namespace WingedCore.AI.Movement
             Vector3 dir = (newPos - countFrom.position).normalized;
             dir.y = 0;
 
-            Utilities.DrawArrow(transform.position, newPos, 0, Color.blue);
+            DebugVisualsHelper.DrawArrow(transform.position, newPos, 0, Color.blue);
 
             if (agent.isOnNavMesh)
                 agent.destination = newPos;

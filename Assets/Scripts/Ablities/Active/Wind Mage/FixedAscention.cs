@@ -1,6 +1,7 @@
 using WingedCore.AI;
 using System;
 using UnityEngine;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.Abilities
 {
@@ -35,7 +36,7 @@ namespace WingedCore.Abilities
 
             _currentRecharge = 0;
 
-            Utilities.DrawSphere(user.position, RADIUS, Color.blue, 3);
+            DebugVisualsHelper.DrawSphere(user.position, RADIUS, Color.blue, 3);
 
             foreach (Collider c in Physics.OverlapSphere(user.position, RADIUS))
             {

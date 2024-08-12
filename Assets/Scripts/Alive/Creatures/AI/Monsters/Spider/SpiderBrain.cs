@@ -1,6 +1,7 @@
 using WingedCore.AI.Monsters.Spider;
 using WingedCore.Weaponry;
 using UnityEngine;
+using WingedCore.Core.Utility;
 
 namespace WingedCore.AI.Monsters
 {
@@ -108,7 +109,7 @@ namespace WingedCore.AI.Monsters
             desireBodyHeight = average + initialBodyHeightOffset;
 
             const float CLOSE_ENOUGH = 0.5f;
-            if (!Utilities.ValueInArea(desireBodyHeight, transform.position.y, CLOSE_ENOUGH))
+            if (!MathHelper.ValueInArea(desireBodyHeight, transform.position.y, CLOSE_ENOUGH))
             {
                 Vector3 force = (desireBodyHeight - transform.position.y) * heightControlMultiplyer * Time.fixedDeltaTime * Vector3.up;
                 Body.AddForce(force, ForceMode.VelocityChange);
