@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.LowLevel;
 
 public class MonoBehaviourSingleton<T> : MonoBehaviour
     where T : Component
@@ -27,6 +29,20 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour
                     _instance = obj.AddComponent<T>();
                 }
             }
+
+#if UNITY_EDITOR
+            //Позволяет подписаться только один раз
+            EditorApplication.playModeStateChanged -= OnPlayModeState;
+            EditorApplication.playModeStateChanged += OnPlayModeState;
+#endif
+            static void OnPlayModeState(PlayModeStateChange state)
+            {
+                if (state == PlayModeStateChange.ExitingEditMode)
+                {
+                    _instance = null;
+                }
+            }
+
             return _instance;
         }
     }

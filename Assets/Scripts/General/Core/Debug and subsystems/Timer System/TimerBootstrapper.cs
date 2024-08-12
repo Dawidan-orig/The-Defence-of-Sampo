@@ -23,6 +23,8 @@ namespace WingedCore.Core.Timers
             PlayerLoop.SetPlayerLoop(current);
             PlayerLoopUtils.PrintPlayerLoop(current);
 
+            // Код дальше - защита от создания дублирования менеджера в PlayerLoop при особой загрузке Assembly
+            // (Не знаю, какой именно, там в Unity надо настройку включить)
 #if UNITY_EDITOR
             //Позволяет подписаться только один раз
             EditorApplication.playModeStateChanged -= OnPlayModeState;
@@ -35,8 +37,17 @@ namespace WingedCore.Core.Timers
                 if(state == PlayModeStateChange.ExitingEditMode) 
                 {
                     PlayerLoopSystem currentPlayerLoop = PlayerLoop.GetCurrentPlayerLoop();
+                    RemoveTimerManager<Update>(ref currentPlayerLoop);
+                    PlayerLoop.SetPlayerLoop(currentPlayerLoop);
+
+                    TimerManager.Clear();
                 }
             }
+        }
+
+        static void RemoveTimerManager<T>(ref PlayerLoopSystem loop) 
+        {
+            PlayerLoopUtils.RemoveSystem<T>(ref loop, in timerSystem);
         }
 
         static bool InsertTimerManager<T>(ref PlayerLoopSystem loop, int index) 

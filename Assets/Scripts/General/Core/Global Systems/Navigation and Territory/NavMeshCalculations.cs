@@ -12,12 +12,16 @@ namespace WingedCore.Core
         private static NavMeshCalculations _instance;
 
         [Min(0)]
+        [Tooltip("Минимальная площадь атомарного треугольника")]
         public float MINIMUM_AREA = 30;
         [Min(0)]
+        [Tooltip("Максимальая площадь атомарного треугольника")]
         public float MAXMIMUM_AREA = 50;
         [Range(0, 100)]
+        [Tooltip("Максимальное число мелких треугольников при объединении")]
         public float MAX_VERTS_IN_COMPLEX = 50;
-        public Bounds octTreeBounds = new Bounds();
+        [Tooltip("Независимое расположение и размер Octtree в мире")]
+        public Bounds octTreeBoundsAbsolute = new Bounds();
 
         [Header("Lookonly")]
         [SerializeReference]
@@ -637,7 +641,7 @@ namespace WingedCore.Core
             }
             #endregion
 
-            octreeCells = new(octTreeBounds);
+            octreeCells = new(octTreeBoundsAbsolute);
             octreeCells.AddRangeToProcess(transforms);
 
             _cells = cellsList.ToArray();
@@ -787,6 +791,9 @@ namespace WingedCore.Core
             Gizmos.color = new Color(0, 0.6f, 0);
             if (octreeCells != null && drawOctTree)
                 octreeCells.DrawGizmo();
+
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireCube(octTreeBoundsAbsolute.center, octTreeBoundsAbsolute.extents *2);
         }
     }
 }
