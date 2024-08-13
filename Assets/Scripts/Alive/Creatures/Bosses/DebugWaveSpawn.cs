@@ -50,14 +50,14 @@ namespace WingedCore.DebugSystems
                 Vector3 to = SpawnZone.max;
 
                 Vector3 pos = new(Random.Range(from.x,to.x),
-                    Random.Range(from.y, to.y),
+                    1,
                     Random.Range(from.z, to.z));
 
                 waves.GetSpawnedUnit(pos, FactionType.enemy);
             }
         }
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireCube(SpawnZone.center, SpawnZone.size);

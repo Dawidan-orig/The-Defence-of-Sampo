@@ -155,8 +155,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7900944302068477665}
-  - component: {fileID: 2843329351619346576}
   - component: {fileID: 5586541267540761048}
+  - component: {fileID: 2843329351619346576}
   - component: {fileID: 1579277658286590084}
   - component: {fileID: 6457755934751162684}
   - component: {fileID: 806366685081612289}
@@ -192,27 +192,6 @@ Transform:
   - {fileID: 6732385865820284828}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2843329351619346576
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6166585230114025203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77f2875d5386eed408c325d7384722a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minDistance: 0.3
-  debug_Draw: 0
-  blade_as_stuff: 0
-  ignoredDistance: 2
-  ignoredImpulse: 5
-  checker: {fileID: 701215099291761642}
-  vital: {fileID: 6457755934751162684}
-  ignored: []
-  controlled: []
 --- !u!114 &5586541267540761048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,6 +395,27 @@ MonoBehaviour:
   _swingReady: 1
   isSwordFixing: 1
   currentState: 
+--- !u!114 &2843329351619346576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6166585230114025203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77f2875d5386eed408c325d7384722a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minDistance: 0.3
+  debug_Draw: 0
+  blade_as_stuff: 0
+  ignoredDistance: 2
+  ignoredImpulse: 5
+  checker: {fileID: 701215099291761642}
+  vital: {fileID: 6457755934751162684}
+  ignored: []
+  controlled: []
 --- !u!54 &1579277658286590084
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -479,12 +479,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ai_weight: 1
-  _ftype: 0
+  _currentFaction: 0
   isAvailableForSelfFaction: 0
+  useDebugColors: 0
   health: 700
   vital: {fileID: 6457755934751162684}
   brainBody: {fileID: 0}
-  root: {fileID: 0}
+  parentToDestroy: {fileID: 0}
 --- !u!114 &3837791418764087138
 MonoBehaviour:
   m_ObjectHideFlags: 0

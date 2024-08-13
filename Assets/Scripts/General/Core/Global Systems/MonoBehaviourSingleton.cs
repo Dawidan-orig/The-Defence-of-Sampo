@@ -18,6 +18,12 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour
                 if (objs.Length > 0)
                 {
                     _instance = objs[0];
+
+#if UNITY_EDITOR
+                    //Позволяет подписаться только один раз
+                    EditorApplication.playModeStateChanged -= OnPlayModeState;
+                    EditorApplication.playModeStateChanged += OnPlayModeState;
+#endif
                 }
                 if (objs.Length > 1)
                 {
@@ -35,12 +41,14 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour
                     EditorApplication.playModeStateChanged -= OnPlayModeState;
                     EditorApplication.playModeStateChanged += OnPlayModeState;
 #endif
-                    void OnPlayModeState(PlayModeStateChange state)
+                    
+                }
+
+                void OnPlayModeState(PlayModeStateChange state)
+                {
+                    if (state == PlayModeStateChange.ExitingPlayMode)
                     {
-                        if (state == PlayModeStateChange.ExitingPlayMode)
-                        {
-                            stopped = true;
-                        }
+                        stopped = true;
                     }
                 }
             }

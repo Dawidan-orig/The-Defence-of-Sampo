@@ -155,6 +155,7 @@ MonoBehaviour:
   ai_weight: 1
   _currentFaction: 2
   isAvailableForSelfFaction: 0
+  useDebugColors: 0
   health: 10000
   connectedObjects: []
   remainsPrefab: {fileID: 0}
@@ -222,6 +223,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9ff2ce697a9fb4485a1ce373faa090, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  possibleHeightToBuild: 0.1
+  progressToBuild: -1
+  pivot: {fileID: 1581792594742125085}
+  ground:
+    serializedVersion: 2
+    m_Bits: 9
+  isBuilt: 0
   weapon: {fileID: 4716082806266835155}
   structureBase: {fileID: 668170970959315730}
   targetsInRange: []

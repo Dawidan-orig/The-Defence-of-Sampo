@@ -26,6 +26,7 @@ namespace WingedCore.Building
         public float possibleHeightToBuild = 0.1f;
         [Tooltip("Количество работы для завершения строительства")]
         public int progressToBuild = -1;
+        public Transform pivot = null;
 
         protected int _currentProgressToBuild = 0;
         [SerializeField, ReadOnly]
@@ -39,26 +40,29 @@ namespace WingedCore.Building
         {
             ground = MonoBehaviourSingleton<VariableProvider>.Instance.ground;
 
+            if(pivot == null)
+                pivot = transform;
+
             if (TryGetComponent(out AITarget interact))
                 interact.enabled = false;
         }
 
         protected virtual void Start()
         {
-            transform.parent = MonoBehaviourSingleton<BuildingSystem>.Instance.structureParent;
+            pivot.parent = MonoBehaviourSingleton<BuildingSystem>.Instance.structureParent;
 
             const float MAX_DISTANCE = 100;
-            if (Physics.Raycast(transform.position + Vector3.up * possibleHeightToBuild, Vector3.down, out var hit, MAX_DISTANCE, ground))
+            if (Physics.Raycast(pivot.position + Vector3.up * possibleHeightToBuild, Vector3.down, out var hit, MAX_DISTANCE, ground))
             {
-                if (Vector3.Distance(transform.position, hit.point) > possibleHeightToBuild)
+                if (Vector3.Distance(pivot.position, hit.point) > possibleHeightToBuild)
                 {
-                    transform.position = hit.point + Vector3.down * possibleHeightToBuild/2;
+                    pivot.position = hit.point + Vector3.down * possibleHeightToBuild/2;
                     LoggerSystem.DebugLog("Опускаю строение вниз на землю", gameObject);
                 }
             }
             else
             {
-                Debug.LogWarning("Земля для строения не найдена! Отключаю", transform);
+                Debug.LogWarning("Земля для строения не найдена! Отключаю", pivot);
                 gameObject.SetActive(false);
             }
         }
@@ -76,7 +80,7 @@ namespace WingedCore.Building
             }
         }
 
-        private void OnDrawGizmos()
+        protected virtual void OnDrawGizmos()
         {
             var array = GetType().ToString().Split('.');
             string text = array[array.Length - 1];

@@ -11,7 +11,7 @@ namespace WingedCore.Building.Towers
     /// <summary>
     /// Башня, работающая относительно области действия - коллайдера.
     /// </summary>
-    public class AttackingTower : MonoBehaviour
+    public class AttackingTower : BuildableStructure
     {
         [Required]
         public BaseShooting weapon;
@@ -21,7 +21,7 @@ namespace WingedCore.Building.Towers
         [ReadOnly]
         [SerializeField] List<Transform> targetsInRange;
 
-        private void Update()
+        protected override void Update()
         {
             if (targetsInRange.Count == 0)
                 return;
@@ -72,6 +72,11 @@ namespace WingedCore.Building.Towers
                     whatToDo.Invoke();
                 }
             }
+        }
+
+        protected override void Build()
+        {
+
         }
     }
 }
