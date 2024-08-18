@@ -3,6 +3,7 @@ using WingedCore.Player.CameraControls;
 using UnityEngine;
 using WingedCore.Core;
 using Alchemy.Inspector;
+using WingedCore.Core.Balance;
 
 namespace WingedCore.Player
 {
@@ -32,6 +33,7 @@ namespace WingedCore.Player
         Vector3 _prevMouse;
         [SerializeField]
         Transform _handTarget;
+        private BalanceInfluencer _influence;
 
         private void Awake()
         {

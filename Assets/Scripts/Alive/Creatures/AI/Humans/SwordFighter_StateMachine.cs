@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using WingedCore.Core.Balance;
 using WingedCore.Weaponry;
 
 namespace WingedCore.AI.Humans.Melee.Sword
@@ -376,9 +377,9 @@ namespace WingedCore.AI.Humans.Melee.Sword
         }
         #endregion
 
-        public void SetInitialDesires() 
+        public void SetInitialDesires()
         {
-            SetDesires(_initialBlade.position,_initialBlade.up, _initialBlade.forward);
+            SetDesires(_initialBlade.position, _initialBlade.up, _initialBlade.forward);
         }
 
         public void InitiateNewBladeMove()

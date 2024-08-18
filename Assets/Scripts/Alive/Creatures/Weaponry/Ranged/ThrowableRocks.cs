@@ -47,7 +47,7 @@ namespace WingedCore.Weaponry.Ranged
             Physics.IgnoreCollision(GetComponent<Collider>(), bullet.GetComponent<Collider>());
             Physics.IgnoreCollision(_host.GetComponent<Collider>(), bullet.GetComponent<Collider>());
 
-            BulletBase b = bullet.GetComponent<BulletBase>();
+            ProjectileBase b = bullet.GetComponent<ProjectileBase>();
             b.SetDamageDealer(transform);
             const int ADDITION_TO_NOT_EARLY_DISSOLVE = 10;
             b.possibleDistance = range + ADDITION_TO_NOT_EARLY_DISSOLVE;
@@ -133,12 +133,7 @@ namespace WingedCore.Weaponry.Ranged
 
             #endregion
 
-
-
             bool res = MathHelper.ValueInArea(hit.point, to, 0.1f) || (hit.transform == possibleTarget && possibleTarget != null);
-
-            if (res)
-                Debug.DrawLine(from, to, Color.green, 0);
 
             return res;
         }

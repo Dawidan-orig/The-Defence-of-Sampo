@@ -1,7 +1,9 @@
 using System;
 using UnityEngine;
+using WingedCore.AI;
 using WingedCore.AI.Humans.Melee;
 using WingedCore.Core;
+using WingedCore.Core.Balance;
 
 namespace WingedCore.Weaponry.Melee
 {
@@ -54,7 +56,13 @@ namespace WingedCore.Weaponry.Melee
 
             if (collision.collider.transform.TryGetComponent<IDamagable>(out var damagable))
             {
-                damagable.Damage(body.velocity.magnitude * body.mass * damageMultiplier, IDamagable.DamageType.sharp);
+                float dmg = body.velocity.magnitude * body.mass * damageMultiplier;
+                _host.GetComponent<BalanceInfluencer>()?.DoInfluence((int)dmg);
+                damagable.Damage(dmg, IDamagable.DamageType.sharp);
+
+                if (Host.TryGetComponent(out AIBehaviourBase unit))
+                    unit.BalanceInfluence.DoInfluence((int)dmg);
+
                 GetComponent<Collider>().isTrigger = true;
                 Invoke(nameof(DisableCollision), noDamageTime);
 

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
-namespace WingedCore.Building
+namespace Sampo.Building
 {
     public class SampoMainStructure : MonoBehaviour, IInteractable
     {

@@ -1,8 +1,12 @@
 using Alchemy.Inspector;
+using Sampo.Factions;
+using Sampo.Waves;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using WingedCore.AI;
 using WingedCore.Core.Timers;
+using static UnityEngine.UI.CanvasScaler;
 
 namespace WingedCore.DebugSystems
 {
@@ -17,13 +21,6 @@ namespace WingedCore.DebugSystems
 
         private CountdownTimer waveTimer;
 
-        private void Awake()
-        {
-            waveTimer = new(timeToNewWave);
-            waveTimer.OnTimerStop += waveTimer.Reset;
-            waveTimer.OnTimerStop += SpawnWave;
-        }
-
         private void Update()
         {
             progress = waveTimer.CurrentTime/timeToNewWave;
@@ -32,6 +29,9 @@ namespace WingedCore.DebugSystems
         private void OnEnable()
         {
             SpawnWave();
+            waveTimer = new(timeToNewWave);
+            waveTimer.OnFinished += waveTimer.Reset;
+            waveTimer.OnFinished += SpawnWave;
             waveTimer.Start();
         }
 
@@ -53,7 +53,8 @@ namespace WingedCore.DebugSystems
                     1,
                     Random.Range(from.z, to.z));
 
-                waves.GetSpawnedUnit(pos, FactionType.enemy);
+                var unit = waves.GetSpawnedUnit(pos);
+                unit.GetComponent<AITarget>().ChangeFactionCompletely(FactionType.enemy);
             }
         }
 
@@ -61,6 +62,11 @@ namespace WingedCore.DebugSystems
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireCube(SpawnZone.center, SpawnZone.size);
+        }
+
+        private void OnDestroy()
+        {
+            waveTimer.Dispose();
         }
     }
 }

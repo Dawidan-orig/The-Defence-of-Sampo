@@ -10,6 +10,7 @@ namespace WingedCore.Core.Balance
     /// <summary>
     /// Эта система отвечает за глобальный баланс вклада игрока(-ов) в мир,
     /// И предполагаемую силу воздействия мира обратно.
+    /// Singleton.
     /// </summary>
     public class CentralBalance : MonoBehaviour
     {
@@ -33,10 +34,12 @@ namespace WingedCore.Core.Balance
          * Решение - уменшить количество очков этой самый обороны. Всо.
          */
 
+        public float chaosIntesivity = 0.7f;
+
         [Tooltip("Текущее количество очков мира, либо же ещё фактор хаоса." +
             "\r\nПредполагается, что чем это число выше, тем больше всего может произойти.")]
         [SerializeField, ReadOnly]
-        int chaosFactor = 0;
+        int chaosFactor = 500;
         [Tooltip("Влияение игрока на мир за текущую итерацию")]
         [SerializeField, ReadOnly]
         int playerInfluence = 0;
@@ -52,16 +55,11 @@ namespace WingedCore.Core.Balance
         /// <returns>Баланса мира и игрока. Если значение уход в минус - игрок сильнее. В плюс - мир сильнее.</returns>
         public int CalculateBalance() 
         {
-            return chaosFactor - playerInfluence;
-        }
+            int res = chaosFactor - playerInfluence;
 
-        /// <summary>
-        /// Завершить текущую итерацию и изменить фактор хаоса
-        /// </summary>
-        /// <param name="newRelativeChaos">Относительное значение, которое прибавится к текущей изменчивости мира.</param>
-        public void Iterate(int newRelativeChaos) 
-        {
-            chaosFactor += newRelativeChaos;
+            chaosFactor = (int) Mathf.Lerp(chaosFactor, playerInfluence, chaosIntesivity);
+
+            return res;
         }
     }
 }

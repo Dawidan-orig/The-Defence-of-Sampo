@@ -4,8 +4,8 @@ using WingedCore.Weaponry;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using static WingedCore.AI.TargetingUtilityAI;
 using WingedCore.Core.Utility;
+using WingedCore.Core.Balance;
 
 namespace WingedCore.AI
 {
@@ -34,6 +34,8 @@ namespace WingedCore.AI
         private Rigidbody _body;
         protected TargetingUtilityAI _AITargeting;
 
+        private BalanceInfluencer balanceInfluence;
+
         #region path and movement
         protected NavMeshPath path;
         protected Vector3 moveTargetPos { get; private set; }
@@ -46,7 +48,7 @@ namespace WingedCore.AI
         #region properties
         public int VisiblePowerPoints { get => visiblePowerPoints; set => visiblePowerPoints = value; }
         public Rigidbody Body { get => _body; set => _body = value; }
-        public AIAction CurrentActivity
+        public TargetingUtilityAI.AIAction CurrentActivity
         {
             get { return _AITargeting.CurrentActivity; }
         }
@@ -91,6 +93,7 @@ namespace WingedCore.AI
             }
         }
         public abstract Tool BehaviourWeapon { get; }
+        public BalanceInfluencer BalanceInfluence { get => balanceInfluence;}
         #endregion
 
         #region unity
@@ -98,6 +101,7 @@ namespace WingedCore.AI
         {
             Transform absoluteParent = GetMainTransform();
 
+            balanceInfluence = absoluteParent.GetComponent<BalanceInfluencer>();
             _body = absoluteParent.gameObject.GetComponent<Rigidbody>();
             _navMeshCalcFrom ??= transform;
         }
@@ -300,6 +304,8 @@ namespace WingedCore.AI
         /// <param name="points">Присваиваемые очки</param>
         public virtual void AssignPoints(int points)
         {
+            balanceInfluence.DoInfluence(points);
+
             int remaining = points;
             visiblePowerPoints = points;
 

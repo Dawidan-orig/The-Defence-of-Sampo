@@ -8,7 +8,6 @@ using WingedCore.Core.Utility;
 
 namespace WingedCore.Weaponry.Ranged
 {
-    //TODO : Пока что это - DirectShooting. Его надо переписать на реальный, абстрактный BaseShooting
     public class BaseShooting : Tool
     {
         public Transform shootPoint;
@@ -35,7 +34,7 @@ namespace WingedCore.Weaponry.Ranged
             Physics.IgnoreCollision(GetComponent<Collider>(), bullet.GetComponent<Collider>());
             Physics.IgnoreCollision(_host.GetComponent<Collider>(), bullet.GetComponent<Collider>());
 
-            BulletBase b = bullet.GetComponent<BulletBase>();
+            ProjectileBase b = bullet.GetComponent<ProjectileBase>();
             b.SetDamageDealer(transform);
             b.possibleDistance = range;
 
@@ -59,9 +58,6 @@ namespace WingedCore.Weaponry.Ranged
             PenetratingRaycast(from, from + (to - from).normalized * range, out hit, DEBUG_DURATION, DEBUG_COLOR_WRONGHIT);
 
             bool res = MathHelper.ValueInArea(hit.point, to, 0.1f) || (hit.transform == possibleTarget && possibleTarget != null);
-
-            if (res)
-                Debug.DrawLine(from, to, DEBUG_COLOR_RIGHTHIT, DEBUG_DURATION);
 
             return res;
         }
@@ -142,7 +138,7 @@ namespace WingedCore.Weaponry.Ranged
 
         protected void PenetratingRaycast(Vector3 from, Vector3 to, out RaycastHit hit, float duration = 0, Color? color = null)
         {
-            const bool DRAW = true;
+            const bool DRAW = false;
 
             if (color == null)
                 color = Color.white;

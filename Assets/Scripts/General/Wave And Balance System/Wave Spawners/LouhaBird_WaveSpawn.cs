@@ -3,6 +3,7 @@ using WingedCore.AI;
 using System.Collections.Generic;
 using UnityEngine;
 using WingedCore.Core.Utility;
+using Sampo.Waves;
 
 /// <summary>
 /// Это временный скрипт для спавна врагов.
@@ -116,7 +117,8 @@ public class LouhaBird_WaveSpawn : MonoBehaviour
             float progressFraction = 1 / (float)MonoBehaviourSingleton<WaveHandler>.Instance.GetAmountOfUnitsToSpawn();
             if (flightProgress > lastSpawnProgress + progressFraction)
             {
-                GameObject unit = MonoBehaviourSingleton<WaveHandler>.Instance.GetSpawnedUnit(transform.position, GetComponent<AITarget>().FactionType, transform.rotation);
+                GameObject unit = MonoBehaviourSingleton<WaveHandler>.Instance.GetSpawnedUnit(transform.position, transform.rotation);
+                unit.GetComponent<AITarget>().ChangeFactionCompletely(FactionType.enemy);
                 unit.GetComponent<Rigidbody>().AddForce(Vector3.up * 10);
                 lastSpawnProgress = flightProgress;
             }

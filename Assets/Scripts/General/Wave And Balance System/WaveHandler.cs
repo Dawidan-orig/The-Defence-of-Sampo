@@ -2,7 +2,7 @@ using WingedCore.AI;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace WingedCore
+namespace Sampo.Waves
 {
     public class WaveHandler : MonoBehaviour
     {
@@ -19,18 +19,21 @@ namespace WingedCore
         public float wave_power = 10000;
         public int units_amount = 100;
 
+        public System.Action OnPreWave;
+
         [Header("Lookonly")]
         [SerializeField]
-        private List<GameObject> unitPrefabsToSpawn = new List<GameObject>();
+        private Stack<KeyValuePair<GameObject, int>> unitPrefabsToSpawn = new Stack<KeyValuePair<GameObject, int>>();
 
-        public GameObject GetSpawnedUnit(Vector3 onPosition, FactionType ofFactionType, Quaternion withRotation = default)
+        public GameObject GetSpawnedUnit(Vector3 onPosition, Quaternion withRotation = default)
         {
             if (unitPrefabsToSpawn.Count == 0)
                 return null;
 
-            GameObject unit = Instantiate(unitPrefabsToSpawn[0], onPosition, withRotation, container);
-            unit.GetComponent<AITarget>().ChangeFactionCompletely(ofFactionType);
-            unitPrefabsToSpawn.RemoveAt(0);
+            var kvp = unitPrefabsToSpawn.Pop();
+
+            GameObject unit = Instantiate(kvp.Key, onPosition, withRotation, container);
+            unit.GetComponent<IPointsDistribution>().AssignPoints(kvp.Value);
             return unit;
         }
         public int GetAmountOfUnitsToSpawn()
@@ -40,6 +43,8 @@ namespace WingedCore
 
         private void FormFromPallete(Pallete givenPallete)
         {
+            OnPreWave?.Invoke();
+
             float remainedPower = wave_power;
             int toSpawn = units_amount;
 
@@ -53,8 +58,7 @@ namespace WingedCore
 
                 //Debug.Log(givenPallete.Pass(generationValue).GetType());
                 GameObject newUnitPrefab = (GameObject)givenPallete.Pass(generationValue);
-                newUnitPrefab.GetComponent<IPointsDistribution>().AssignPoints(usedPoints);
-                unitPrefabsToSpawn.Add(newUnitPrefab);
+                unitPrefabsToSpawn.Push(KeyValuePair.Create(newUnitPrefab, usedPoints));
 
                 toSpawn--;
                 remainedPower -= usedPoints;
@@ -69,11 +73,6 @@ namespace WingedCore
             Pallete former = prefabPalletes[chosenPalleteIndex].enemies;
 
             FormFromPallete(former);
-        }
-
-        public void FormProceduralPalette() // Создаём сбалансированную палитру юнитов процедурно
-        {
-            unitPrefabsToSpawn.Clear();
         }
     }
 }

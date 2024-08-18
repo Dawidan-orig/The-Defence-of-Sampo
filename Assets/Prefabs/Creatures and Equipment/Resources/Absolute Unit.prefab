@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3464873321032151638}
   - component: {fileID: 2498818268452375569}
   - component: {fileID: 3300596841645366359}
+  - component: {fileID: 577526194152060533}
   m_Layer: 6
   m_Name: Absolute Unit
   m_TagString: Untagged
@@ -138,7 +139,7 @@ MonoBehaviour:
   health: 700
   vital: {fileID: 6457755934751162684}
   brainBody: {fileID: 0}
-  root: {fileID: 0}
+  parentToDestroy: {fileID: 0}
 --- !u!114 &3837791418764087138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,6 +213,18 @@ MonoBehaviour:
     behaviour: {fileID: 0}
     _totalWeight: 0
   _possibleActions: []
+--- !u!114 &577526194152060533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6166585230114025203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cf21244ca4aea142abb04d8e3fa768c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &261701640518159192
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 1667672298561886317}
   - component: {fileID: 4760303856139256941}
   - component: {fileID: 4090504870370541617}
+  - component: {fileID: 136077546242165401}
   m_Layer: 6
   m_Name: NM_Direct Shooting
   m_TagString: Untagged
@@ -129,12 +130,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ai_weight: 1
-  _ftype: 0
+  _currentFaction: 0
   isAvailableForSelfFaction: 0
+  useDebugColors: 0
   health: 100
   vital: {fileID: 0}
   brainBody: {fileID: 0}
-  root: {fileID: 0}
+  parentToDestroy: {fileID: 0}
 --- !u!54 &2397089146008967547
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -258,6 +260,18 @@ MonoBehaviour:
   terrainMask:
     serializedVersion: 2
     m_Bits: 9
+--- !u!114 &136077546242165401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397089146008967548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cf21244ca4aea142abb04d8e3fa768c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2397089146338771506
 GameObject:
   m_ObjectHideFlags: 0

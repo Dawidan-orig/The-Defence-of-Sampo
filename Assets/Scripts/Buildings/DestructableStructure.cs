@@ -51,35 +51,5 @@ namespace WingedCore.Building
             if (remainsPrefab)
                 Instantiate(remainsPrefab);
         }
-
-        protected override void DebugChangeColors()
-        {
-#if UNITY_EDITOR
-            if (useDebugColors)
-            {
-                WingedCore.DebugSystems.VariableProvider provider = MonoBehaviourSingleton<WingedCore.DebugSystems.VariableProvider>.Instance;
-
-                Material material = null;
-
-                switch (this.FactionType)
-                {
-                    case FactionType.sampo: material = provider.friend; break;
-                    case FactionType.enemy: material = provider.enemy; break;
-                    case FactionType.aggressive: material = provider.agro; break;
-                    case FactionType.neutral: material = provider.neutral; break;
-                }
-
-                Transform highest = parentToDestroy;
-                if (highest == null)
-                    highest = transform;
-
-                if (material != null)
-                    foreach (Renderer renderer in highest.GetComponentsInChildren<Renderer>())
-                    {
-                        renderer.sharedMaterial = material;
-                    }
-            }
-#endif
-        }
     }
 }

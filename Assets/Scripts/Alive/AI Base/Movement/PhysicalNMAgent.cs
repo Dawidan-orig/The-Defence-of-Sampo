@@ -1,4 +1,3 @@
-using WingedCore.AI;
 using UnityEngine;
 using UnityEngine.AI;
 using WingedCore.Core.Utility;
@@ -21,7 +20,18 @@ namespace WingedCore.AI.Movement
 
         Vector3 lookPos;
         Vector3 IMovingAgent.DesireLookDir => desireLookDir;
-        Transform IMovingAgent.CountFrom => countFrom;
+        Transform IMovingAgent.CountFrom
+        {
+            get
+            {
+                if (countFrom == null)
+                    countFrom = transform;
+                if (TryGetComponent(out AIBehaviourBase ai) && ai.CalcFrom)
+                    countFrom = ai.CalcFrom;
+
+                return countFrom;
+            }
+        }
 
         public MonoBehaviour Component => this;
 
@@ -47,12 +57,12 @@ namespace WingedCore.AI.Movement
         {
             desireLookDir = transform.forward;
             desireLookDir.y = 0;
+            agent.autoRepath = false;
 
-            countFrom = transform;
             if (TryGetComponent(out AIBehaviourBase ai) && ai.CalcFrom)
                 countFrom = ai.CalcFrom;
-
-            agent.autoRepath = false;
+            if (countFrom == null)
+                countFrom = transform;
 
             DisableAgent();
         }
@@ -85,7 +95,7 @@ namespace WingedCore.AI.Movement
         {
             if (!agent.enabled)
             {
-                if (RaycastHelper.VisualizedRaycast(countFrom.position, Vector3.down,out var t, toGroundHeight, terrainMask))
+                if (RaycastHelper.VisualizedRaycast(countFrom.position, Vector3.down, out var t, toGroundHeight, terrainMask))
                 {
                     ResetAgent();
                 }

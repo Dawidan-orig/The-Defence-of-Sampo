@@ -6,6 +6,9 @@ namespace WingedCore.AI
 {
     public class AliveBeing : AITarget, IDamagable
     {
+        //TODO : Объединить с DestructibleStructure, и определить "сверху" типы урона и слабость к ним.
+        // Типы урона должны быть полностью Generic, конкретная реализация их уже будет присуща игре.
+
         public float health = 100;
         [Tooltip("Коллайдер, которые регистрирует получение урона")]
         public Collider vital;
@@ -17,7 +20,7 @@ namespace WingedCore.AI
 
         public Collider Vital => vital;
 
-
+        TMPro.TextMeshPro text;
 
         private void Awake()
         {
@@ -28,6 +31,9 @@ namespace WingedCore.AI
                 brainBody = transform;
             if (parentToDestroy == null)
                 parentToDestroy = transform;
+
+            text = DebugVisualsHelper.CreateTextInWorld(health.ToString(), transform, position: transform.position + GetComponent<Collider>().bounds.size.y / 2 * Vector3.up, color: Color.green, fontSize: 4);
+            text.transform.parent = transform;
         }
 
         public void Damage(float harm, IDamagable.DamageType type)
@@ -39,6 +45,7 @@ namespace WingedCore.AI
             else if (type == IDamagable.DamageType.thermal)
                 health -= harm;
 
+            text.text = health.ToString();
             DebugVisualsHelper.CreateFlowText(Mathf.RoundToInt(harm).ToString(), 5, transform.position, new Color(0.3f, 0, 0, 0.3f));
 
             if (health < 0)
@@ -48,41 +55,6 @@ namespace WingedCore.AI
                 else
                     Destroy(parentToDestroy.gameObject);
             }
-        }
-
-        private void OnDrawGizmos()
-        {
-            DebugVisualsHelper.CreateTextInWorld(health.ToString(), transform, position: transform.position + GetComponent<Collider>().bounds.size.y / 2 * Vector3.up, color: Color.green);
-        }
-
-        protected override void DebugChangeColors()
-        {
-#if UNITY_EDITOR
-            if (useDebugColors)
-            {
-                WingedCore.DebugSystems.VariableProvider provider = MonoBehaviourSingleton<WingedCore.DebugSystems.VariableProvider>.Instance;
-
-                Material material = null;
-
-                switch (this.FactionType)
-                {
-                    case FactionType.sampo: material = provider.friend; break;
-                    case FactionType.enemy: material = provider.enemy; break;
-                    case FactionType.aggressive: material = provider.agro; break;
-                    case FactionType.neutral: material = provider.neutral; break;
-                }
-
-                Transform highest = parentToDestroy;
-                if (highest == null)
-                    highest = transform;
-
-                if (material != null)
-                    foreach (Renderer renderer in highest.GetComponentsInChildren<Renderer>())
-                    {
-                        renderer.sharedMaterial = material;
-                    }
-            }
-#endif
         }
     }
 }

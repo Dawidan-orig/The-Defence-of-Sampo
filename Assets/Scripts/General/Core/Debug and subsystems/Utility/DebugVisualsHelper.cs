@@ -8,8 +8,8 @@ namespace WingedCore.Core.Utility
     {
         public static void CreateFlowText(string text, float duration, Vector3 position, Color? color = null)
         {
-            var tMesh = CreateTextInWorld(text, duration: duration, position: position, color: color);
-            tMesh.gameObject.AddComponent<TextFlow>();
+            var tMesh = CreateTextInWorld(text, duration: duration, position: position, color: color, fontSize: 4);
+            tMesh.gameObject?.AddComponent<TextFlow>();
         }
         public static TextMeshPro CreateTextInWorld(string text, Transform parent = null, float duration = 0, Vector3 position = default(Vector3), Color? color = null, TextAnchor textAnchor = TextAnchor.MiddleCenter, TextAlignmentOptions textAlignment = TextAlignmentOptions.Center, int fontSize = 12, int sortingOrder = 5000)
         {
@@ -17,21 +17,23 @@ namespace WingedCore.Core.Utility
 
             if (color == null) color = Color.white;
 
-            GameObject gameObject = new GameObject("TextMesh of " + (parent ? parent.ToString() : "nothing"), typeof(TextMeshPro));
+            GameObject gameObject = new GameObject("TextMesh of " + (parent ? parent.ToString() : "nothing"));
             gameObject.AddComponent<TextFaceCamera>();
+            gameObject.hideFlags = HideFlags.HideAndDontSave;
             Transform transform = gameObject.transform;
             if (parent != null)
                 transform.SetParent(parent);
             else
                 transform.SetParent(/*utility.transform*/ null);
             transform.position = position;
-            TextMeshPro textMesh = gameObject.GetComponent<TextMeshPro>();
+            TextMeshPro textMesh = gameObject.AddComponent<TextMeshPro>();
             textMesh.alignment = textAlignment;
             textMesh.text = text;
             textMesh.fontSize = fontSize;
             textMesh.color = (Color)color;
             textMesh.GetComponent<MeshRenderer>().sortingOrder = sortingOrder;
-            UnityEngine.Object.Destroy(gameObject, duration == 0 ? Time.deltaTime * 2 : duration);
+            if(duration != 0)
+                UnityEngine.Object.Destroy(gameObject, duration);
             return textMesh;
         }
         public static void DrawLineWithDistance(Vector3 start, Vector3 end, Color? color = null, Transform parent = null, float duration = 0)

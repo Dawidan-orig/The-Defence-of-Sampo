@@ -1,10 +1,11 @@
 using WingedCore.AI;
 using UnityEngine;
 using WingedCore.Core;
+using WingedCore.Core.Balance;
 
 namespace WingedCore.Weaponry.Ranged
 {
-    public class BulletBase : MonoBehaviour, IDamageDealer
+    public class ProjectileBase : MonoBehaviour, IDamageDealer
     {
         public GameObject instantiatedOnDestroy;
         public Vector3 startPoint;
@@ -18,6 +19,7 @@ namespace WingedCore.Weaponry.Ranged
         private void Start()
         {
             startPoint = transform.position;
+            gameObject.hideFlags = HideFlags.HideInHierarchy;
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -25,7 +27,16 @@ namespace WingedCore.Weaponry.Ranged
             if (collision.collider.transform.TryGetComponent<IDamagable>(out var c))
             {
                 Rigidbody r = GetComponent<Rigidbody>();
-                c.Damage(r.mass * r.velocity.magnitude * damageMultyplier, IDamagable.DamageType.blunt);
+                float dmg = r.mass * r.velocity.magnitude * damageMultyplier;
+
+                if(_damageSource != null)
+                if (_damageSource.TryGetComponent(out AIBehaviourBase unit)) 
+                {
+                    unit.BalanceInfluence.DoInfluence((int)dmg);
+                }
+
+                DamageFrom.GetComponent<BalanceInfluencer>()?.DoInfluence((int)dmg);
+                c.Damage(dmg, IDamagable.DamageType.blunt);
             }
 
             HandledSelfDestroy();

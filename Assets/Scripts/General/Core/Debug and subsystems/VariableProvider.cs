@@ -1,13 +1,15 @@
 using UnityEngine;
+using WingedCore.AI;
 
 namespace WingedCore.DebugSystems
 {
     public class VariableProvider : MonoBehaviour
     {
-        //TODO : Сделать из этого соответствующие GameObject'ы для всех фракций юнитов. Убрать это в UtilityAIManager
         public Transform unitsContainer;
-        public Transform singletonsContainer;
+        public Transform buildingsContainer;
 
+        //TODO : Сделать из этого соответствующие GameObject'ы для всех фракций юнитов. Убрать это в UtilityAIManager
+        //TODO : Перевести в Blackboard от Git-Amend
         public Material friend;
         public Material enemy;
         public Material agro;
@@ -26,5 +28,34 @@ namespace WingedCore.DebugSystems
         public const int orderPointsLayer = 1000;
 
         public LayerMask ground;
+
+        public bool useDebugColors;
+
+        public void DebugChangeColors(GameObject target, int faction)
+        {
+#if UNITY_EDITOR
+            if (useDebugColors)
+            {
+                Material material = null;
+
+                switch (faction)
+                {
+                    case 1: material = neutral; break;
+                    case 2: material = friend; break;
+                    case 3: material = enemy; break;
+                    case 4: material = agro; break;
+                }
+
+                if (material != null)
+                    foreach (Renderer renderer in target.GetComponentsInChildren<Renderer>())
+                    {
+                        if (renderer.gameObject.TryGetComponent(out TMPro.TextMeshPro _))
+                            continue;
+
+                        renderer.sharedMaterial = material;
+                    }
+            }
+#endif
+        }
     }
 }

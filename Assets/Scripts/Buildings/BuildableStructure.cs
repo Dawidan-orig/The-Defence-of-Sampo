@@ -6,6 +6,7 @@ using UnityEditor.Rendering;
 using WingedCore.Core.Utility;
 using Alchemy.Inspector;
 using WingedCore.DebugSystems;
+using WingedCore.Core.Balance;
 
 
 namespace WingedCore.Building
@@ -33,14 +34,18 @@ namespace WingedCore.Building
         protected LayerMask ground = 8 + 1;
         [SerializeField]
         private bool isBuilt = false;
+
+        private BalanceInfluencer balanceInfluencer;
         
         protected bool IsBuilt { get => isBuilt; }
+        public BalanceInfluencer BalanceInfluencer { get => balanceInfluencer;}
 
         private void Awake()
         {
             ground = MonoBehaviourSingleton<VariableProvider>.Instance.ground;
+            balanceInfluencer = GetComponent<BalanceInfluencer>();
 
-            if(pivot == null)
+            if (pivot == null)
                 pivot = transform;
 
             if (TryGetComponent(out AITarget interact))

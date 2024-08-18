@@ -1,0 +1,20 @@
+{
+    "name": "SampoWaveSystem",
+    "rootNamespace": "",
+    "references": [
+        "GUID:88be65f96b86746888c927a5c8ff3534",
+        "GUID:6c48c94ad58ed104fa5e4052898e5fab",
+        "GUID:77d67ac501f6b3248aba6e5adbe60ba7",
+        "GUID:9f0a6962198da0847aaf2a7ee3dfeb4d",
+        "GUID:c8323624d3ceaa14a87e50b665d69c38"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

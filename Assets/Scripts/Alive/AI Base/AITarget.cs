@@ -1,4 +1,6 @@
 using UnityEngine;
+using WingedCore.DebugSystems;
+using static UnityEngine.GraphicsBuffer;
 
 namespace WingedCore.AI
 {
@@ -42,12 +44,7 @@ namespace WingedCore.AI
         #region Unity
         private void OnValidate()
         {
-            DebugChangeColors();
-        }
-
-        private void Awake()
-        {
-            DebugChangeColors();
+            MonoBehaviourSingleton<VariableProvider>.Instance.DebugChangeColors(gameObject, (int)_currentFaction);
         }
 
         protected virtual void OnEnable()
@@ -80,7 +77,7 @@ namespace WingedCore.AI
              * AITargetManager.Instance.UpdateAIInfo(this);
              */
 
-            DebugChangeColors();
+            MonoBehaviourSingleton<VariableProvider>.Instance.DebugChangeColors(gameObject, (int)_currentFaction);
         }
 
         public bool IsWillingToAttack(FactionType type)
@@ -88,32 +85,6 @@ namespace WingedCore.AI
             bool comparedFactions = _currentFaction != type; // Ќа будущее, если вдруг захочу какие-нибудь аль€нсы.
 
             return (comparedFactions || _currentFaction == FactionType.aggressive) && _currentFaction != FactionType.neutral;
-        }
-
-        protected virtual void DebugChangeColors() 
-        {
-#if UNITY_EDITOR
-            if (useDebugColors)
-            {
-                WingedCore.DebugSystems.VariableProvider provider = MonoBehaviourSingleton<WingedCore.DebugSystems.VariableProvider>.Instance;
-
-                Material material = null;
-
-                switch (_currentFaction)
-                {
-                    case FactionType.sampo: material = provider.friend; break;
-                    case FactionType.enemy: material = provider.enemy; break;
-                    case FactionType.aggressive: material = provider.agro; break;
-                    case FactionType.neutral: material = provider.neutral; break;
-                }
-
-                if (material != null)
-                    foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
-                    {
-                        renderer.sharedMaterial = material;
-                    }
-            }
-#endif
         }
     }
 }

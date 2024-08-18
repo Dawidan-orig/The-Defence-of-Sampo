@@ -3,8 +3,9 @@ using WingedCore.Core;
 using System.Collections.Generic;
 using UnityEngine;
 using Sampo.Economy;
+using WingedCore.Building;
 
-namespace WingedCore.Building
+namespace Sampo.Building
 {
     /*TODO : Эта штука должна как-то понимать, когда надо выпустить NullUnit'ов,
      * Для этого надо будет сделать систему менеджмента экономики

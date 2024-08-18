@@ -72,9 +72,6 @@ namespace WingedCore.Weaponry.Melee
             AngularVelocityEuler = body.angularVelocity * 360 / (2 * Mathf.PI);
         }
 
-
-
-
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.yellow;

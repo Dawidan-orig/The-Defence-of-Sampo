@@ -1029,6 +1029,7 @@ GameObject:
   - component: {fileID: 5072331520620561110}
   - component: {fileID: 3743604981802368088}
   - component: {fileID: 2118354975803688040}
+  - component: {fileID: 8561774080414015774}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -1213,7 +1214,7 @@ MonoBehaviour:
   health: 2000
   vital: {fileID: 3743604981802368088}
   brainBody: {fileID: 0}
-  root: {fileID: 7070418557163671830}
+  parentToDestroy: {fileID: 0}
 --- !u!114 &1789166653878866503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1302,6 +1303,18 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2395078813691770050}
   m_Enabled: 1
+--- !u!114 &8561774080414015774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2395078813691770050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cf21244ca4aea142abb04d8e3fa768c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2408927835712368721
 GameObject:
   m_ObjectHideFlags: 0
@@ -3881,6 +3894,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5786148076034434746}
     m_Modifications:
+    - target: {fileID: 2782243429053041379, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0c5964cf455b1d34ca4d52e577782be1, type: 2}
     - target: {fileID: 7455112557779443598, guid: dbfbb4803b1356445814d460b83b3c1b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

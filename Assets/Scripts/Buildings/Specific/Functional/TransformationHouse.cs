@@ -8,8 +8,9 @@ using Alchemy.Inspector;
 using System.Linq;
 using WingedCore.Core.JournalLogger;
 using Sampo.Economy;
+using WingedCore.Building;
 
-namespace WingedCore.Building.Transformators
+namespace Sampo.Building.Transformators
 {
     /// <summary>
     /// Базовый класс для всех зданий-преобразователей пустых юнитов

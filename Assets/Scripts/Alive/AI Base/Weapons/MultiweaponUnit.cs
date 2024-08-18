@@ -167,9 +167,15 @@ namespace WingedCore.AI.Humans
         {
             Dictionary<AITarget, int> res = new();
 
-            foreach (var beh in behaviours)
-                foreach (var kvp in beh.GetActionsDictionary())
-                    res.Add(kvp.Key, kvp.Value);
+            foreach (AIBehaviourBase beh in behaviours)
+                foreach (KeyValuePair<AITarget, int> kvp in beh.GetActionsDictionary())
+                {
+                    if (res.ContainsKey(kvp.Key))                     
+                        if (res[kvp.Key] < kvp.Value)                        
+                            res[kvp.Key] = kvp.Value;
+                    else
+                        res.Add(kvp.Key, kvp.Value);
+                }
 
             return res;
         }

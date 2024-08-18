@@ -31,7 +31,7 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour
                 }
                 if (_instance == null)
                 {
-                    GameObject obj = new GameObject();
+                    GameObject obj = new GameObject("Autocreted Singleton : " + typeof(T).Name);
                     //obj.transform.parent = MonoBehaviourSingleton<VariableProvider>.Instance.singletonsContainer;
                     //obj.hideFlags = HideFlags.DontSave;
                     _instance = obj.AddComponent<T>();

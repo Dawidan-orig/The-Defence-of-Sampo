@@ -3,8 +3,9 @@ using WingedCore.Core;
 using System.Collections;
 using UnityEngine;
 using Sampo.Economy;
+using WingedCore.Building;
 
-namespace WingedCore.Building.Spawners
+namespace Sampo.Building.Spawners
 {
     /// <summary>
     /// Дом, из которого появляются юниты-пустышки.

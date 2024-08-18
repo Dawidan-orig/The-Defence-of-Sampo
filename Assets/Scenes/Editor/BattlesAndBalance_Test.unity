@@ -898,6 +898,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 054badc8c6df94f4d91c81fd76f60705, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &148704490
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 148704491}
+  - component: {fileID: 148704492}
+  m_Layer: 0
+  m_Name: Balance
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &148704491
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 148704490}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 426795707}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &148704492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 148704490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5435a108e56b7f44801733fbc795d77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildingsInfl: 0
+  playerCharacterInfl: 0
+  sampoUnitsInfl: 0
 --- !u!1 &153373100
 GameObject:
   m_ObjectHideFlags: 0
@@ -3098,6 +3145,7 @@ Transform:
   - {fileID: 1240872889}
   - {fileID: 1876095204}
   - {fileID: 1155417402}
+  - {fileID: 148704491}
   m_Father: {fileID: 1475909525}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &433143899
@@ -3664,6 +3712,10 @@ PrefabInstance:
     - target: {fileID: 828726681102639149, guid: a41825ceede633242a511bf161ea559c, type: 3}
       propertyPath: m_LocalPosition.z
       value: 2.304
+      objectReference: {fileID: 0}
+    - target: {fileID: 888304070303691479, guid: a41825ceede633242a511bf161ea559c, type: 3}
+      propertyPath: ai_weight
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 888304070303691479, guid: a41825ceede633242a511bf161ea559c, type: 3}
       propertyPath: useDebugColors
@@ -4914,11 +4966,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   wave_power: 1000
   units_amount: 10
-  unitPrefabsToSpawn:
-  - {fileID: 2397089146008967548, guid: 5b02990bf9808a0478c7e7a922b8d7bf, type: 3}
-  - {fileID: 1526482222200477036, guid: 3ebfc4c41f40a7541b4bd0a9ddf139c0, type: 3}
-  - {fileID: 2397089146008967548, guid: 693f1112080b1aa4ba66392dd5e61f8d, type: 3}
-  - {fileID: 2875792448630465248, guid: ac256d9e416a53d49ab826947c8cc177, type: 3}
 --- !u!1001 &671104483
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10626,6 +10673,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 479956040}
     m_Modifications:
     - target: {fileID: 975673156300585467, guid: 0c505736392cb664890859be582405e6, type: 3}
+      propertyPath: ai_weight
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 975673156300585467, guid: 0c505736392cb664890859be582405e6, type: 3}
       propertyPath: useDebugColors
       value: 1
       objectReference: {fileID: 0}
@@ -12445,7 +12496,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitsContainer: {fileID: 1504553171}
-  singletonsContainer: {fileID: 426795707}
+  buildingsContainer: {fileID: 479956040}
   friend: {fileID: 2100000, guid: 0c5964cf455b1d34ca4d52e577782be1, type: 2}
   enemy: {fileID: 2100000, guid: ec147b7338395574699adea3ebd630af, type: 2}
   agro: {fileID: 2100000, guid: a2fc51767c9de254ba2ec39e695ac921, type: 2}
@@ -12453,6 +12504,7 @@ MonoBehaviour:
   ground:
     serializedVersion: 2
     m_Bits: 9
+  useDebugColors: 1
 --- !u!1 &1789620681
 GameObject:
   m_ObjectHideFlags: 0
@@ -13761,7 +13813,7 @@ Terrain:
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: 2100000, guid: 594ea882c5a793440b60ff72d896021e, type: 2}
+  m_MaterialTemplate: {fileID: 2100000, guid: 774fb2efcf5a06e4ebb09ced855a11c1, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
