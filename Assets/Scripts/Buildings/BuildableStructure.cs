@@ -27,6 +27,7 @@ namespace WingedCore.Building
         public float possibleHeightToBuild = 0.1f;
         [Tooltip("Количество работы для завершения строительства")]
         public int progressToBuild = -1;
+        [Required]
         public Transform pivot = null;
 
         protected int _currentProgressToBuild = 0;
@@ -39,7 +40,7 @@ namespace WingedCore.Building
         
         protected bool IsBuilt { get => isBuilt; }
         public BalanceInfluencer BalanceInfluencer { get => balanceInfluencer;}
-
+        
         private void Awake()
         {
             ground = MonoBehaviourSingleton<VariableProvider>.Instance.ground;
@@ -54,7 +55,7 @@ namespace WingedCore.Building
 
         protected virtual void Start()
         {
-            pivot.parent = MonoBehaviourSingleton<BuildingSystem>.Instance.structureParent;
+            pivot.parent = MonoBehaviourSingleton<BuildingSystem>.Instance.lastPlacedStructureParent;
 
             const float MAX_DISTANCE = 100;
             if (Physics.Raycast(pivot.position + Vector3.up * possibleHeightToBuild, Vector3.down, out var hit, MAX_DISTANCE, ground))

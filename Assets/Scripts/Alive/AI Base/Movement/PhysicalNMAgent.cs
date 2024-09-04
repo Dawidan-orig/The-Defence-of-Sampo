@@ -25,15 +25,18 @@ namespace WingedCore.AI.Movement
             get
             {
                 if (countFrom == null)
-                    countFrom = transform;
-                if (TryGetComponent(out AIBehaviourBase ai) && ai.CalcFrom)
-                    countFrom = ai.CalcFrom;
+                {
+                    if (TryGetComponent(out AIBehaviourBase ai) && ai.NMCalcFrom)
+                    countFrom = ai.NMCalcFrom;
+                }
 
                 return countFrom;
             }
         }
 
         public MonoBehaviour Component => this;
+
+        public float AverageVelocity => agent.speed;
 
         private Vector3 desireLookDir;
         private Transform countFrom;
@@ -59,8 +62,8 @@ namespace WingedCore.AI.Movement
             desireLookDir.y = 0;
             agent.autoRepath = false;
 
-            if (TryGetComponent(out AIBehaviourBase ai) && ai.CalcFrom)
-                countFrom = ai.CalcFrom;
+            if (TryGetComponent(out AIBehaviourBase ai) && ai.NMCalcFrom)
+                countFrom = ai.NMCalcFrom;
             if (countFrom == null)
                 countFrom = transform;
 

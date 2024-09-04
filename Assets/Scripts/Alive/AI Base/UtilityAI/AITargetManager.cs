@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using Alchemy.Serialization;
 using WingedCore.Core.JournalLogger;
+using Sampo.Factions;
 
 namespace WingedCore.AI
 {

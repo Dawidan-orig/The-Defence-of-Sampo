@@ -2,6 +2,8 @@ using WingedCore.Weaponry;
 using WingedCore.Weaponry.Melee;
 using System.Collections.Generic;
 using UnityEngine;
+using WingedCore.AI.CounterSystem;
+using Alchemy.Inspector;
 
 namespace WingedCore.AI.Humans.Melee
 {
@@ -62,28 +64,29 @@ namespace WingedCore.AI.Humans.Melee
         protected Transform _bladeHandle;
 
         [Header("lookonly")]
-        [SerializeField]
+        [SerializeField, ReadOnly]
         protected AttackCatcher _catcher;
-        [SerializeField]
+        [SerializeField, ReadOnly]
         protected Transform _initialBlade;
-        [SerializeField]
+        [SerializeField, ReadOnly]
         protected Transform _moveFrom;
-        [SerializeField]
+        [SerializeField, ReadOnly]
         protected Transform _desireBlade;
-        [SerializeField]
+        [SerializeField, ReadOnly]
         protected float _moveProgress;
-        [SerializeField]
+        [SerializeField, ReadOnly]
         protected float _AnimatedMoveProgress;
-        [SerializeField]
+        [SerializeField, ReadOnly]
         protected float _currentToInitialAwait;
-        [SerializeField]
+        [SerializeField, ReadOnly]
         protected Stack<ActionJoint> _currentCombo = new Stack<ActionJoint>();
-        [SerializeField]
+        [SerializeField, ReadOnly]
         protected bool _swingReady = true;
         #endregion
 
         public AttackCatcher AttackCatcher { get => _catcher; set => _catcher = value; }
         public bool SwingReady { get => _swingReady; set => _swingReady = value; }
+
 
         #region properties for state machine
         public Transform BladeHandle { get { return _bladeHandle; } }
@@ -129,6 +132,13 @@ namespace WingedCore.AI.Humans.Melee
             {
                 weapon = defaultWeapon;
             }
+        }
+
+        protected override void InitializeTags()
+        {
+            base.InitializeTags();
+
+            _counterTagLocal.AddNewRole((CounterNode)Resources.Load("Tags/Melee"));
         }
 
         public override Transform GetRightHandTarget()

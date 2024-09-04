@@ -60,7 +60,7 @@ namespace WingedCore.AI.Monsters
         protected override void Update()
         {
             if (Physics.Raycast(transform.position, Vector3.down, out var hit, legsHarmony.legsLength, terrain))
-                CalcFrom.position = hit.point + Vector3.up* 1.5f;
+                NMCalcFrom.position = hit.point + Vector3.up* 1.5f;
 
             Transform target = CurrentActivity.target;
 

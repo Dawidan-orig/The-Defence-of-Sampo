@@ -1,11 +1,12 @@
-using WingedCore.AI.Conditions;
-using WingedCore.Core;
-using WingedCore.Weaponry;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using WingedCore.Core.Utility;
+using WingedCore.AI.Conditions;
+using WingedCore.AI.CounterSystem;
+using WingedCore.Core;
 using WingedCore.Core.Balance;
+using WingedCore.Core.Utility;
+using WingedCore.Weaponry;
 
 namespace WingedCore.AI
 {
@@ -21,18 +22,23 @@ namespace WingedCore.AI
         [Header("Ground for animation and movement")]
         [Tooltip("Кривая от 0 до 1, определяющая то," +
             "с какой интенсивностью в зависимости от дальности оружия ИИ будет отдоходить от цели")]
-        public AnimationCurve retreatInfluence;
+        public AnimationCurve retreatInfluence = AnimationCurve.Linear(0, 0, 1, 1);
         public float toGroundDist = 0.3f;
+        [Tooltip("Отсюда NavMesh будет строить путь")]
+        [SerializeField] private Transform navMeshCountFrom;
         [Header("Targeting AI")]
         public float distanceInfluence = 1;
         public float congestionInfluence = 1;
-        [SerializeField]
-        private bool _hasCongestion = true;
+        [SerializeField] private List<CounterNode> roles = new();
+        [SerializeField] private bool _hasCongestion = true;
 
-        private Transform _navMeshCalcFrom;
-        private Collider _vital;
-        private Rigidbody _body;
+        #region component connections
+        protected AliveBeing alivePart;
+        protected IMovingAgent _movingAgent;
+        protected CounterTagLocal _counterTagLocal;
+        protected Rigidbody _body;
         protected TargetingUtilityAI _AITargeting;
+        #endregion
 
         private BalanceInfluencer balanceInfluence;
 
@@ -52,26 +58,12 @@ namespace WingedCore.AI
         {
             get { return _AITargeting.CurrentActivity; }
         }
-        public Transform CalcFrom
-        {
-            get
-            {
-                _navMeshCalcFrom ??= transform;
-                return _navMeshCalcFrom;
-            }
-        }
+        public IMovingAgent MovingAgent { get => _movingAgent; set => _movingAgent = value; }
         public Collider Vital
         {
             get
             {
-                if (!_vital)
-                {
-                    var colliders = GetMainTransform().GetComponents<Collider>();
-                    if (colliders.Length != 1)
-                        Debug.LogWarning("Много коллайдеров за раз на одном объекте, беру в Vital самый первый", transform);
-                    _vital = colliders[0];
-                }
-                return _vital;
+                return alivePart.Vital;
             }
         }
         public bool HasCongestion
@@ -93,22 +85,36 @@ namespace WingedCore.AI
             }
         }
         public abstract Tool BehaviourWeapon { get; }
-        public BalanceInfluencer BalanceInfluence { get => balanceInfluence;}
+        public BalanceInfluencer BalanceInfluence { get => balanceInfluence; }
+
+        public virtual List<CounterNode> nodesToProvide => roles;
+
+        public Transform NMCalcFrom { get => navMeshCountFrom; }
         #endregion
 
         #region unity
         protected virtual void Awake()
         {
             Transform absoluteParent = GetMainTransform();
+            _movingAgent = absoluteParent.GetComponent<IMovingAgent>();
+            alivePart = absoluteParent.GetComponent<AliveBeing>();
 
             balanceInfluence = absoluteParent.GetComponent<BalanceInfluencer>();
+            if(balanceInfluence == null)
+                balanceInfluence = absoluteParent.gameObject.AddComponent<BalanceInfluencer>();
+
             _body = absoluteParent.gameObject.GetComponent<Rigidbody>();
-            _navMeshCalcFrom ??= transform;
         }
         protected virtual void Start()
         {
             _AITargeting.AddNewActionsFromBehaviour(this);
+
+            if (navMeshCountFrom == null)
+                navMeshCountFrom = GetMainTransform().transform;
+
+            InitializeTags();
         }
+
         protected virtual void Update()
         {
             if (CurrentActivity.target == null
@@ -176,6 +182,35 @@ namespace WingedCore.AI
             return closestPointToTarget;
         }
 
+        protected virtual void InitializeTags()
+        {
+            const float HEALTH_BULK = 5000;
+            const float HEALTH_WEAK = 200;
+
+            const float HIGH_SPEED = 15;
+            const float VERY_HIGH_SPEED = 30;
+            const float LOW_SPEED = 3;
+
+            Transform mainParent = GetMainTransform();
+            if (_counterTagLocal == null)
+                _counterTagLocal = mainParent.GetComponent<CounterTagLocal>();
+
+            if(_counterTagLocal == null)
+                _counterTagLocal =mainParent.gameObject.AddComponent<CounterTagLocal>();
+
+            if (alivePart.Health > HEALTH_BULK)
+                _counterTagLocal.AddNewRole((CounterNode)Resources.Load("Tags/HealthBulk"));
+            else if (alivePart.Health < HEALTH_WEAK)
+                _counterTagLocal.AddNewRole((CounterNode)Resources.Load("Tags/HealthWeak"));
+
+            if (_movingAgent.AverageVelocity > VERY_HIGH_SPEED)
+                _counterTagLocal.AddNewRole((CounterNode)Resources.Load("Tags/Incredibly Fast"));
+            else if (_movingAgent.AverageVelocity > HIGH_SPEED)
+                _counterTagLocal.AddNewRole((CounterNode)Resources.Load("Tags/Fast"));
+            else if (_movingAgent.AverageVelocity < LOW_SPEED)
+                _counterTagLocal.AddNewRole((CounterNode)Resources.Load("Tags/Slow"));
+        }
+
         #region movement control
         /// <summary>
         /// Проверяет, есть ли смысл перестраивать путь к цели
@@ -212,7 +247,7 @@ namespace WingedCore.AI
         /// </summary>
         private void Repath()
         {
-            Vector3 closestPos = GetClosestPoint(CurrentActivity.target, CalcFrom.position);
+            Vector3 closestPos = GetClosestPoint(CurrentActivity.target, NMCalcFrom.position);
             moveTargetPos = closestPos;
 
             if (CurrentActivity.behaviour.BehaviourWeapon
@@ -229,8 +264,8 @@ namespace WingedCore.AI
             repathLastTargetPos = moveTargetPos;
 
             path = new NavMeshPath();
-            NavMesh.CalculatePath(CalcFrom.position, moveTargetPos, NavMesh.AllAreas, path);
-            _AITargeting.MovingAgent.PassPath(path);
+            NavMesh.CalculatePath(NMCalcFrom.position, moveTargetPos, NavMesh.AllAreas, path);
+            _movingAgent.PassPath(path);
 
             /*
             Vector3 forwardLook = (_ctx.CurrentActivity.target.position - _ctx.transform.position).normalized;
@@ -253,17 +288,17 @@ namespace WingedCore.AI
             if (path.status != NavMeshPathStatus.PathInvalid && path.corners.Length > 1)
             {
                 if (Vector3.Distance(GetMainTransform().position, _AITargeting.CurrentActivity.target.position) > lookDist)
-                    _AITargeting.MovingAgent.MoveIteration(path.corners[1]);
+                    _movingAgent.MoveIteration(path.corners[1]);
                 else
-                    _AITargeting.MovingAgent.MoveIteration(path.corners[1], _AITargeting.CurrentActivity.target.position);
+                    _movingAgent.MoveIteration(path.corners[1], _AITargeting.CurrentActivity.target.position);
             }
             else
             {
                 _AITargeting.ModifyAllActionsOf(_AITargeting.CurrentActivity.target, new NoPathCondition(10));
 
-                var closest = MonoBehaviourSingleton<NavMeshCalculations>.Instance.GetCell(CalcFrom.position);
+                var closest = MonoBehaviourSingleton<NavMeshCalculations>.Instance.GetCell(NMCalcFrom.position);
                 moveTargetPos = closest.Center();
-                _AITargeting.MovingAgent.MoveIteration(moveTargetPos);
+                _movingAgent.MoveIteration(moveTargetPos);
             }
         }
         private void RetreatReposition()
@@ -273,7 +308,7 @@ namespace WingedCore.AI
 
             Vector3 newPos = RelativeRetreatMovement();
 
-            if (_AITargeting.MovingAgent.IsNearObstacle(newPos - GetMainTransform().position, out Vector3 normal))
+            if (_movingAgent.IsNearObstacle(newPos - GetMainTransform().position, out Vector3 normal))
             {
                 Vector3 dir = Vector3.ProjectOnPlane(
                     (CurrentActivity.target.position - GetMainTransform().position).normalized,
@@ -284,7 +319,7 @@ namespace WingedCore.AI
                     * (CurrentActivity.target.position - GetMainTransform().position).magnitude;
             }
 
-            _AITargeting.MovingAgent.MoveIteration(newPos, CurrentActivity.target.position);
+            _movingAgent.MoveIteration(newPos, CurrentActivity.target.position);
         }
         #endregion
 
@@ -308,6 +343,8 @@ namespace WingedCore.AI
 
             int remaining = points;
             visiblePowerPoints = points;
+
+            InitializeTags();
 
             //TODO DESIGN : Гармоничное изменение скорости движения
         }
@@ -346,7 +383,7 @@ namespace WingedCore.AI
         /// <summary>
         /// Доступна ли текущая цель для атаки/взаимодействия?
         /// </summary>
-        public virtual bool AvailableToAct() 
+        public virtual bool AvailableToAct()
         {
             return Vector3.Distance(GetMainTransform().position,
                 CurrentActivity.target.position)
@@ -362,7 +399,7 @@ namespace WingedCore.AI
         #region animation
         public Vector3 GetLookTarget()
         {
-            if(CurrentActivity.target == null)
+            if (CurrentActivity.target == null)
                 return Vector3.zero;
 
             return (CurrentActivity.target ? CurrentActivity.target.position : Vector3.zero);

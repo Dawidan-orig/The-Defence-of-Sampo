@@ -94,7 +94,7 @@ namespace Sampo.Balance
 
         private void RecalcParts() 
         {
-            int sum = buildingsInfl + playerCharacterInfl + sampoUnitsInfl;
+            float sum = buildingsInfl + playerCharacterInfl + sampoUnitsInfl;
             buildingsPart = buildingsInfl / sum;
             playerCharacterPart = playerCharacterInfl / sum;
             sampoUnitsPart = sampoUnitsInfl / sum;

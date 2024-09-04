@@ -5,6 +5,7 @@ namespace WingedCore.AI
 {
     public interface IMovingAgent
     {
+        public abstract float AverageVelocity { get; }
         protected abstract Vector3 DesireLookDir { get; }
         protected abstract Transform CountFrom { get; }
         public abstract MonoBehaviour Component { get; }

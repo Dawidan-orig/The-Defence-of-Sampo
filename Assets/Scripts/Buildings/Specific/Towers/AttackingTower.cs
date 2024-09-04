@@ -16,7 +16,7 @@ namespace WingedCore.Building.Towers
         [Required]
         public BaseShooting weapon;
         [Required]
-        public DestructableStructure structureBase;
+        public DestructableStructure structureFactionBase;
 
         [ReadOnly]
         [SerializeField] List<Transform> targetsInRange;
@@ -67,7 +67,7 @@ namespace WingedCore.Building.Towers
         {
             if(other.TryGetComponent(out AITarget target)) 
             {
-                if(target.IsWillingToAttack(structureBase.FactionType)) 
+                if(target.IsWillingToAttack(structureFactionBase.FactionType)) 
                 {
                     whatToDo.Invoke();
                 }

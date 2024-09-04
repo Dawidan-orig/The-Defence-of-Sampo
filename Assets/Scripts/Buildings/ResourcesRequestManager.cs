@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using WingedCore.AI;
 using Sampo.Building.Spawners;
+using Sampo.Factions;
 
 namespace Sampo.Economy
 {

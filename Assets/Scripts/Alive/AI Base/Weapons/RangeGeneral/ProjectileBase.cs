@@ -35,7 +35,7 @@ namespace WingedCore.Weaponry.Ranged
                     unit.BalanceInfluence.DoInfluence((int)dmg);
                 }
 
-                DamageFrom.GetComponent<BalanceInfluencer>()?.DoInfluence((int)dmg);
+                _damageSource?.GetComponent<BalanceInfluencer>().DoInfluence((int)dmg);
                 c.Damage(dmg, IDamagable.DamageType.blunt);
             }
 

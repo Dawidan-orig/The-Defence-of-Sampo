@@ -1,6 +1,8 @@
 using WingedCore.Weaponry;
 using WingedCore.Weaponry.Ranged;
 using UnityEngine;
+using WingedCore.AI.CounterSystem;
+using System.Collections.Generic;
 
 namespace WingedCore.AI.Humans.Ranged
 {
@@ -8,6 +10,7 @@ namespace WingedCore.AI.Humans.Ranged
     {
         public BaseShooting weapon;
         public override Tool BehaviourWeapon => weapon;
+
         protected override void Awake()
         {
             base.Awake();
@@ -28,6 +31,18 @@ namespace WingedCore.AI.Humans.Ranged
 
                 weapon.Shoot(target.position);
             }
+        }
+
+        protected override void InitializeTags()
+        {
+            base.InitializeTags();
+
+            const float BULLETS_PER_SECOND_RAPID = 1/8;
+
+            _counterTagLocal.AddNewRole((CounterNode)Resources.Load("Tags/Ranged"));
+
+            if(weapon.timeBetweenBullets < BULLETS_PER_SECOND_RAPID)
+                _counterTagLocal.AddNewRole((CounterNode)Resources.Load("Tags/Rapid"));
         }
         public override Transform GetRightHandTarget()
         {

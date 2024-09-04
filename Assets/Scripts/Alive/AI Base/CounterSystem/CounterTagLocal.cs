@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,6 +30,7 @@ namespace WingedCore.AI.CounterSystem {
 
         public void AddNewRole(CounterNode role) 
         {
+            if(!containedTagsRoles.Contains(role))
             containedTagsRoles.Add(role);
         }
 

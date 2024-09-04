@@ -10,7 +10,7 @@ namespace WingedCore.Building
     public class BuildingSystem : MonoBehaviour
     {
 
-        public Transform structureParent;
+        public Transform lastPlacedStructureParent;
         //TODO : Убрать это, слишком лобовое решение. Оно временно пока нет полноценной системы
         public List<GameObject> prefabs = new List<GameObject>();
 

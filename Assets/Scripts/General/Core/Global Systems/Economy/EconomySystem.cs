@@ -33,7 +33,10 @@ namespace Sampo.Economy
                 cattleProd = value;
             }
         }
-
+        public void AddToAll(int amount) 
+        {
+            Overall += amount;
+        }
         public bool Spend(int amount)
         {
             WingedCore.Core.JournalLogger.LoggerSystem.DebugLog("Spent " + amount + "of all resources", gameObject);

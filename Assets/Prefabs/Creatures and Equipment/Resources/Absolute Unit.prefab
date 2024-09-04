@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 2498818268452375569}
   - component: {fileID: 3300596841645366359}
   - component: {fileID: 577526194152060533}
+  - component: {fileID: -8455214847657045621}
   m_Layer: 6
   m_Name: Absolute Unit
   m_TagString: Untagged
@@ -57,17 +58,38 @@ MonoBehaviour:
   visiblePowerPoints: 100
   retreatInfluence:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   toGroundDist: 0.3
+  navMeshCountFrom: {fileID: 0}
   distanceInfluence: 1
   congestionInfluence: 1
+  roles: []
   _hasCongestion: 1
   unitReferencePrefabs:
   - {fileID: 622290399896821018, guid: d37bd346832a248409f3258746c3d79b, type: 3}
   behaviourUpdateFrequency: 3
+  kitContainer: {fileID: 0}
   behaviours: []
   currentBehaviour: {fileID: 0}
 --- !u!54 &1579277658286590084
@@ -225,6 +247,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cf21244ca4aea142abb04d8e3fa768c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-8455214847657045621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6166585230114025203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da110bb38fb06084e8af803f00e33c84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  economyToAdd: 5
 --- !u!1001 &261701640518159192
 PrefabInstance:
   m_ObjectHideFlags: 0

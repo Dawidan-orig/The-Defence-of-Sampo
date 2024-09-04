@@ -35,7 +35,7 @@ namespace WingedCore.Weaponry.Ranged
             Physics.IgnoreCollision(_host.GetComponent<Collider>(), bullet.GetComponent<Collider>());
 
             ProjectileBase b = bullet.GetComponent<ProjectileBase>();
-            b.SetDamageDealer(transform);
+            b.SetDamageDealer(_host);
             b.possibleDistance = range;
 
             readyToFire = false;

@@ -26,15 +26,13 @@ namespace WingedCore.AI
         [SerializeField]
         protected List<AIAction> _possibleActions = new();
 
-        IMovingAgent _movingAgent;
         private AIAction _noAction;
         private AIBehaviourBase _behaviourAI;
         private AITarget _targetComp; // Казалось бы, не должно быть его здесь. Но. AITarget'ов много разных видов
                                   // - и живые есть, и строения, и ещё бог знает что будет потом.
                                   // Потому и зависимость, потому и не вливаю. А контроллировать смену фракции нужно.
         public AIAction CurrentActivity { get => _currentActivity; }
-        public IMovingAgent MovingAgent { get => _movingAgent; set => _movingAgent = value; }
-        //TODO? : В идеале вообще убрать отсюда BehaviourAI для избегания Tight Coupling'а
+        //TODO? : В идеале вообще убрать отсюда BehaviourAI для избегания Tight Coupling'а и двусторонней связи
         public AIBehaviourBase BehaviourAI { get => _behaviourAI ??= GetComponent<AIBehaviourBase>(); }
         public EventHandler ChangedToNewAction;
 
@@ -172,7 +170,6 @@ namespace WingedCore.AI
         {
             _targetComp = GetComponent<AITarget>();
             _targetComp.factionChanged += RefreshCompletely;
-            _movingAgent = GetComponent<IMovingAgent>();
         }
 
         protected virtual void OnEnable()

@@ -28,6 +28,11 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour
                 if (objs.Length > 1)
                 {
                     Debug.LogError("Среди всех активных сцен есть больше одного " + typeof(T).Name);
+                    foreach (var obj in objs) 
+                    {
+                        Debug.Log("",obj);
+                        obj.hideFlags = HideFlags.None;
+                    }
                 }
                 if (_instance == null)
                 {

@@ -2,6 +2,7 @@ using WingedCore.AI;
 using System.Collections.Generic;
 using UnityEngine;
 using WingedCore.Core;
+using WingedCore.AI.CounterSystem;
 
 namespace WingedCore.Building
 {
@@ -26,6 +27,25 @@ namespace WingedCore.Building
         {
             if (!parentToDestroy)
                 parentToDestroy = transform;
+
+            InitializeTags();
+        }
+
+        private void InitializeTags()
+        {
+            const float BUILDING_HEALTH_BULK = 5000;
+            const float BUILDING_HEALTH_WEAK = 500;
+
+            CounterTagLocal tagSystem = GetComponent<CounterTagLocal>();
+            if(tagSystem == null)
+                tagSystem = gameObject.AddComponent<CounterTagLocal>();
+
+            tagSystem.AddNewRole((CounterNode)Resources.Load("Building"));
+
+            if (health > BUILDING_HEALTH_BULK)
+                tagSystem.AddNewRole((CounterNode)Resources.Load("Tags/HealthBulk"));
+            else if (health > BUILDING_HEALTH_WEAK)
+                tagSystem.AddNewRole((CounterNode)Resources.Load("Tags/HealthWeak"));
         }
 
         public void Damage(float harm, IDamagable.DamageType type)
@@ -40,16 +60,18 @@ namespace WingedCore.Building
 
             if (health < 0)
             {
-                Destroy(parentToDestroy.gameObject);
+                HanldedOnDestroy(parentToDestroy.gameObject);
                 foreach (var obj in connectedObjects)
-                    Destroy(obj);
+                    HanldedOnDestroy(obj);
             }
         }
 
-        private void OnDestroy()
+        private void HanldedOnDestroy(GameObject obj)
         {
             if (remainsPrefab)
                 Instantiate(remainsPrefab);
+
+            Destroy(obj);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace WingedCore.AI
         //TODO : Объединить с DestructibleStructure, и определить "сверху" типы урона и слабость к ним.
         // Типы урона должны быть полностью Generic, конкретная реализация их уже будет присуща игре.
 
-        public float health = 100;
+        [SerializeField]private float health = 100;
         [Tooltip("Коллайдер, которые регистрирует получение урона")]
         public Collider vital;
         [Tooltip("Этот объект определяет ту часть тела, в которой расположен TargetingUtilityAI (Мозг)")]
@@ -19,6 +19,7 @@ namespace WingedCore.AI
         public Transform parentToDestroy;
 
         public Collider Vital => vital;
+        public float Health => health;
 
         TMPro.TextMeshPro text;
 
@@ -33,7 +34,7 @@ namespace WingedCore.AI
                 parentToDestroy = transform;
 
             text = DebugVisualsHelper.CreateTextInWorld(health.ToString(), transform, position: transform.position + GetComponent<Collider>().bounds.size.y / 2 * Vector3.up, color: Color.green, fontSize: 4);
-            text.transform.parent = transform;
+            text.transform.SetParent(transform);
         }
 
         public void Damage(float harm, IDamagable.DamageType type)

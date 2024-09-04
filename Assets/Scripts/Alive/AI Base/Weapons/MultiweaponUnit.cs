@@ -5,6 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Alchemy.Inspector;
+using WingedCore.AI.CounterSystem;
 
 namespace WingedCore.AI.Humans
 {
@@ -25,7 +27,7 @@ namespace WingedCore.AI.Humans
         public List<GameObject> unitReferencePrefabs = new();
         public float behaviourUpdateFrequency = 10;
 
-        private Transform kitContainer;
+        [SerializeField, Required] private Transform kitContainer;
 
         [SerializeField]
         private List<AIBehaviourBase> behaviours;
@@ -47,6 +49,10 @@ namespace WingedCore.AI.Humans
             }
 
             Initialize();
+
+            _AITargeting.ChangedToNewAction += OnNewAction;
+
+            StartCoroutine(CheckingCycle());
         }
         private void Initialize()
         {
@@ -60,12 +66,13 @@ namespace WingedCore.AI.Humans
                 return;
             }
 
-            foreach (var reference in unitReferencePrefabs)
-                AddNewBehaviour(reference);
-
-            _AITargeting.ChangedToNewAction += OnNewAction;
-
-            StartCoroutine(CheckingCycle());
+            for (int i = 0; i < kitContainer.childCount; i++) {
+                var child = kitContainer.GetChild(i);
+                AIBehaviourBase beh = child.GetComponent<AIBehaviourBase>();
+                InitBehaviour(beh);
+                behaviourToChild.Add(beh, child);
+                child.gameObject.SetActive(false);
+            }
         }
         private void OnNewAction(object sender, EventArgs _) 
         {
@@ -132,17 +139,20 @@ namespace WingedCore.AI.Humans
         {
             GameObject copy = Instantiate(AIKit, kitContainer);
             AIBehaviourBase beh = copy.GetComponent<AIBehaviourBase>();
+            InitBehaviour(beh);
+            behaviourToChild.Add(beh, copy.transform);
+            copy.SetActive(false);
+        }
+
+        private void InitBehaviour(AIBehaviourBase beh) 
+        {
             if (!currentBehaviour)
                 currentBehaviour = beh;
             if (beh.BehaviourWeapon)
                 beh.BehaviourWeapon.Host = GetMainTransform().transform;
             behaviours.Add(beh);
-            behaviourToChild.Add(beh, copy.transform);
-            copy.SetActive(false);
 
             _AITargeting.AddNewActionsFromBehaviour(beh);
-
-            ChangeToBestWeapon();
         }
 
         #region AIBehaviour overrides

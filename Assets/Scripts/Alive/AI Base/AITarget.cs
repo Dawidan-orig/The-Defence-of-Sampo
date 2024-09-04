@@ -1,6 +1,6 @@
+using Sampo.Factions;
 using UnityEngine;
 using WingedCore.DebugSystems;
-using static UnityEngine.GraphicsBuffer;
 
 namespace WingedCore.AI
 {

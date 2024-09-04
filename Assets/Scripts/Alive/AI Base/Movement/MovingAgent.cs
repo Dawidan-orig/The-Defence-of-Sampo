@@ -32,6 +32,8 @@ public class MovingAgent : MonoBehaviour, IMovingAgent
 
     MonoBehaviour IMovingAgent.Component => this;
 
+    public float AverageVelocity => throw new System.NotImplementedException();
+
     private void Awake()
     {
         movement = GetComponent<Movement>();        
@@ -46,8 +48,8 @@ public class MovingAgent : MonoBehaviour, IMovingAgent
         desireLookDir.y = 0;
 
         countFrom = transform;
-        if (TryGetComponent(out AIBehaviourBase ai) && ai.CalcFrom)
-            countFrom = ai.CalcFrom;
+        if (TryGetComponent(out AIBehaviourBase ai) && ai.NMCalcFrom)
+            countFrom = ai.NMCalcFrom;
     }
 
     private void OnEnable()
@@ -139,5 +141,10 @@ public class MovingAgent : MonoBehaviour, IMovingAgent
         
 
         return wallHit || !stepFloorHit;
+    }
+
+    public void InitializeTags()
+    {
+        throw new System.NotImplementedException();
     }
 }

@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1884536461175855227}
+  - component: {fileID: 3143866045413718835}
   - component: {fileID: 4011318034177242973}
   - component: {fileID: 8430431688793388396}
   - component: {fileID: 1548033618098399182}
-  - component: {fileID: 3143866045413718835}
   m_Layer: 2
   m_Name: Gun
   m_TagString: Untagged
@@ -36,6 +36,31 @@ Transform:
   - {fileID: 3351427671680836873}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3143866045413718835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18677235702261851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3816c1821ffc5d24e953eb00ead986c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _host: {fileID: 0}
+  additionalMeleeReach: 0
+  alive:
+    serializedVersion: 2
+    m_Bits: 64
+  structures:
+    serializedVersion: 2
+    m_Bits: 1
+  shootPoint: {fileID: 3351427671680836873}
+  bulletPrefab: {fileID: 4384517561961518265, guid: e6573e7c6bb6c134197802e0e29f2b89, type: 3}
+  range: 30
+  timeBetweenBullets: 0.4
+  gunPower: 50
 --- !u!33 &4011318034177242973
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -107,31 +132,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3143866045413718835
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18677235702261851}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3816c1821ffc5d24e953eb00ead986c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _host: {fileID: 0}
-  additionalMeleeReach: 0
-  alive:
-    serializedVersion: 2
-    m_Bits: 64
-  structures:
-    serializedVersion: 2
-    m_Bits: 1
-  shootPoint: {fileID: 3351427671680836873}
-  bulletPrefab: {fileID: 4384517561961518265, guid: e6573e7c6bb6c134197802e0e29f2b89, type: 3}
-  range: 30
-  timeBetweenBullets: 0.4
-  gunPower: 50
 --- !u!1 &4161219360457479780
 GameObject:
   m_ObjectHideFlags: 0

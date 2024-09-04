@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using WingedCore.Core.Utility;
 using Sampo.Waves;
+using Sampo.Factions;
 
 /// <summary>
 /// Это временный скрипт для спавна врагов.

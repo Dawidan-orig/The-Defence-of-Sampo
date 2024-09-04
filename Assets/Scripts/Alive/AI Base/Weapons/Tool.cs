@@ -1,6 +1,7 @@
 using WingedCore.AI;
 using WingedCore.Core;
 using UnityEngine;
+using Sampo.Factions;
 
 namespace WingedCore.Weaponry
 {

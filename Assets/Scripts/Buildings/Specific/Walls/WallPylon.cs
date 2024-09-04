@@ -12,12 +12,28 @@ namespace WingedCore.Building
         public bool shouldFocus = true;
 
         [Header("Editor Pre-Playmode Only")]
-        public WallPylon wallToConnect;
+
+#if UNITY_EDITOR
+        //TODO : Добавить этот функционал для тестирований.
+        public List<GameObject> wallsToConnect = new List<GameObject>();
+#endif
 
         protected override void Start()
         {
             base.Start();
-            WallPylon otherWall = wallToConnect ? wallToConnect : MonoBehaviourSingleton<BuildingSystem>.Instance.CurrentWallInFocus;
+
+            if (wallsToConnect.Count > 0)
+            {
+                foreach (var pylon in wallsToConnect)
+                {
+                    var wall = Instantiate(wallSegmentPrefab, transform.position, Quaternion.identity, transform);
+                    wall.GetComponent<AITarget>().ChangeFactionCompletely(GetComponent<AITarget>().FactionType);
+                    wall.GetComponent<WallSegment>().ArrangeSegment(pylon.transform.position, wallSegmentPrefab, transform);
+                }
+                return;
+            }
+
+            WallPylon otherWall = MonoBehaviourSingleton<BuildingSystem>.Instance.CurrentWallInFocus;
 
             if (otherWall)
             {
